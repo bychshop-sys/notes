@@ -128,6 +128,13 @@
                     Add Flashcard
                 </button>
             </div>
+            
+            <div class="mt-6 pt-4 border-t border-gray-100">
+                <label for="sync-key" class="block text-sm font-medium text-gray-700 mb-2">Sync Key (For cross-device sync)</label>
+                <input id="sync-key" type="text" placeholder="Enter a key (e.g., 'MyCode')" oninput="handleSyncKeyChange()" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                <p class="text-xs text-gray-500 mt-1">Use the same key on all devices to sync your data.</p>
+            </div>
+
             <p id="auth-status" class="text-sm text-center mt-3 text-gray-600">Initializing...</p>
             <p id="user-id-display" class="text-xs text-center mt-1 text-gray-400 break-all"></p>
         </div>
@@ -166,14 +173,13 @@
         setLogLevel('debug');
 
         // --- MANDATORY GLOBAL VARIABLE SETUP (Prioritized over user-provided config) ---
-        // Fallback config provided by the user
         const userProvidedConfig = {
             apiKey: "AIzaSyCgWmuOquxwwHCG2u6FNZrb-zrBics3HWk",
             authDomain: "notes-d7918.firebaseapp.com",
             projectId: "notes-d7918",
             storageBucket: "notes-d7918.firebasestorage.app",
             messagingSenderId: "136757169437",
-            appId: "1:136757169437:web:809c9df7ff5aca5ea6e5f4", // Retaining this for reliable appId fallback
+            appId: "1:136757169437:web:809c9df7ff5aca5ea6e5f4",
             measurementId: "G-H54E8JGDFL"
         };
 
@@ -196,6 +202,7 @@
         let userId = null;
         let isAuthReady = false;
         let flashcards = [];
+        let unsubscribeSnapshot = null; // To hold the listener cleanup function
 
         // App initialization
         try {
@@ -204,47 +211,42 @@
             auth = getAuth(app);
             document.getElementById('auth-status').textContent = 'Authenticating...';
 
-            // Function to handle the initial sign-in attempt
             async function attemptInitialSignIn() {
+                if (isAuthReady || auth.currentUser) return; 
+
                 try {
                     if (initialAuthToken) {
                         await signInWithCustomToken(auth, initialAuthToken);
-                        console.log("Signed in with custom token.");
+                        console.log("Signed in with custom token (Canvas).");
                     } else {
                         await signInAnonymously(auth);
-                        console.log("Signed in anonymously (no custom token provided).");
+                        console.log("Signed in anonymously (External Hosting).");
                     }
                 } catch (error) {
                     console.error("Critical: Initial sign-in failed. Error:", error);
-                    document.getElementById('auth-status').textContent = 'Authentication failed. Check console.';
+                    document.getElementById('auth-status').textContent = 'Authentication Failed! Check console for errors (e.g., Firebase Anonymous Auth not enabled or API key restrictions).';
                 }
             }
 
 
             // 1. Authentication Check Listener
-            // This listener fires whenever the auth state changes (sign-in, sign-out, token refresh)
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // User is successfully signed in
                     userId = user.uid;
                     isAuthReady = true;
                     document.getElementById('auth-status').textContent = 'Connected to Firestore.';
-                    document.getElementById('user-id-display').textContent = `User ID: ${userId}`;
+                    document.getElementById('user-id-display').textContent = `Firebase UID: ${userId} (Private Data)`;
                     
                     // 2. Start listening to the data ONLY after a user is confirmed
                     subscribeToFlashcards();
 
                 } else {
-                    // If the state changes to 'no user', and we haven't tried to sign in yet, try now.
-                    // This is primarily for the very first load.
                     if (!isAuthReady) {
                         attemptInitialSignIn();
                     }
                 }
             });
 
-            // If the listener hasn't found a user (which happens immediately on load),
-            // manually trigger the sign-in attempt. This ensures the process starts immediately.
             if (!auth.currentUser) {
                 attemptInitialSignIn();
             }
@@ -257,21 +259,56 @@
         // Expose functions globally
         window.addCard = addCard;
         window.handleManualSwipe = handleManualSwipe;
+        window.handleSyncKeyChange = handleSyncKeyChange;
+
 
         // --- Firestore Operations ---
 
-        function getFlashcardsCollectionRef(uid) {
-            // Private data path: /artifacts/{appId}/users/{userId}/flashcards
-            return collection(db, `artifacts/${appId}/users/${uid}/flashcards`);
+        function getFlashcardsCollectionRef() {
+            if (!db) return null;
+
+            const syncKeyInput = document.getElementById('sync-key');
+            // Ensure the input exists before trying to access its value
+            const currentSyncKey = syncKeyInput ? syncKeyInput.value.trim() : '';
+
+            if (currentSyncKey) {
+                // Use PUBLIC path for syncing across anonymous devices
+                // Path: /artifacts/{appId}/public/data/flashcards_sync/{currentSyncKey}/cards
+                document.getElementById('user-id-display').textContent = `Sync Key Active: ${currentSyncKey} (Public Shared Data)`;
+                return collection(db, `artifacts/${appId}/public/data/flashcards_sync/${currentSyncKey}/cards`);
+            } else if (isAuthReady && userId) {
+                // Fallback to PRIVATE path keyed by authenticated Firebase UID
+                // Path: /artifacts/{appId}/users/{userId}/flashcards
+                document.getElementById('user-id-display').textContent = `Firebase UID: ${userId} (Private Data)`;
+                return collection(db, `artifacts/${appId}/users/${userId}/flashcards`);
+            }
+            return null; 
+        }
+
+        function handleSyncKeyChange() {
+            // This function is called every time the Sync Key input changes.
+            // It automatically re-subscribes to the data based on the new path.
+            subscribeToFlashcards();
         }
 
         function subscribeToFlashcards() {
             if (!isAuthReady || !db || !userId) return;
 
-            const cardsRef = getFlashcardsCollectionRef(userId);
+            // Stop the previous listener if one exists
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot();
+                unsubscribeSnapshot = null;
+            }
+
+            const cardsRef = getFlashcardsCollectionRef();
+
+            if (!cardsRef) {
+                console.error("Cannot subscribe: Firestore reference is null.");
+                return;
+            }
             
-            // Listen for real-time updates
-            onSnapshot(cardsRef, (snapshot) => {
+            // Start the new real-time listener
+            unsubscribeSnapshot = onSnapshot(cardsRef, (snapshot) => {
                 flashcards = snapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
@@ -296,14 +333,16 @@
                 return;
             }
 
-            if (!isAuthReady || !db || !userId) {
-                console.error("Firestore not ready or user not authenticated.");
+            const cardsRef = getFlashcardsCollectionRef();
+
+            if (!cardsRef) {
+                console.error("Firestore not ready or data path not set.");
+                document.getElementById('auth-status').textContent = 'Not ready. Wait for connection or enter Sync Key.';
                 return;
             }
 
             try {
-                // Attempt to write to the database. This requires the Security Rules fix.
-                await addDoc(getFlashcardsCollectionRef(userId), {
+                await addDoc(cardsRef, {
                     title: title,
                     description: description,
                     createdAt: Date.now()
@@ -318,10 +357,13 @@
         }
 
         async function deleteCard(cardId) {
-            if (!isAuthReady || !db || !userId || !cardId) return;
+            const cardsRef = getFlashcardsCollectionRef();
+
+            if (!cardsRef || !cardId) return;
 
             try {
-                const cardDocRef = doc(getFlashcardsCollectionRef(userId), cardId);
+                // Get the document reference using the collection reference's path
+                const cardDocRef = doc(cardsRef.parent, cardId);
                 await deleteDoc(cardDocRef);
                 
                 console.log(`Card with ID ${cardId} successfully deleted persistently.`);
