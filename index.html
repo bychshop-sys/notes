@@ -204,39 +204,49 @@
             auth = getAuth(app);
             document.getElementById('auth-status').textContent = 'Authenticating...';
 
-            // 1. Authentication Check
-            onAuthStateChanged(auth, async (user) => {
+            // Function to handle the initial sign-in attempt
+            async function attemptInitialSignIn() {
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                        console.log("Signed in with custom token.");
+                    } else {
+                        await signInAnonymously(auth);
+                        console.log("Signed in anonymously (no custom token provided).");
+                    }
+                } catch (error) {
+                    console.error("Critical: Initial sign-in failed. Error:", error);
+                    document.getElementById('auth-status').textContent = 'Authentication failed. Check console.';
+                }
+            }
+
+
+            // 1. Authentication Check Listener
+            // This listener fires whenever the auth state changes (sign-in, sign-out, token refresh)
+            onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // User is signed in (either via custom token or anonymously)
+                    // User is successfully signed in
                     userId = user.uid;
                     isAuthReady = true;
                     document.getElementById('auth-status').textContent = 'Connected to Firestore.';
                     document.getElementById('user-id-display').textContent = `User ID: ${userId}`;
                     
-                    // 2. Start listening to the data
+                    // 2. Start listening to the data ONLY after a user is confirmed
                     subscribeToFlashcards();
 
                 } else {
-                    // No user, attempt sign-in
-                    try {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            // Fallback to anonymous sign-in
-                            await signInAnonymously(auth);
-                        }
-                    } catch (error) {
-                        console.error("Authentication failed:", error);
-                        document.getElementById('auth-status').textContent = 'Authentication failed. Check console.';
+                    // If the state changes to 'no user', and we haven't tried to sign in yet, try now.
+                    // This is primarily for the very first load.
+                    if (!isAuthReady) {
+                        attemptInitialSignIn();
                     }
                 }
             });
 
-            // Handle initial auth token sign-in separately if listener hasn't fired yet
-            if (!auth.currentUser && initialAuthToken) {
-                 signInWithCustomToken(auth, initialAuthToken).catch(err => console.error("Initial token sign-in failed:", err));
-            } else if (!auth.currentUser) {
-                 signInAnonymously(auth).catch(err => console.error("Anonymous sign-in failed:", err));
+            // If the listener hasn't found a user (which happens immediately on load),
+            // manually trigger the sign-in attempt. This ensures the process starts immediately.
+            if (!auth.currentUser) {
+                attemptInitialSignIn();
             }
 
         } catch (error) {
