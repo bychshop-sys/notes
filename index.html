@@ -298,7 +298,6 @@
                 }));
 
                 // Only shuffle the array the very first time it loads to establish a random order.
-                // Subsequent updates (add/delete) will maintain the current order for a smoother cycle.
                 if (!hasShuffled && newCards.length > 0) {
                     flashcards = shuffleArray(newCards);
                     hasShuffled = true;
@@ -313,8 +312,6 @@
                     flashcards = flashcards.filter(c => newIds.has(c.id));
                 }
                 
-                // If there was an actual content change and not just an array manipulation, 
-                // we should re-render to reflect the deletion or addition.
                 console.log("Flashcards updated. Total:", flashcards.length);
                 renderCardStack();
             }, (error) => {
@@ -346,7 +343,7 @@
                 await addDoc(cardsRef, {
                     title: title,
                     description: description,
-                    createdAt: Date.now() // Used for stability/sorting in Firestore, not for local order
+                    createdAt: Date.now() 
                 });
                 titleInput.value = '';
                 descriptionInput.value = '';
@@ -367,7 +364,6 @@
                 const cardDocRef = doc(cardsRef.parent, cardId);
                 await deleteDoc(cardDocRef);
                 
-                // The onSnapshot listener will handle the local array update and re-render
                 console.log(`Card with ID ${cardId} successfully deleted persistently.`);
             } catch (e) {
                 console.error("Error deleting document. Check Security Rules:", e);
@@ -446,31 +442,53 @@
             document.addEventListener('mousemove', drag);
             document.addEventListener('mouseup', endDrag);
 
-            // Touch Events
-            cardEl.addEventListener('touchstart', (e) => startDrag(e.touches[0]));
-            document.addEventListener('touchmove', (e) => drag(e.touches[0]));
+            // Touch Events (using { passive: false } to allow preventDefault and stop scrolling)
+            cardEl.addEventListener('touchstart', startDrag, { passive: false });
+            document.addEventListener('touchmove', drag, { passive: false });
             document.addEventListener('touchend', endDrag);
         }
 
+        function getClientCoords(e) {
+            if (e.touches && e.touches.length > 0) {
+                return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+            }
+            return { clientX: e.clientX, clientY: e.clientY };
+        }
+
         function startDrag(e) {
+            // Use this only to prevent default on touch start to block potential body scrolling
+            if (e.type.startsWith('touch')) {
+                e.preventDefault();
+            }
+
             if (!currentCardEl) return;
+            // Check if we started drag on the current top card element
+            if (!e.type.startsWith('touch') && e.target !== currentCardEl && !currentCardEl.contains(e.target)) return;
+
+
             isDragging = true;
             currentCardEl.classList.add('swiping');
             
-            startX = e.clientX || e.pageX;
-            startY = e.clientY || e.pageY;
+            const coords = getClientCoords(e);
+            
+            startX = coords.clientX;
+            startY = coords.clientY;
             
             document.body.style.userSelect = 'none';
         }
 
         function drag(e) {
             if (!isDragging || !currentCardEl) return;
+            
+            // CRITICAL FIX: Prevent default scrolling on touchmove when dragging a card
+            if (e.type.startsWith('touch')) {
+                e.preventDefault();
+            }
 
-            const clientX = e.clientX || e.pageX;
-            const clientY = e.clientY || e.pageY;
-
-            dragX = clientX - startX;
-            dragY = clientY - startY;
+            const coords = getClientCoords(e);
+            
+            dragX = coords.clientX - startX;
+            dragY = coords.clientY - startY;
 
             // Rotation effect based on horizontal drag distance
             const rotation = dragX / 25; 
