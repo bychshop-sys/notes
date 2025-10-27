@@ -158,7 +158,6 @@
 
     <!-- Firebase SDK Imports -->
     <script type="module">
-        // FIX: Added deleteDoc to the Firestore imports.
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, setDoc, query, where, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -167,7 +166,7 @@
         setLogLevel('debug');
 
         // --- MANDATORY GLOBAL VARIABLE SETUP (Prioritized over user-provided config) ---
-        // Your provided firebaseConfig is used here as the default/fallback config.
+        // Fallback config using the details you provided
         const userProvidedConfig = {
             apiKey: "AIzaSyCgWmuOquxwwHCG2u6FNZrb-zrBics3HWk",
             authDomain: "notes-d7918.firebaseapp.com",
@@ -293,6 +292,7 @@
             }
 
             try {
+                // Attempt to write to the database. This requires the Security Rules fix.
                 await addDoc(getFlashcardsCollectionRef(userId), {
                     title: title,
                     description: description,
@@ -300,10 +300,10 @@
                 });
                 titleInput.value = '';
                 descriptionInput.value = '';
-                // Optional: Show success message (using console for simplicity per instructions)
-                console.log("Card added successfully!");
+                console.log("Card add operation initiated.");
             } catch (e) {
-                console.error("Error adding document: ", e);
+                console.error("Error adding document. Check Security Rules:", e);
+                document.getElementById('auth-status').textContent = 'Write Failed. Check Security Rules.';
             }
         }
 
@@ -311,15 +311,13 @@
             if (!isAuthReady || !db || !userId || !cardId) return;
 
             try {
-                // Perform robust, persistent deletion using deleteDoc on the private data path.
                 const cardDocRef = doc(getFlashcardsCollectionRef(userId), cardId);
                 await deleteDoc(cardDocRef);
                 
                 console.log(`Card with ID ${cardId} successfully deleted persistently.`);
-                // The onSnapshot listener will update the local 'flashcards' array and re-render the stack automatically.
-
             } catch (e) {
-                console.error("Error deleting document: ", e);
+                console.error("Error deleting document. Check Security Rules:", e);
+                document.getElementById('auth-status').textContent = 'Delete Failed. Check Security Rules.';
             }
         }
 
@@ -370,14 +368,14 @@
             animateSwipeOut(currentCardEl, direction === 'right' ? 300 : -300);
             
             if (direction === 'right') {
-                // 'Keep' or 'Reviewed' - simply remove from view
+                // 'Keep' or 'Reviewed' - no persistent action for right swipe
                 console.log(`Card ${cardId} marked as reviewed.`);
             } else {
                 // 'Discard' or 'Delete' - perform persistent delete
                 deleteCard(cardId);
             }
 
-            // Remove swiped card from local array and re-render
+            // Manually pop the card from the view to immediately clear the top card
             flashcards.pop();
             renderCardStack();
         }
@@ -405,7 +403,6 @@
             startX = e.clientX || e.pageX;
             startY = e.clientY || e.pageY;
             
-            // Prevent text selection while dragging on desktop
             document.body.style.userSelect = 'none';
         }
 
@@ -419,7 +416,7 @@
             dragY = clientY - startY;
 
             // Rotation effect based on horizontal drag distance
-            const rotation = dragX / 25; // Max rotation 12 degrees
+            const rotation = dragX / 25; 
             
             currentCardEl.style.transform = `
                 translateX(${dragX}px) 
@@ -445,13 +442,11 @@
 
                 if (direction === 'right') {
                     console.log(`Card ${cardId} marked as reviewed.`);
-                    // Right swipe = Keep/Reviewed (no persistent action needed for this app)
                 } else {
                     // Left swipe = Delete/Discard
                     deleteCard(cardId);
                 }
 
-                // Remove swiped card from local array and re-render the stack
                 flashcards.pop();
                 renderCardStack();
             } else {
@@ -474,7 +469,7 @@
             cardEl.style.opacity = '0';
         }
 
-        // Initial render when script loads (will be overridden by onSnapshot later)
+        // Initial render when script loads
         renderCardStack();
 
     </script>
