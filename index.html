@@ -125,18 +125,13 @@
                 <input id="card-title" type="text" placeholder="Card Title (e.g., Key Principle)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" maxlength="80">
                 <textarea id="card-description" rows="4" placeholder="Description or Good Advice" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                 <button onclick="addCard()" class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150">
-                    Add Flashcard
+                    Add Flashcard (Public)
                 </button>
             </div>
             
-            <div class="mt-6 pt-4 border-t border-gray-100">
-                <label for="sync-key" class="block text-sm font-medium text-gray-700 mb-2">Sync Key (For cross-device sync)</label>
-                <input id="sync-key" type="text" placeholder="Enter a key (e.g., 'MyCode')" oninput="handleSyncKeyChange()" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                <p class="text-xs text-gray-500 mt-1">Use the same key on all devices to sync your data.</p>
-            </div>
-
             <p id="auth-status" class="text-sm text-center mt-3 text-gray-600">Initializing...</p>
-            <p id="user-id-display" class="text-xs text-center mt-1 text-gray-400 break-all"></p>
+            <!-- Displaying the data location status -->
+            <p id="data-status-display" class="text-xs text-center mt-1 text-green-600 font-medium">Data is Global and Shared.</p>
         </div>
 
         <!-- Swipe Section -->
@@ -171,6 +166,10 @@
 
         // Enable debug logging for Firebase
         setLogLevel('debug');
+
+        // --- GLOBAL CONSTANTS ---
+        // This key forces all users onto the same public data path for shared notes.
+        const GLOBAL_SYNC_KEY = 'GLOBAL_SHARED_FLASHCARDS';
 
         // --- MANDATORY GLOBAL VARIABLE SETUP (Prioritized over user-provided config) ---
         const userProvidedConfig = {
@@ -235,7 +234,6 @@
                     userId = user.uid;
                     isAuthReady = true;
                     document.getElementById('auth-status').textContent = 'Connected to Firestore.';
-                    document.getElementById('user-id-display').textContent = `Firebase UID: ${userId} (Private Data)`;
                     
                     // 2. Start listening to the data ONLY after a user is confirmed
                     subscribeToFlashcards();
@@ -259,7 +257,6 @@
         // Expose functions globally
         window.addCard = addCard;
         window.handleManualSwipe = handleManualSwipe;
-        window.handleSyncKeyChange = handleSyncKeyChange;
 
 
         // --- Firestore Operations ---
@@ -267,28 +264,9 @@
         function getFlashcardsCollectionRef() {
             if (!db) return null;
 
-            const syncKeyInput = document.getElementById('sync-key');
-            // Ensure the input exists before trying to access its value
-            const currentSyncKey = syncKeyInput ? syncKeyInput.value.trim() : '';
-
-            if (currentSyncKey) {
-                // Use PUBLIC path for syncing across anonymous devices
-                // Path: /artifacts/{appId}/public/data/flashcards_sync/{currentSyncKey}/cards
-                document.getElementById('user-id-display').textContent = `Sync Key Active: ${currentSyncKey} (Public Shared Data)`;
-                return collection(db, `artifacts/${appId}/public/data/flashcards_sync/${currentSyncKey}/cards`);
-            } else if (isAuthReady && userId) {
-                // Fallback to PRIVATE path keyed by authenticated Firebase UID
-                // Path: /artifacts/{appId}/users/{userId}/flashcards
-                document.getElementById('user-id-display').textContent = `Firebase UID: ${userId} (Private Data)`;
-                return collection(db, `artifacts/${appId}/users/${userId}/flashcards`);
-            }
-            return null; 
-        }
-
-        function handleSyncKeyChange() {
-            // This function is called every time the Sync Key input changes.
-            // It automatically re-subscribes to the data based on the new path.
-            subscribeToFlashcards();
+            // Public path using the hardcoded global key
+            // Path: /artifacts/{appId}/public/data/flashcards_sync/GLOBAL_SHARED_FLASHCARDS/cards
+            return collection(db, `artifacts/${appId}/public/data/flashcards_sync/${GLOBAL_SYNC_KEY}/cards`);
         }
 
         function subscribeToFlashcards() {
@@ -337,7 +315,7 @@
 
             if (!cardsRef) {
                 console.error("Firestore not ready or data path not set.");
-                document.getElementById('auth-status').textContent = 'Not ready. Wait for connection or enter Sync Key.';
+                document.getElementById('auth-status').textContent = 'Not ready. Wait for connection.';
                 return;
             }
 
