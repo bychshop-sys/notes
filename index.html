@@ -1,557 +1,915 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swipe Flashcard Notepad</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+    <title>Notepad</title>
+    <!-- Google Fonts for Sleek Design -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
+        :root {
+            --green-user: #4CAF50;
+            --blue-user: #2196F3;
+            --background-color: #f7f7f7;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --secondary-color: #666;
+            --danger-color: #f44336;
+            --success-color: #00bcd4;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
         }
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-            width: 100%;
-            max-width: 900px;
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
         }
-        /* --- Flashcard Stack Styling --- */
-        #swipe-area {
-            position: relative;
-            width: 100%;
-            max-width: 350px;
-            height: 450px;
-            margin-top: 30px;
-        }
-        .flashcard {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+
+        body, html {
             height: 100%;
-            background: linear-gradient(135deg, #ffffff, #f7f7f7);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            background-color: var(--background-color);
+        }
+
+        /* --- Global App Layout --- */
+        #app-container {
+            height: 100vh;
+            display: grid;
+            grid-template-rows: 50px 1fr;
+            background-color: var(--background-color);
+        }
+
+        /* --- Header/Navigation --- */
+        #header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            background-color: var(--card-background);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            z-index: 20;
+            position: relative;
+        }
+
+        #header-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        #header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary-color);
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .header-btn:hover {
+            color: var(--text-color);
+        }
+
+        /* --- Main Content Area (Swipe/Flashcard) --- */
+        #main-content {
+            display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
-            text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .flashcard-stack {
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            max-height: 600px;
+            position: relative;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            padding: 25px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: grab;
             user-select: none;
-            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-            will-change: transform;
-            opacity: 1;
-            transform: translateY(0px) scale(1);
         }
-        /* Stack visual effect */
-        .flashcard:nth-last-child(2) {
-            transform: translateY(4px) scale(0.98);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            z-index: 1;
+
+        .flashcard-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
-        .flashcard:nth-last-child(3) {
-            transform: translateY(8px) scale(0.96);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            z-index: 0;
-        }
-        .flashcard:nth-last-child(n+4) {
-            opacity: 0;
-            transform: translateY(12px) scale(0.94);
-        }
-        .flashcard.swiping {
-            transition: none;
-            cursor: grabbing;
-        }
-        .flashcard h2 {
+
+        .flashcard-title {
             font-size: 1.5rem;
-            font-weight: 800;
-            color: #333;
-            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-color);
             word-wrap: break-word;
-            max-width: 100%;
+            max-width: 80%;
         }
-        .flashcard p {
+
+        .flashcard-description {
             font-size: 1rem;
-            color: #555;
-            word-wrap: break-word;
-            max-height: 280px;
+            color: var(--secondary-color);
+            flex-grow: 1;
             overflow-y: auto;
+            max-height: calc(100% - 150px);
+            line-height: 1.6;
         }
-        .no-cards {
+
+        .flashcard-footer {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            margin-top: 15px;
+        }
+
+        .swipe-btns {
             position: absolute;
-            top: 0;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            z-index: 5;
+        }
+
+        .swipe-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--card-background);
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .swipe-btn:active {
+            transform: scale(0.9);
+        }
+
+        #like-btn { background-color: var(--green-user); }
+        #discard-btn { background-color: var(--danger-color); }
+
+        .new-tag {
+            background-color: var(--success-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .like-indicator {
+            font-size: 1.2rem;
+            color: var(--danger-color);
+            cursor: pointer;
+        }
+
+        /* User Color Coding (kept for styling compatibility but app is single-user) */
+        .card-green { border-left: 8px solid var(--green-user); }
+        .card-blue { border-left: 8px solid var(--blue-user); }
+        .user-tag {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        .user-tag-green { background-color: rgba(76, 175, 80, 0.2); color: var(--green-user); }
+        .user-tag-blue { background-color: rgba(33, 150, 243, 0.2); color: var(--blue-user); }
+
+        /* --- Modals (Add Note, Trash, Import/Export) --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
             align-items: center;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            font-size: 1.2rem;
-            color: #888;
-            padding: 20px;
-            text-align: center;
+            justify-content: center;
         }
-        .swipe-controls button {
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        .modal-content {
+            background-color: var(--card-background);
+            margin: auto;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 400px;
+            position: relative;
         }
-        .swipe-controls button:active {
-            transform: scale(0.95);
+
+        .modal-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            color: var(--text-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        h2 { margin-bottom: 20px; color: var(--text-color); font-weight: 600; text-align: center;}
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-btn {
+            background-color: var(--green-user);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .modal-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Trash List */
+        #trash-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .trash-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .trash-item:last-child { border-bottom: none; }
+        .trash-item-title { font-weight: 500; font-size: 0.95rem; }
+        .recover-btn {
+            background: none;
+            border: none;
+            color: var(--success-color);
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        /* Import/Export */
+        #import-export-modal textarea {
+            height: 150px;
+        }
+        #import-btn { background-color: var(--blue-user); margin-top: 10px;}
+        #export-btn { background-color: var(--secondary-color); margin-bottom: 15px;}
+        #import-btn:hover { background-color: #1a7bbd; }
+        #export-btn:hover { background-color: #555; }
+
+        /* --- Mobile Responsiveness (Sleek/Synchronized) --- */
+        @media (max-width: 600px) {
+            #main-content {
+                padding: 10px;
+            }
+            .flashcard-stack {
+                max-height: 80vh;
+            }
+            .swipe-btns {
+                gap: 20px;
+                bottom: 15px;
+            }
+            .swipe-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
-<body class="p-4 sm:p-8">
-    <div class="main-container">
-        <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Flashcard Swiper</h1>
+<body>
 
-        <!-- Input Section -->
-        <div id="input-section" class="w-full max-w-lg bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-2xl font-bold text-indigo-600 mb-4">Add New Card</h2>
-            <div class="space-y-4">
-                <input id="card-title" type="text" placeholder="Card Title (e.g., Key Principle)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" maxlength="80">
-                <textarea id="card-description" rows="4" placeholder="Description or Good Advice" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                <button onclick="addCard()" class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150">
-                    Add Flashcard (Public)
-                </button>
+    <!-- 2. Main Application Container -->
+    <div id="app-container">
+        <!-- Header -->
+        <header id="header">
+            <span id="header-title">NOTEPAD</span>
+            <div id="header-actions">
+                <button class="header-btn" title="Add Note" onclick="openAddNoteModal()">➕</button>
+                <button class="header-btn" title="Import/Export" onclick="openImportExportModal()">📦</button>
+                <button class="header-btn" title="Trash" onclick="openTrashModal()">🗑️</button>
             </div>
-            
-            <p id="auth-status" class="text-sm text-center mt-3 text-gray-600">Initializing...</p>
-            <!-- Displaying the data location status -->
-            <p id="data-status-display" class="text-xs text-center mt-1 text-green-600 font-medium">Data is Global and Shared.</p>
-        </div>
+        </header>
 
-        <!-- Swipe Section -->
-        <div id="swipe-area-container" class="w-full max-w-lg flex flex-col items-center">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Swipe Left to Delete, Swipe Right to Cycle</h2>
-            <div id="swipe-area">
-                <div class="no-cards">
-                    Loading cards or database initialization...
+        <!-- Main Content (Flashcard Swiping) -->
+        <main id="main-content">
+            <div class="flashcard-stack" id="flashcard-stack">
+                <!-- Flashcards will be dynamically inserted here -->
+                <div id="no-notes-placeholder" class="flashcard" style="align-items: center; justify-content: center; text-align: center; opacity: 1; transform: translate(0,0);">
+                    <h2 style="margin-bottom: 0;">All Caught Up!</h2>
+                    <p style="margin-top: 10px;">No active notes. Use ➕ to add a new one.</p>
                 </div>
             </div>
-            <!-- Swipe Controls -->
-            <div class="swipe-controls flex justify-center mt-10">
-                <button onclick="handleManualSwipe('delete')" class="p-4 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition duration-150">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-                <!-- Removed the green checkmark button for 'Keep/Cycle' -->
+
+            <!-- Swipe Buttons -->
+            <div class="swipe-btns" id="swipe-btns" style="display: none;">
+                <button class="swipe-btn" id="discard-btn" title="Discard" onclick="discardCurrent()">❌</button>
+                <button class="swipe-btn" id="like-btn" title="Keep/Like" onclick="likeCurrent()">❤️</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- 3. Add Note Modal -->
+    <div id="add-note-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('add-note-modal')">&times;</span>
+            <h2>Add Note</h2>
+            <input type="text" id="note-title" placeholder="Title" maxlength="50">
+            <textarea id="note-description" placeholder="Description / Advice..."></textarea>
+            <button class="modal-btn" onclick="saveNewNote()">Add Note</button>
+        </div>
+    </div>
+
+    <!-- 4. Trash Modal -->
+    <div id="trash-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('trash-modal')">&times;</span>
+            <h2>Trashed Notes</h2>
+            <div id="trash-list">
+                <!-- Trashed notes will be dynamically inserted here -->
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK Imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, setDoc, query, where, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- 5. Import/Export Modal -->
+    <div id="import-export-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('import-export-modal')">&times;</span>
+            <h2>Import / Export</h2>
 
-        // Enable debug logging for Firebase
-        setLogLevel('debug');
+            <button id="export-btn" class="modal-btn" onclick="exportNotes()">Export Notes</button>
+            <p style="font-size: 0.9rem; margin: 10px 0;">Copy the data below:</p>
+            <textarea id="export-data" readonly placeholder="Exported JSON will appear here..."></textarea>
 
-        // --- UTILITY FUNCTIONS ---
+            <p style="margin-top: 20px; font-size: 0.9rem;">Paste JSON to import:</p>
+            <textarea id="import-data" placeholder="Paste your note JSON here..."></textarea>
+            <button id="import-btn" class="modal-btn" onclick="importNotes()">Import Notes</button>
+            <p id="import-status" style="margin-top: 10px; text-align: center;"></p>
+        </div>
+    </div>
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+<script>
+/*
+  Local-only Notepad
+  - Stores notes in localStorage under key NOTES_STORAGE_KEY
+  - Single-user mode (no profile selection)
+  - Swipe gestures (touch/mouse): both left/right cycle randomly to another note (no deletion)
+  - Discard button moves a note to Trash
+  - Like button toggles like and marks note not-new
+  - Import/Export works with JSON arrays
+*/
 
-        // --- GLOBAL CONSTANTS ---
-        const GLOBAL_SYNC_KEY = 'GLOBAL_SHARED_FLASHCARDS';
+const NOTES_STORAGE_KEY = 'notepad_notes_v1';
 
-        // --- MANDATORY GLOBAL VARIABLE SETUP (Prioritized over user-provided config) ---
-        const userProvidedConfig = {
-            apiKey: "AIzaSyCgWmuOquxwwHCG2u6FNZrb-zrBics3HWk",
-            authDomain: "notes-d7918.firebaseapp.com",
-            projectId: "notes-d7918",
-            storageBucket: "notes-d7918.firebasestorage.app",
-            messagingSenderId: "136757169437",
-            appId: "1:136757169437:web:809c9df7ff5aca5ea6e5f4",
-            measurementId: "G-H54E8JGDFL"
-        };
+/* Application state */
+let notes = []; // includes trashed notes flagged with trashed: true
+let currentNoteIndex = 0; // index into activeNotes (not including trashed)
+let activeNotes = []; // derived
+const stackContainer = document.getElementById('flashcard-stack');
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined'
-            ? JSON.parse(__firebase_config)
-            : userProvidedConfig;
+/* Utility */
+function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
 
-        const appId = typeof __app_id !== 'undefined'
-            ? __app_id
-            : userProvidedConfig.projectId; // Fallback
+function saveToStorage() {
+    try {
+        localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+    } catch (e) {
+        console.error('Failed to save notes to localStorage', e);
+    }
+}
 
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined'
-            ? __initial_auth_token
-            : null;
-        // --- END MANDATORY SETUP ---
+function loadFromStorage() {
+    try {
+        const raw = localStorage.getItem(NOTES_STORAGE_KEY);
+        notes = raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        console.error('Failed to load notes from storage', e);
+        notes = [];
+    }
+    normalizeNotes();
+}
 
-        // Global variables for Firebase services
-        let db = null;
-        let auth = null;
-        let userId = null;
-        let isAuthReady = false;
-        let flashcards = [];
-        let unsubscribeSnapshot = null;
-        let hasShuffled = false; // Flag to ensure we only shuffle on initial load
+function normalizeNotes() {
+    // Ensure each note has required fields
+    notes = notes.map(n => ({
+        id: n.id || uid(),
+        title: n.title || '',
+        description: n.description || '',
+        liked: !!n.liked,
+        likes: typeof n.likes === 'number' ? n.likes : 0,
+        isNew: n.isNew !== false, // default true unless explicitly false
+        createdAt: n.createdAt || new Date().toISOString(),
+        trashed: !!n.trashed
+    }));
+    saveToStorage();
+}
 
-        // App initialization
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            document.getElementById('auth-status').textContent = 'Authenticating...';
+function getActiveNotes() {
+    return notes.filter(n => !n.trashed);
+}
 
-            async function attemptInitialSignIn() {
-                if (isAuthReady || auth.currentUser) return; 
+function renderNotes() {
+    activeNotes = getActiveNotes();
+    stackContainer.innerHTML = '';
 
-                try {
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                        console.log("Signed in with custom token (Canvas).");
-                    } else {
-                        await signInAnonymously(auth);
-                        console.log("Signed in anonymously (External Hosting).");
-                    }
-                } catch (error) {
-                    console.error("Critical: Initial sign-in failed. Error:", error);
-                    document.getElementById('auth-status').textContent = 'Authentication Failed! Check console for errors.';
-                }
-            }
+    const placeholder = document.createElement('div');
+    placeholder.id = 'no-notes-placeholder';
+    placeholder.className = 'flashcard';
+    placeholder.style.alignItems = 'center';
+    placeholder.style.justifyContent = 'center';
+    placeholder.style.textAlign = 'center';
+    placeholder.style.opacity = activeNotes.length ? '0' : '1';
+    placeholder.style.transform = 'translate(0,0)';
+    placeholder.innerHTML = `
+        <h2 style="margin-bottom: 0;">All Caught Up!</h2>
+        <p style="margin-top: 10px;">No active notes. Use ➕ to add a new one.</p>
+    `;
+    stackContainer.appendChild(placeholder);
 
-            // 1. Authentication Check Listener
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    userId = user.uid;
-                    isAuthReady = true;
-                    document.getElementById('auth-status').textContent = 'Connected to Firestore.';
-                    
-                    // 2. Start listening to the data ONLY after a user is confirmed
-                    subscribeToFlashcards();
+    if (activeNotes.length === 0) {
+        document.getElementById('swipe-btns').style.display = 'none';
+        return;
+    } else {
+        document.getElementById('swipe-btns').style.display = 'flex';
+    }
 
-                } else {
-                    if (!isAuthReady) {
-                        attemptInitialSignIn();
-                    }
-                }
-            });
+    // Render stack: top card should be last appended, so we append from bottom to top
+    activeNotes.forEach((note, index) => {
+        const card = document.createElement('div');
+        card.className = 'flashcard';
+        // keep color-left border classes in case styling expects them; single-user default to green style
+        card.classList.add('card-green');
+        card.id = `note-${note.id}`;
+        card.dataset.noteId = note.id;
+        card.dataset.index = index;
 
-            if (!auth.currentUser) {
-                attemptInitialSignIn();
-            }
+        // Position / stacking
+        const zIndex = index + 1; // lower index = bottom
+        const depth = Math.min((activeNotes.length - 1 - index) * 5, 20); // top card has depth 0
+        const scale = 1 - Math.min((activeNotes.length - 1 - index) * 0.03, 0.2);
 
-        } catch (error) {
-            console.error("Firebase Initialization Error:", error);
-            document.getElementById('auth-status').textContent = 'Firebase Error: Check console.';
-        }
+        card.style.zIndex = zIndex;
+        card.style.transform = `translateY(${depth}px) scale(${scale})`;
 
-        // Expose functions globally
-        window.addCard = addCard;
-        window.handleManualSwipe = handleManualSwipe;
+        card.innerHTML = `
+            <div class="flashcard-header">
+                <span class="flashcard-title">${escapeHtml(note.title)}</span>
+                <span class="user-tag user-tag-green">${note.isNew ? 'NEW' : ''}</span>
+            </div>
+            <div class="flashcard-description">${escapeHtml(note.description)}</div>
+            <div class="flashcard-footer">
+                <div>
+                    ${note.isNew ? '<span class="new-tag">NEW</span>' : ''}
+                </div>
+                <span class="like-indicator" data-liked="${note.liked}" onclick="toggleLike('${note.id}', event)">${note.liked ? '❤️' : '🤍'} ${note.likes || 0}</span>
+            </div>
+        `;
+        stackContainer.appendChild(card);
+    });
 
+    // The topmost card will be the last .flashcard appended (highest z-index)
+    setupSwipeGestures();
+    // Ensure currentNoteIndex stays in range; set to 0 (top) if out of range
+    if (currentNoteIndex >= activeNotes.length) currentNoteIndex = 0;
+}
 
-        // --- Firestore Operations ---
+/* Basic HTML-escape to avoid injection into DOM from imported JSON */
+function escapeHtml(text) {
+    if (!text && text !== 0) return '';
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
 
-        function getFlashcardsCollectionRef() {
-            if (!db) return null;
+/* Add note */
+function openAddNoteModal() {
+    document.getElementById('note-title').value = '';
+    document.getElementById('note-description').value = '';
+    document.getElementById('add-note-modal').style.display = 'flex';
+}
 
-            // Public path using the hardcoded global key
-            // Path: /artifacts/{appId}/public/data/flashcards_sync/GLOBAL_SHARED_FLASHCARDS/cards
-            return collection(db, `artifacts/${appId}/public/data/flashcards_sync/${GLOBAL_SYNC_KEY}/cards`);
-        }
+function saveNewNote() {
+    const title = document.getElementById('note-title').value.trim();
+    const description = document.getElementById('note-description').value.trim();
 
-        function subscribeToFlashcards() {
-            if (!isAuthReady || !db || !userId) return;
+    if (!title || !description) {
+        console.warn('Title and Description cannot be empty.');
+        return;
+    }
 
-            // Stop the previous listener if one exists
-            if (unsubscribeSnapshot) {
-                unsubscribeSnapshot();
-                unsubscribeSnapshot = null;
-            }
+    const newNote = {
+        id: uid(),
+        title,
+        description,
+        liked: false,
+        likes: 0,
+        isNew: true,
+        createdAt: new Date().toISOString(),
+        trashed: false
+    };
+    notes.push(newNote);
+    saveToStorage();
+    closeModal('add-note-modal');
+    // show newly added on top by re-rendering and placing it as last element (top)
+    renderNotes();
+}
 
-            const cardsRef = getFlashcardsCollectionRef();
+/* Like toggle */
+function toggleLike(noteId, event) {
+    event.stopPropagation();
+    const n = notes.find(x => x.id === noteId);
+    if (!n) return;
+    n.liked = !n.liked;
+    n.likes = n.liked ? (n.likes || 0) + 1 : Math.max(0, (n.likes || 1) - 1);
+    n.isNew = false;
+    saveToStorage();
+    renderNotes();
+}
 
-            if (!cardsRef) {
-                console.error("Cannot subscribe: Firestore reference is null.");
-                return;
-            }
-            
-            // Start the new real-time listener
-            unsubscribeSnapshot = onSnapshot(cardsRef, (snapshot) => {
-                const newCards = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
+/* Discard current (via button) -> move to trash */
+function discardCurrent() {
+    activeNotes = getActiveNotes();
+    if (activeNotes.length === 0) return;
+    const topNote = activeNotes[activeNotes.length - 1];
+    if (!topNote) return;
+    const note = notes.find(n => n.id === topNote.id);
+    if (!note) return;
+    note.trashed = true;
+    note.trashedAt = new Date().toISOString();
+    saveToStorage();
+    // After discarding, show next random available note (if any)
+    // We'll shuffle active notes so top changes
+    shuffleActiveNotes();
+    renderNotes();
+}
 
-                // Only shuffle the array the very first time it loads to establish a random order.
-                if (!hasShuffled && newCards.length > 0) {
-                    flashcards = shuffleArray(newCards);
-                    hasShuffled = true;
-                } else if (newCards.length > flashcards.length) {
-                    // New card added: Find the new card(s) and append it to maintain order.
-                    const existingIds = new Set(flashcards.map(c => c.id));
-                    const addedCards = newCards.filter(c => !existingIds.has(c.id));
-                    flashcards = [...flashcards, ...addedCards];
-                } else if (newCards.length < flashcards.length) {
-                    // Card(s) deleted: Filter the local array to remove deleted IDs.
-                    const newIds = new Set(newCards.map(c => c.id));
-                    flashcards = flashcards.filter(c => newIds.has(c.id));
-                }
-                
-                console.log("Flashcards updated. Total:", flashcards.length);
-                renderCardStack();
-            }, (error) => {
-                console.error("Error subscribing to flashcards:", error);
-                document.getElementById('auth-status').textContent = 'Data Sync Error.';
-            });
-        }
+/* Like current (via button) -> toggle like on topmost note */
+function likeCurrent() {
+    activeNotes = getActiveNotes();
+    if (activeNotes.length === 0) return;
+    const topNote = activeNotes[activeNotes.length - 1];
+    if (!topNote) return;
+    const note = notes.find(n => n.id === topNote.id);
+    if (!note) return;
+    note.liked = !note.liked;
+    note.likes = note.liked ? (note.likes || 0) + 1 : Math.max(0, (note.likes || 1) - 1);
+    note.isNew = false;
+    saveToStorage();
+    renderNotes();
+}
 
-        async function addCard() {
-            const titleInput = document.getElementById('card-title');
-            const descriptionInput = document.getElementById('card-description');
-            const title = titleInput.value.trim();
-            const description = descriptionInput.value.trim();
+/* Shuffle active notes array in-memory to randomize cycle - does not affect trashed notes */
+function shuffleActiveNotes() {
+    const active = getActiveNotes();
+    // Fisher-Yates
+    for (let i = active.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [active[i], active[j]] = [active[j], active[i]];
+    }
+    // Reconstruct notes array: keep trashed ones as before, replace active ones with shuffled order while preserving identifers/content
+    const trashed = notes.filter(n => n.trashed);
+    notes = [...trashed, ...active];
+    saveToStorage();
+}
 
-            if (!title || !description) {
-                console.error("Title and Description cannot be empty.");
-                return;
-            }
+/* Swipe gestures: both left and right cycle randomly (do NOT delete on gesture) */
+function setupSwipeGestures() {
+    // Remove previous gesture listeners by cloning top card node if needed
+    const cards = Array.from(document.querySelectorAll('.flashcard-stack .flashcard'));
+    if (cards.length === 0) return;
 
-            const cardsRef = getFlashcardsCollectionRef();
+    // Topmost card: last .flashcard in container (excluding placeholder)
+    // We'll pick the element with highest z-index or last in DOM
+    const topCard = cards.filter(c => c.id && c.id.startsWith('note-')).slice(-1)[0];
+    if (!topCard) return;
 
-            if (!cardsRef) {
-                console.error("Firestore not ready or data path not set.");
-                document.getElementById('auth-status').textContent = 'Not ready. Wait for connection.';
-                return;
-            }
+    // Remove previous listeners by replacing node (simple cleanup)
+    const newCard = topCard.cloneNode(true);
+    topCard.parentNode.replaceChild(newCard, topCard);
 
-            try {
-                await addDoc(cardsRef, {
-                    title: title,
-                    description: description,
-                    createdAt: Date.now() 
-                });
-                titleInput.value = '';
-                descriptionInput.value = '';
-                console.log("Card add operation initiated.");
-            } catch (e) {
-                console.error("Error adding document. Check Security Rules:", e);
-                document.getElementById('auth-status').textContent = 'Write Failed. Check Security Rules.';
-            }
-        }
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+    const threshold = 80;
+    let currentX = 0;
 
-        async function deleteCard(cardId) {
-            const cardsRef = getFlashcardsCollectionRef();
+    newCard.addEventListener('touchstart', startDrag, {passive: true});
+    newCard.addEventListener('mousedown', startDrag);
 
-            if (!cardsRef || !cardId) return;
-
-            try {
-                // Get the document reference using the collection reference's path
-                const cardDocRef = doc(cardsRef.parent, cardId);
-                await deleteDoc(cardDocRef);
-                
-                console.log(`Card with ID ${cardId} successfully deleted persistently.`);
-            } catch (e) {
-                console.error("Error deleting document. Check Security Rules:", e);
-                document.getElementById('auth-status').textContent = 'Delete Failed. Check Security Rules.';
-            }
-        }
-
-        function cycleCard() {
-            if (flashcards.length < 2) return;
-            // Move the last card (the one on top of the stack) to the beginning
-            const topCard = flashcards.pop();
-            flashcards.unshift(topCard);
-            renderCardStack();
-            console.log("Card cycled to the back of the deck.");
-        }
-
-        // --- Card Rendering and Swipe Logic ---
-
-        const swipeArea = document.getElementById('swipe-area');
-        let currentCardEl = null;
-        let isDragging = false;
-        let startX = 0;
-        let startY = 0;
-        let dragX = 0;
-        let dragY = 0;
-
-        function renderCardStack() {
-            swipeArea.innerHTML = '';
-            
-            if (flashcards.length === 0) {
-                swipeArea.innerHTML = '<div class="no-cards">No flashcards yet! Add one above to start reviewing.</div>';
-                currentCardEl = null;
-                return;
-            }
-
-            // Render cards (up to 3 for visual stack effect), showing the end of the shuffled array
-            flashcards.slice(-3).reverse().forEach((card, index) => {
-                const cardEl = document.createElement('div');
-                cardEl.className = 'flashcard';
-                cardEl.dataset.id = card.id;
-                cardEl.dataset.index = index;
-                cardEl.innerHTML = `
-                    <h2 class="px-2">${card.title}</h2>
-                    <p class="mt-4 px-2 text-justify">${card.description}</p>
-                `;
-
-                if (index === 0) {
-                    currentCardEl = cardEl;
-                    setupSwipeListeners(cardEl);
-                }
-                
-                swipeArea.appendChild(cardEl);
-            });
-        }
-
-        // Handles manual click on the buttons below the stack (only delete remains)
-        function handleManualSwipe(direction) {
-            if (!currentCardEl || direction !== 'delete') return;
-
-            const cardId = currentCardEl.dataset.id;
-            
-            animateSwipeOut(currentCardEl, -300); // Animate left (delete)
-            deleteCard(cardId);
-            // Local removal is handled by the onSnapshot listener, but we remove the top card
-            // visually immediately here to avoid waiting for the round trip.
-            flashcards.pop(); 
-            renderCardStack();
-        }
-
-
-        // --- Touch/Mouse Swipe Implementation ---
-
-        function setupSwipeListeners(cardEl) {
-            // Mouse Events
-            cardEl.addEventListener('mousedown', startDrag);
-            document.addEventListener('mousemove', drag);
+    function startDrag(e) {
+        if (e.type === 'mousedown') {
+            startX = e.clientX;
+            startY = e.clientY;
+            document.addEventListener('mousemove', onDrag);
             document.addEventListener('mouseup', endDrag);
-
-            // Touch Events (using { passive: false } to allow preventDefault and stop scrolling)
-            cardEl.addEventListener('touchstart', startDrag, { passive: false });
-            document.addEventListener('touchmove', drag, { passive: false });
+        } else {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            document.addEventListener('touchmove', onDrag, {passive: false});
             document.addEventListener('touchend', endDrag);
         }
+        isDragging = true;
+        newCard.style.transition = 'none';
+    }
 
-        function getClientCoords(e) {
-            if (e.touches && e.touches.length > 0) {
-                return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+    function onDrag(e) {
+        if (!isDragging) return;
+        if (e.type === 'mousemove') {
+            currentX = e.clientX;
+        } else {
+            // touchmove
+            currentX = e.touches[0].clientX;
+            e.preventDefault(); // avoid page scroll while dragging
+        }
+        const deltaX = currentX - startX;
+        const rotation = deltaX / 20;
+        newCard.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
+    }
+
+    function endDrag(e) {
+        if (!isDragging) return;
+        isDragging = false;
+
+        // get final X from mouseup/touchend
+        let endClientX = startX;
+        if (e.type === 'mouseup') {
+            endClientX = (e.clientX !== undefined) ? e.clientX : startX;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', endDrag);
+        } else {
+            endClientX = (e.changedTouches && e.changedTouches[0] && e.changedTouches[0].clientX) ? e.changedTouches[0].clientX : startX;
+            document.removeEventListener('touchmove', onDrag);
+            document.removeEventListener('touchend', endDrag);
+        }
+
+        const deltaX = endClientX - startX;
+
+        if (Math.abs(deltaX) > threshold) {
+            // Gesture swipe detected — both directions should cycle randomly
+            const toRight = deltaX > 0;
+            const translateX = toRight ? '400%' : '-400%';
+            const rotate = toRight ? '10deg' : '-10deg';
+            newCard.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
+            newCard.style.transform = `${translateX} rotate(${rotate})`;
+            newCard.style.opacity = '0';
+            // mark as not new
+            const noteId = newCard.dataset.noteId;
+            const n = notes.find(x => x.id === noteId);
+            if (n) {
+                n.isNew = false;
+                saveToStorage();
             }
-            return { clientX: e.clientX, clientY: e.clientY };
+            // after animation, reshuffle active notes and re-render
+            setTimeout(() => {
+                shuffleActiveNotes();
+                renderNotes();
+            }, 300);
+        } else {
+            // Snap back
+            newCard.style.transition = 'transform 0.25s ease-out';
+            newCard.style.transform = 'translate(0,0) rotate(0deg)';
+        }
+    }
+}
+
+/* Trash modal rendering and actions */
+function openTrashModal() {
+    renderTrashList();
+    document.getElementById('trash-modal').style.display = 'flex';
+}
+
+function renderTrashList() {
+    const list = document.getElementById('trash-list');
+    const trashed = notes.filter(n => n.trashed).sort((a,b) => (b.trashedAt||'').localeCompare(a.trashedAt||''));
+    list.innerHTML = '';
+    if (trashed.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">Trash is empty.</p>';
+        return;
+    }
+    trashed.forEach(note => {
+        const item = document.createElement('div');
+        item.className = 'trash-item';
+        item.innerHTML = `
+            <div style="display:flex;flex-direction:column;">
+                <span class="trash-item-title">${escapeHtml(note.title)}</span>
+                <small style="color:var(--secondary-color)">${note.trashedAt ? new Date(note.trashedAt).toLocaleString() : ''}</small>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <button class="recover-btn" title="Recover" onclick="recoverNote('${note.id}')">🔄</button>
+                <button class="recover-btn" title="Delete Permanently" onclick="deletePermanently('${note.id}')" style="color:var(--danger-color)">🗑️</button>
+            </div>
+        `;
+        list.appendChild(item);
+    });
+}
+
+function recoverNote(id) {
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+    note.trashed = false;
+    note.trashedAt = undefined;
+    note.isNew = true;
+    saveToStorage();
+    renderTrashList();
+    renderNotes();
+}
+
+function deletePermanently(id) {
+    notes = notes.filter(n => n.id !== id);
+    saveToStorage();
+    renderTrashList();
+    renderNotes();
+}
+
+/* Import / Export */
+function openImportExportModal() {
+    document.getElementById('import-export-modal').style.display = 'flex';
+    document.getElementById('export-data').value = '';
+    document.getElementById('import-data').value = '';
+    document.getElementById('import-status').innerText = '';
+}
+
+function exportNotes() {
+    // Export ALL notes (including trashed) to JSON
+    const exportArray = notes.map(n => ({
+        id: n.id,
+        title: n.title,
+        description: n.description,
+        liked: n.liked,
+        likes: n.likes,
+        isNew: n.isNew,
+        createdAt: n.createdAt,
+        trashed: n.trashed,
+        trashedAt: n.trashedAt || null
+    }));
+    const exportString = JSON.stringify(exportArray, null, 2);
+    document.getElementById('export-data').value = exportString;
+    document.getElementById('import-status').style.color = 'var(--blue-user)';
+    document.getElementById('import-status').innerText = 'Data prepared. Copy the JSON from the text area above.';
+}
+
+function importNotes() {
+    const jsonInput = document.getElementById('import-data').value.trim();
+    const status = document.getElementById('import-status');
+    status.innerText = '';
+
+    if (!jsonInput) {
+        status.innerText = 'Paste JSON data to import.';
+        status.style.color = 'var(--danger-color)';
+        return;
+    }
+
+    try {
+        const parsed = JSON.parse(jsonInput);
+        if (!Array.isArray(parsed)) {
+            throw new Error("Data must be a JSON array of notes.");
         }
 
-        function startDrag(e) {
-            // Use this only to prevent default on touch start to block potential body scrolling
-            if (e.type.startsWith('touch')) {
-                e.preventDefault();
+        let importedCount = 0;
+        for (const item of parsed) {
+            if (item.title && item.description) {
+                const newNote = {
+                    id: item.id || uid(),
+                    title: item.title,
+                    description: item.description,
+                    liked: !!item.liked,
+                    likes: typeof item.likes === 'number' ? item.likes : 0,
+                    isNew: item.isNew !== false,
+                    createdAt: item.createdAt || new Date().toISOString(),
+                    trashed: !!item.trashed,
+                    trashedAt: item.trashedAt || null
+                };
+                notes.push(newNote);
+                importedCount++;
             }
-
-            if (!currentCardEl) return;
-            // Check if we started drag on the current top card element
-            if (!e.type.startsWith('touch') && e.target !== currentCardEl && !currentCardEl.contains(e.target)) return;
-
-
-            isDragging = true;
-            currentCardEl.classList.add('swiping');
-            
-            const coords = getClientCoords(e);
-            
-            startX = coords.clientX;
-            startY = coords.clientY;
-            
-            document.body.style.userSelect = 'none';
         }
+        normalizeNotes();
+        status.style.color = 'var(--green-user)';
+        status.innerText = `Imported ${importedCount} notes!`;
+        document.getElementById('import-data').value = '';
+        renderNotes();
+    } catch (err) {
+        status.style.color = 'var(--danger-color)';
+        status.innerText = 'Import failed. Check JSON format.';
+        console.error('Import error', err);
+    }
+}
 
-        function drag(e) {
-            if (!isDragging || !currentCardEl) return;
-            
-            // CRITICAL FIX: Prevent default scrolling on touchmove when dragging a card
-            if (e.type.startsWith('touch')) {
-                e.preventDefault();
+/* Modal helper */
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+/* Initialization */
+function init() {
+    loadFromStorage();
+    renderNotes();
+    // ensure that tapping outside modals closes them
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
             }
+        });
+    });
 
-            const coords = getClientCoords(e);
-            
-            dragX = coords.clientX - startX;
-            dragY = coords.clientY - startY;
-
-            // Rotation effect based on horizontal drag distance
-            const rotation = dragX / 25; 
-            
-            // Adjust card scale slightly based on drag for a "smoother" feel
-            const scale = 1 - (Math.abs(dragX) / 400);
-
-            currentCardEl.style.transform = `
-                translateX(${dragX}px) 
-                translateY(${dragY}px) 
-                rotate(${rotation}deg)
-                scale(${Math.max(0.9, scale)})
-            `;
+    // Prevent page scrolling on mobile to keep app feel
+    document.addEventListener('touchmove', function(e) {
+        // if a modal is open or interacting with a scrollable element, allow; otherwise prevent
+        const modalOpen = Array.from(document.querySelectorAll('.modal')).some(m => m.style.display === 'flex');
+        if (!modalOpen) {
+            e.preventDefault();
         }
+    }, { passive: false });
+}
 
-        function endDrag() {
-            if (!isDragging || !currentCardEl) return;
-            isDragging = false;
-            currentCardEl.classList.remove('swiping');
-            document.body.style.userSelect = 'auto';
+// Load and start
+window.addEventListener('load', init);
 
-            const swipeThreshold = 100; // Pixels needed to trigger a swipe
-            const cardId = currentCardEl.dataset.id;
+// Expose a couple of helpers to window scope for inline onclick handlers in markup
+window.openAddNoteModal = openAddNoteModal;
+window.openImportExportModal = openImportExportModal;
+window.openTrashModal = openTrashModal;
+window.closeModal = closeModal;
+window.saveNewNote = saveNewNote;
+window.discardCurrent = discardCurrent;
+window.likeCurrent = likeCurrent;
+window.toggleLike = toggleLike;
+window.recoverNote = recoverNote;
+window.deletePermanently = deletePermanently;
+window.exportNotes = exportNotes;
+window.importNotes = importNotes;
 
-            if (Math.abs(dragX) > swipeThreshold) {
-                // Swipe detected!
-                const action = dragX > 0 ? 'cycle' : 'delete'; // Right = cycle, Left = delete
-                
-                animateSwipeOut(currentCardEl, dragX);
-
-                if (action === 'cycle') {
-                    cycleCard();
-                } else {
-                    // Delete
-                    deleteCard(cardId);
-                    flashcards.pop(); // Remove locally for immediate visual effect
-                    renderCardStack();
-                }
-            } else {
-                // Reset card position (smoothly snapping back)
-                currentCardEl.style.transform = '';
-            }
-            
-            // Reset drag variables
-            dragX = 0;
-            dragY = 0;
-        }
-
-        function animateSwipeOut(cardEl, finalX) {
-            // Apply fast animation for the fly-out effect
-            cardEl.style.transition = 'transform 0.5s ease-out, opacity 0.4s ease-out';
-            cardEl.style.transform = `
-                translateX(${finalX * 3}px) 
-                translateY(${dragY * 3}px) 
-                rotate(${finalX / 10}deg)
-                scale(0.5)
-            `;
-            cardEl.style.opacity = '0';
-        }
-
-        // Initial render when script loads
-        renderCardStack();
-
-    </script>
+/* Utility: if you want to debug quickly from console */
+window._NOTEPAD = {
+    notes,
+    saveToStorage,
+    loadFromStorage
+};
+</script>
 </body>
 </html>
