@@ -3,1088 +3,445 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notepad</title>
-    <!-- Google Fonts for Sleek Design -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>FlashCard NotePad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --green-user: #4CAF50;
-            --blue-user: #2196F3;
-            --background-color: #f7f7f7;
-            --card-background: #ffffff;
-            --text-color: #333;
-            --secondary-color: #666;
-            --danger-color: #f44336;
-            --success-color: #00bcd4;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --border-radius: 12px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body, html {
-            height: 100%;
-            overflow: hidden;
-        }
-
-        /* --- Global App Layout --- */
-        #app-container {
-            /* Initial state handled by JS */
-            height: 100vh;
-            display: grid;
-            grid-template-rows: 50px 1fr;
-            background-color: var(--background-color);
-        }
-
-        /* --- Header/Navigation --- */
-        #header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 15px;
-            background-color: var(--card-background);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            z-index: 20; /* Fixed: Added Z-index to ensure header is clickable */
-            position: relative; /* Necessary for z-index to work */
-        }
-
-        #header-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        #header-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .header-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--secondary-color);
-            transition: color 0.2s;
-            line-height: 1;
-        }
-
-        .header-btn:hover {
-            color: var(--text-color);
-        }
-
-        /* --- Main Content Area (Swipe/Flashcard) --- */
-        #main-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            z-index: 10; /* Set below header */
-        }
-
-        .flashcard-stack {
-            width: 100%;
-            max-width: 400px;
-            height: 100%;
-            max-height: 600px;
-            position: relative;
-        }
-
-        .flashcard {
-            width: 100%;
-            height: 100%;
-            padding: 25px;
-            background-color: var(--card-background);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: flex-start;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: grab;
-            user-select: none;
-        }
-
-        .flashcard-header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-
-        .flashcard-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-color);
-            word-wrap: break-word;
-            max-width: 80%;
-        }
-
-        .flashcard-description {
-            font-size: 1rem;
-            color: var(--secondary-color);
-            flex-grow: 1;
-            overflow-y: auto;
-            max-height: calc(100% - 150px);
-            line-height: 1.6;
-        }
-
-        .flashcard-footer {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-            margin-top: 15px;
-        }
-
-        .swipe-btns {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 30px;
-            z-index: 5;
-        }
-
-        .swipe-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
-            font-size: 1.8rem;
-            color: var(--card-background);
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s, opacity 0.2s;
-        }
-
-        .swipe-btn:active {
-            transform: scale(0.9);
-        }
-
-        #like-btn { background-color: var(--green-user); }
-        #discard-btn { background-color: var(--danger-color); }
-
-        .new-tag {
-            background-color: var(--success-color);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .like-indicator {
-            font-size: 1.2rem;
-            color: var(--danger-color);
-            cursor: pointer;
-        }
-
-        /* User Color Coding */
-        .card-green { border-left: 8px solid var(--green-user); }
-        .card-blue { border-left: 8px solid var(--blue-user); }
-        .user-tag {
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 5px;
-            font-weight: 600;
-        }
-        .user-tag-green { background-color: rgba(76, 175, 80, 0.2); color: var(--green-user); }
-        .user-tag-blue { background-color: rgba(33, 150, 243, 0.2); color: var(--blue-user); }
-
-        /* --- Modals (Profile, Add Note, Trash) --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: var(--card-background);
-            margin: auto;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-        }
-
-        .modal-close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .modal-close:hover,
-        .modal-close:focus {
-            color: var(--text-color);
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        h2 { margin-bottom: 20px; color: var(--text-color); font-weight: 600; text-align: center;}
-
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0 15px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .modal-btn {
-            background-color: var(--green-user);
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: background-color 0.2s;
-        }
-
-        .modal-btn:hover {
-            background-color: #45a049;
-        }
-
-        /* Profile Selection */
-        .profile-selection {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .profile-card {
-            padding: 20px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            cursor: pointer;
-            width: 120px;
-            border: 3px solid transparent;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .profile-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .profile-card-green { background-color: rgba(76, 175, 80, 0.1); border-color: var(--green-user); }
-        .profile-card-blue { background-color: rgba(33, 150, 243, 0.1); border-color: var(--blue-user); }
-
-        .profile-card p {
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        .profile-card-green p { color: var(--green-user); }
-        .profile-card-blue p { color: var(--blue-user); }
-        .profile-icon { font-size: 2.5rem; }
-
-        /* Trash List */
-        #trash-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 15px;
-        }
-        .trash-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .trash-item:last-child { border-bottom: none; }
-        .trash-item-title { font-weight: 500; font-size: 0.95rem; }
-        .recover-btn {
-            background: none;
-            border: none;
-            color: var(--success-color);
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-
-        /* Import/Export */
-        #import-export-modal textarea {
-            height: 150px;
-        }
-        #import-btn { background-color: var(--blue-user); margin-top: 10px;}
-        #export-btn { background-color: var(--secondary-color); margin-bottom: 15px;}
-        #import-btn:hover { background-color: #1a7bbd; }
-        #export-btn:hover { background-color: #555; }
-
-        /* Chat Box */
-        #chat-box-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 50;
-        }
-        #chat-toggle-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: var(--blue-user);
-            color: white;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: background-color 0.2s;
-        }
-        #chat-toggle-btn:hover { background-color: #1a7bbd; }
-
-        #chat-window {
-            display: none;
-            width: 300px;
-            height: 400px;
-            background-color: var(--card-background);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: absolute; /* Position relative to container */
-            bottom: 0;
-            right: 0;
-        }
-        #chat-messages {
-            flex-grow: 1;
-            padding: 10px;
-            overflow-y: auto;
-            border-bottom: 1px solid #eee;
-        }
-        .chat-message {
-            margin-bottom: 8px;
-            padding: 5px 10px;
-            border-radius: 10px;
-            max-width: 80%;
-            word-wrap: break-word;
-        }
-        .chat-message-system { background-color: #e0f7fa; color: #00838f; margin-left: auto; }
-        #chat-input-container {
-            display: flex;
-            padding: 10px;
-        }
-        #chat-input {
-            flex-grow: 1;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px 0 0 6px;
-            border-right: none;
-        }
-        #chat-send-btn {
-            padding: 8px 12px;
-            background-color: var(--blue-user);
-            color: white;
-            border: none;
-            border-radius: 0 6px 6px 0;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        /* --- Mobile Responsiveness (Sleek/Synchronized) --- */
-        @media (max-width: 600px) {
-            #main-content {
-                padding: 10px;
-            }
-            .flashcard-stack {
-                max-height: 80vh;
-            }
-            .swipe-btns {
-                gap: 20px;
-                bottom: 15px;
-            }
-            .swipe-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
-            }
-            #chat-window {
-                width: 90vw;
-                height: 300px;
-                right: 5vw;
-                bottom: 10px;
-            }
-        }
-
+        /* [CSS VARIABLES] */
+        :root { --color-green: #4CAF50; --color-blue: #2196F3; --color-red: #F44336; --color-dark: #333; --color-light: #f9f9f9; --color-bg: #ececec; --border-radius: 12px; --shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        /* [GLOBAL STYLES & BODY] */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--color-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        /* [LOGIN SCREEN] */
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 400px; padding: 20px; background: white; border-radius: var(--border-radius); box-shadow: var(--shadow); }
+        .profile-btn { width: 100%; padding: 15px; margin-top: 15px; border: none; border-radius: var(--border-radius); color: white; font-size: 1.1em; cursor: pointer; transition: transform 0.2s; }
+        .profile-btn:hover { transform: scale(1.02); }
+        .profile-green { background-color: var(--color-green); }
+        .profile-blue { background-color: var(--color-blue); }
+        /* [MAIN APP CONTAINER] */
+        #app-container { display: none; flex-direction: column; width: 100%; max-width: 500px; height: 90vh; background: white; border-radius: var(--border-radius); box-shadow: var(--shadow); position: relative; padding: 20px; }
+        /* [CARD STYLES] */
+        #flashcard-wrapper { position: relative; flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 20px 0; }
+        #flashcard { width: 100%; height: 100%; background: var(--color-light); border-radius: var(--border-radius); padding: 25px; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.3s ease-out, opacity 0.3s ease-out; border-left: 8px solid; }
+        .swipe-out { transform: translateX(-100%) rotate(-5deg); opacity: 0; }
+        .note-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; padding-left: 10px; border-left: 4px solid; }
+        .card-title { font-size: 1.5rem; font-weight: bold; color: var(--color-dark); }
+        .card-description { flex-grow: 1; font-size: 1.1rem; line-height: 1.6; color: #555; overflow-y: auto; padding-right: 5px; }
+        .new-tag { background-color: var(--color-red); color: white; padding: 4px 8px; border-radius: 9999px; font-size: 0.7rem; font-weight: bold; margin-left: 10px; align-self: center; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-size: 0.9em; color: #888; }
+        /* [CONTROLS] */
+        #note-controls { display: flex; justify-content: space-around; padding-top: 20px; border-top: 1px solid #eee; }
+        .control-btn { padding: 12px 20px; border-radius: 9999px; font-weight: bold; cursor: pointer; transition: background-color 0.2s, transform 0.1s; }
+        .control-btn:active { transform: scale(0.98); }
+        .btn-swipe { background-color: var(--color-blue); color: white; }
+        .btn-discard { background-color: var(--color-red); color: white; }
+        .btn-like { background-color: #ddd; color: var(--color-dark); }
+        .btn-like.liked { background-color: #FFC0CB; color: var(--color-red); }
+        /* [MODALS] */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; }
+        .modal-content { background-color: white; padding: 25px; border-radius: var(--border-radius); box-shadow: var(--shadow); width: 90%; max-width: 450px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-close { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
+        .modal-close:hover, .modal-close:focus { color: var(--color-dark); }
+        input[type="text"], textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: var(--border-radius); resize: vertical; }
+        .form-btn { background-color: var(--color-green); color: white; padding: 10px 20px; border: none; border-radius: var(--border-radius); cursor: pointer; margin-top: 10px; }
+        /* [TRASH MODAL] */
+        #trash-list li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        #trash-list li:last-child { border-bottom: none; }
+        .recover-btn, .delete-btn { padding: 5px 10px; margin-left: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8em; }
+        .recover-btn { background-color: var(--color-blue); color: white; }
+        .delete-btn { background-color: var(--color-red); color: white; }
+        /* [UTILITY BUTTONS] */
+        .utility-btn { position: absolute; width: 40px; height: 40px; background: var(--color-dark); color: white; border-radius: 9999px; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; box-shadow: var(--shadow); transition: transform 0.2s, background 0.2s; z-index: 50; }
+        .utility-btn:hover { background: #555; }
+        #add-btn { bottom: 20px; right: 20px; }
+        #trash-btn { top: 20px; right: 20px; }
+        #tools-btn { top: 20px; left: 20px; background: var(--color-green); font-size: 1.1rem;}
+        /* [CHAT BOX] */
+        #chat-box-container { position: fixed; bottom: 20px; right: 20px; width: 300px; max-height: 400px; z-index: 100; display: none; flex-direction: column; background: white; border-radius: var(--border-radius); box-shadow: var(--shadow); }
+        #chat-header { background: var(--color-dark); color: white; padding: 10px; border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius); font-weight: bold; cursor: pointer; }
+        #chat-messages { flex-grow: 1; padding: 10px; overflow-y: auto; max-height: 300px; border-bottom: 1px solid #eee; }
+        .chat-message { margin-bottom: 5px; padding: 5px 8px; border-radius: 8px; font-size: 0.9em; }
+        .message-green { background-color: #e6ffe6; border-left: 4px solid var(--color-green); }
+        .message-blue { background-color: #e6f0ff; border-left: 4px solid var(--color-blue); }
+        #chat-form { display: flex; padding: 10px; }
+        #chat-input { flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 8px; margin-right: 8px; }
+        #chat-send-btn { background-color: var(--color-blue); color: white; padding: 8px 15px; border-radius: 8px; }
+        #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; }
+        #chat-minimize { display: none; }
+        /* [TOOLS MODAL] */
+        .tools-section { margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: var(--border-radius); }
     </style>
 </head>
 <body>
-
-    <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-
-        // IMPORTANT: The firebaseConfig and other global variables are automatically provided by the Canvas environment.
-        // The following setup uses a public mock config to ensure the code structure is correct.
-
-        // Global variables available in the Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyCgWmuOquxwwHCG2u6FNZrb-zrBics3HWk",
-            authDomain: "notes-d7918.firebaseapp.com",
-            projectId: "notes-d7918",
-            storageBucket: "notes-d7918.firebasestorage.app",
-            messagingSenderId: "136757169437",
-            appId: "1:136757169437:web:809c9df7ff5aca5ea6e5f4",
-            measurementId: "G-H54E8JGDFL"
-        };
-
-        // Initialize Firebase
+        // [FIREBASE IMPORTS & INITIALIZATION]
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, query, onSnapshot, updateDoc, arrayUnion, arrayRemove, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        const firebaseConfig = {apiKey: "AIzaSyCgWmuOquxwwHCG2u6FNZrb-zrBics3HWk", authDomain: "notes-d7918.firebaseapp.com", projectId: "notes-d7918", storageBucket: "notes-d7918.firebasestorage.app", messagingSenderId: "136757169437", appId: "1:136757169437:web:809c9df7ff5aca5ea6e5f4", measurementId: "G-H54E8JGDFL"};
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
+        let currentUserId = null; let currentUserProfile = null; let notes = []; let trashNotes = []; let currentNoteIndex = 0;
 
-        // Export Firebase references for global use in the main script block
-        window.firebaseRefs = {
-            db,
-            collection,
-            getDocs,
-            addDoc,
-            updateDoc,
-            deleteDoc,
-            doc,
-            query,
-            where,
-            onSnapshot,
-            serverTimestamp,
-            appId // Export appId
-        };
-    </script>
-
-    <!-- 1. Profile Selection Screen (Initial Entry) -->
-    <div id="profile-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Select Profile</h2>
-            <p style="text-align: center; margin-bottom: 20px; color: var(--secondary-color);">Choose your note color code.</p>
-            <div class="profile-selection">
-                <div class="profile-card profile-card-green" onclick="selectProfile('green')">
-                    <span class="profile-icon">🟢</span>
-                    <p>Green</p>
-                </div>
-                <div class="profile-card profile-card-blue" onclick="selectProfile('blue')">
-                    <span class="profile-icon">🔵</span>
-                    <p>Blue</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. Main Application Container -->
-    <div id="app-container" style="display: none;"> <!-- Hidden until profile is selected -->
-        <!-- Header -->
-        <header id="header">
-            <span id="header-title">NOTEPAD</span>
-            <div id="header-actions">
-                <button class="header-btn" title="Add Note" onclick="openAddNoteModal()">➕</button>
-                <button class="header-btn" title="Import/Export" onclick="openImportExportModal()">📦</button>
-                <button class="header-btn" title="Trash" onclick="openTrashModal()">🗑️</button>
-            </div>
-        </header>
-
-        <!-- Main Content (Flashcard Swiping) -->
-        <main id="main-content">
-            <div class="flashcard-stack" id="flashcard-stack">
-                <!-- Flashcards will be dynamically inserted here -->
-                <div id="no-notes-placeholder" class="flashcard" style="align-items: center; justify-content: center; text-align: center; opacity: 1; transform: translate(0,0);">
-                    <h2 style="margin-bottom: 0;">All Caught Up!</h2>
-                    <p style="margin-top: 10px;">No active notes. Use ➕ to add a new one.</p>
-                </div>
-            </div>
-
-            <!-- Swipe Buttons -->
-            <div class="swipe-btns" id="swipe-btns" style="display: none;">
-                <button class="swipe-btn" id="discard-btn" title="Discard" onclick="swipe('discard')">❌</button>
-                <button class="swipe-btn" id="like-btn" title="Keep/Next" onclick="swipe('like')">❤️</button>
-            </div>
-        </main>
-    </div>
-
-    <!-- 3. Add Note Modal -->
-    <div id="add-note-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('add-note-modal')">&times;</span>
-            <h2>Add Note</h2>
-            <input type="text" id="note-title" placeholder="Title" maxlength="50">
-            <textarea id="note-description" placeholder="Description / Advice..."></textarea>
-            <button class="modal-btn" onclick="saveNewNote()">Add Note</button>
-        </div>
-    </div>
-
-    <!-- 4. Trash Modal -->
-    <div id="trash-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('trash-modal')">&times;</span>
-            <h2>Trashed Notes</h2>
-            <div id="trash-list">
-                <!-- Trashed notes will be dynamically inserted here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- 5. Import/Export Modal -->
-    <div id="import-export-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('import-export-modal')">&times;</span>
-            <h2>Import / Export</h2>
-
-            <button id="export-btn" class="modal-btn" onclick="exportNotes()">Export Notes</button>
-            <p style="font-size: 0.9rem; margin: 10px 0;">Copy the data below:</p>
-            <textarea id="export-data" readonly placeholder="Exported JSON will appear here..."></textarea>
-
-            <p style="margin-top: 20px; font-size: 0.9rem;">Paste JSON to import:</p>
-            <textarea id="import-data" placeholder="Paste your note JSON here..."></textarea>
-            <button id="import-btn" class="modal-btn" onclick="importNotes()">Import Notes</button>
-            <p id="import-status" style="margin-top: 10px; text-align: center;"></p>
-        </div>
-    </div>
-
-    <!-- 6. Chat Box -->
-    <div id="chat-box-container">
-        <button id="chat-toggle-btn" onclick="toggleChatWindow()" title="Chat / Reminders">💬</button>
-        <div id="chat-window" style="display: none;">
-            <div id="chat-messages">
-                <div class="chat-message chat-message-system">Welcome! Simple reminders here.</div>
-            </div>
-            <div id="chat-input-container">
-                <input type="text" id="chat-input" placeholder="Type a reminder..." onkeyup="if(event.key === 'Enter') sendChatMessage()">
-                <button id="chat-send-btn" onclick="sendChatMessage()">Send</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Use the Firebase references exported from the module script
-        let firebaseRefs = {};
-        let db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp, appId;
-
-        const NOTES_COLLECTION = "flashcards";
-        const TRASH_COLLECTION = "trash";
-        const CHAT_COLLECTION = "chat";
-        let currentUser = null; // 'green' or 'blue'
-        let notes = [];
-        let trashNotes = [];
-        let currentNoteIndex = 0;
-        let unsubscribeNotes = null;
-        let unsubscribeTrash = null;
-        let unsubscribeChat = null;
-
-        // --- Core Application Flow (Profile) ---
-
-        /**
-         * Generates the Firestore collection path for notes.
-         * Using /artifacts/{appId}/public/data/collection_name for shared data.
-         */
-        const getCollectionPath = (collectionName) => {
-            return `/artifacts/${appId}/public/data/${collectionName}`;
-        };
-
-        /**
-         * Selects the user profile and starts the main app.
-         * @param {string} profile - 'green' or 'blue'.
-         */
-        function selectProfile(profile) {
-            currentUser = profile;
-            localStorage.setItem('currentUser', profile);
-            document.getElementById('profile-modal').style.display = 'none';
-            document.getElementById('app-container').style.display = 'grid';
-            initializeAppListeners();
-        }
-
-        /**
-         * Initial check on load to bypass profile if already set.
-         */
-        function initApp() {
-            // Wait for Firebase module to load and expose refs
-            if (!window.firebaseRefs || !window.firebaseRefs.db) {
-                 setTimeout(initApp, 100);
-                 return;
-            }
-
-            firebaseRefs = window.firebaseRefs;
-            ({ db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp, appId } = firebaseRefs);
-
-            currentUser = localStorage.getItem('currentUser');
-
-            if (!currentUser) {
-                document.getElementById('profile-modal').style.display = 'flex';
+        // [USER PROFILE & AUTH LOGIC]
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                const userRef = doc(db, "users", currentUserId);
+                // Check if profile exists in Firestore, otherwise use the stored local profile from selection
+                onSnapshot(userRef, (docSnap) => {
+                    if (docSnap.exists() && docSnap.data().profile) {
+                        currentUserProfile = docSnap.data().profile;
+                    }
+                    if (currentUserProfile) {
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('app-container').style.display = 'flex';
+                        document.getElementById('chat-toggle-btn').style.display = 'flex';
+                        fetchUserNotes();
+                        setupChatListener();
+                    }
+                });
+            } else if (auth.currentUser) {
+                 // Logged in but profile isn't set yet (or fresh anonymous user)
             } else {
-                document.getElementById('app-container').style.display = 'grid';
-                initializeAppListeners();
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('app-container').style.display = 'none';
+                document.getElementById('chat-box-container').style.display = 'none';
+                document.getElementById('chat-toggle-btn').style.display = 'none';
+                currentUserId = null; currentUserProfile = null;
             }
-        }
+        });
+        window.selectProfile = async (profile) => {
+            currentUserProfile = profile;
+            try {
+                const userCredential = await signInAnonymously(auth);
+                const userRef = doc(db, "users", userCredential.user.uid);
+                await setDoc(userRef, { profile: profile, uid: userCredential.user.uid });
+            } catch (error) { console.error("Login/Profile Error: ", error); }
+        };
 
-        // --- Firebase Listeners and Data Sync ---
-
-        /**
-         * Sets up real-time listeners for notes, trash, and chat.
-         */
-        function initializeAppListeners() {
-            if (unsubscribeNotes) unsubscribeNotes();
-            if (unsubscribeTrash) unsubscribeTrash();
-            if (unsubscribeChat) unsubscribeChat();
-
-            // Notes Listener (Fetch all notes for both users)
-            const notesQuery = collection(db, getCollectionPath(NOTES_COLLECTION));
-            unsubscribeNotes = onSnapshot(notesQuery, (snapshot) => {
-                // Ensure data is sorted for consistent swiping order (e.g., by creation date)
-                notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => {
-                    const dateA = a.createdAt || '';
-                    const dateB = b.createdAt || '';
-                    // Sorting newest first is common for feeds
-                    return dateB.localeCompare(dateA);
+        // [NOTES LOGIC: FETCHING, DISPLAYING, ACTIONS]
+        const fetchUserNotes = () => {
+            const notesCollection = collection(db, "notes");
+            const q = query(notesCollection, orderBy("timestamp", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const activeNotes = []; const trashed = [];
+                snapshot.docs.forEach(doc => {
+                    const noteData = { id: doc.id, ...doc.data() };
+                    if (noteData.isTrashed) {
+                        trashed.push(noteData);
+                    } else {
+                        activeNotes.push(noteData);
+                    }
                 });
-                renderNotes();
-            }, (error) => { console.error("Error fetching notes: ", error); });
+                // Check if current note is still in the active list
+                const currentNoteId = notes[currentNoteIndex]?.id;
+                notes = activeNotes;
+                trashNotes = trashed;
+                const newIndex = notes.findIndex(n => n.id === currentNoteId);
 
-            // Trash Listener
-            const trashQuery = collection(db, getCollectionPath(TRASH_COLLECTION));
-            unsubscribeTrash = onSnapshot(trashQuery, (snapshot) => {
-                trashNotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderTrashList();
-            }, (error) => { console.error("Error fetching trash: ", error); });
-
-            // Chat Listener
-            const chatQuery = query(collection(db, getCollectionPath(CHAT_COLLECTION)));
-            unsubscribeChat = onSnapshot(chatQuery, (snapshot) => {
-                const chatMessages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Sort by timestamp for chat messages
-                chatMessages.sort((a, b) => (a.timestamp && b.timestamp) ? (a.timestamp.toMillis() - b.timestamp.toMillis()) : 0);
-                renderChatMessages(chatMessages);
-            }, (error) => { console.error("Error fetching chat: ", error); });
-        }
-
-
-        // --- Flashcard & Swiping Logic ---
-
-        /**
-         * Renders the current stack of active flashcards.
-         */
-        function renderNotes() {
-            const stack = document.getElementById('flashcard-stack');
-            stack.innerHTML = '';
-            currentNoteIndex = 0;
-
-            if (notes.length === 0) {
-                document.getElementById('no-notes-placeholder').style.display = 'flex';
-                document.getElementById('swipe-btns').style.display = 'none';
-                return;
-            }
-
-            document.getElementById('no-notes-placeholder').style.display = 'none';
-            document.getElementById('swipe-btns').style.display = 'flex';
-
-            notes.forEach((note, index) => {
-                const card = document.createElement('div');
-                card.className = `flashcard card-${note.user}`;
-                card.id = `note-${note.id}`;
-                // Stagger Z-index and position for stack effect
-                card.style.zIndex = notes.length - index;
-                card.style.transform = `translateY(${Math.min(index * 5, 20)}px) scale(${1 - Math.min(index * 0.05, 0.2)})`;
-                card.dataset.noteId = note.id;
-                card.dataset.index = index;
-
-                card.innerHTML = `
-                    <div class="flashcard-header">
-                        <span class="flashcard-title">${note.title}</span>
-                        <span class="user-tag user-tag-${note.user}">${note.user === 'green' ? 'GREEN' : 'BLUE'}</span>
-                    </div>
-                    <div class="flashcard-description">${note.description}</div>
-                    <div class="flashcard-footer">
-                        <div>
-                            ${note.isNew ? '<span class="new-tag">NEW</span>' : ''}
-                        </div>
-                        <span class="like-indicator" data-liked="${note.liked || false}" onclick="toggleLike('${note.id}', event)">${note.liked ? '❤️' : '🤍'} ${note.likes || 0}</span>
-                    </div>
-                `;
-                stack.appendChild(card);
+                if (newIndex === -1 && notes.length > 0) {
+                    currentNoteIndex = 0; // Reset to start if current note was deleted/trashed
+                } else if (notes.length === 0) {
+                    currentNoteIndex = 0; // No notes
+                } else if (newIndex !== -1) {
+                    currentNoteIndex = newIndex; // Keep the index if the note is found
+                }
+                renderCurrentNote();
+                renderTrashNotes();
             });
-            setupSwipeGestures();
-        }
-
-        /**
-         * Handles the Tinder-style swipe action (like/discard).
-         * @param {string} action - 'like' or 'discard'.
-         */
-        async function swipe(action) {
-            if (notes.length === 0) return;
-
+        };
+        const renderCurrentNote = () => {
+            const cardElement = document.getElementById('flashcard');
+            const note = notes[currentNoteIndex];
+            if (!note) {
+                cardElement.innerHTML = '<h2 class="card-title">No Notes Yet!</h2><p class="card-description">Add your first note using the + button.</p>';
+                cardElement.style.borderColor = 'gray';
+                document.getElementById('note-controls').style.display = 'none';
+                return;
+            }
+            document.getElementById('note-controls').style.display = 'flex';
+            const color = note.profile === 'green' ? 'var(--color-green)' : 'var(--color-blue)';
+            cardElement.innerHTML = `
+                <div class="note-header" style="border-left-color: ${color};">
+                    <h2 class="card-title">${note.title}</h2>
+                    ${note.isNew ? '<span class="new-tag">NEW</span>' : ''}
+                </div>
+                <p class="card-description">${note.description}</p>
+                <div class="card-footer">
+                    <span class="like-count">${note.likes?.length || 0} ❤️</span>
+                    <span class="note-profile" style="color: ${color};">Profile: ${note.profile}</span>
+                </div>
+            `;
+            cardElement.style.borderColor = color;
+            updateLikeButton(note);
+        };
+        window.swipeNext = async () => {
             const currentNote = notes[currentNoteIndex];
-            const cardElement = document.getElementById(`note-${currentNote.id}`);
-
-            if (!cardElement) return;
-
-            // 1. Swiping Animation
-            const translateX = action === 'like' ? '400%' : '-400%';
-            const rotate = action === 'like' ? '10deg' : '-10deg';
-            cardElement.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
-            cardElement.style.transform = `${translateX} rotate(${rotate})`;
-            cardElement.style.opacity = '0';
-
-            // 2. Firebase Update
-            try {
-                // a. Mark as swiped (no longer "new")
-                if (currentNote.isNew) {
-                    await updateDoc(doc(db, getCollectionPath(NOTES_COLLECTION), currentNote.id), { isNew: false });
-                }
-
-                if (action === 'discard') {
-                    // b. Move to Trash
-                    const noteToTrash = { ...currentNote, trashedAt: new Date().toISOString() };
-                    delete noteToTrash.id; // Remove client-side ID for new Firebase document
-                    await addDoc(collection(db, getCollectionPath(TRASH_COLLECTION)), noteToTrash);
-                    await deleteDoc(doc(db, getCollectionPath(NOTES_COLLECTION), currentNote.id));
-                }
-                // If 'like', only the `isNew` update runs. Data sync handles re-rendering.
-
-                // 3. Increment index temporarily for next swipe action while waiting for Firestore sync
-                currentNoteIndex = Math.min(currentNoteIndex + 1, notes.length - 1);
-
-            } catch (error) {
-                console.error("Error swiping note:", error);
-                // Revert animation on error
-                cardElement.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-                cardElement.style.transform = 'translate(0,0) rotate(0)';
-                cardElement.style.opacity = '1';
-                currentNoteIndex = 0; // Reset index
+            if (currentNote && currentNote.isNew) {
+                // Mark as swiped/read
+                await updateDoc(doc(db, "notes", currentNote.id), { isNew: false });
             }
-        }
-
-        /**
-         * Sets up basic drag gestures for card swiping.
-         */
-        function setupSwipeGestures() {
-            const cards = document.querySelectorAll('.flashcard-stack .flashcard');
-            if (cards.length === 0) return;
-
-            // Only apply gesture to the topmost card (index 0 in DOM, usually)
-            const card = cards[cards.length - 1]; 
-            if (!card) return;
-
-            let isDragging = false;
-            let startX, startY;
-            const threshold = 100;
-
-            // Ensure previous listeners are removed if card is re-rendered (though onSnapshot handles this well)
-            // For robustness, ensure card is the top visible one:
-            if (card.dataset.index !== String(notes.length - 1)) return;
-
-            card.addEventListener('mousedown', startDrag);
-            card.addEventListener('touchstart', startDrag);
-
-            function startDrag(e) {
-                if (notes.length === 0) return;
-                // Check if the click/touch originated from the like/discard buttons/indicators
-                if (e.target.closest('.like-indicator') || e.target.closest('.swipe-btns')) return;
-
-                isDragging = true;
-                startX = e.clientX || e.touches[0].clientX;
-                startY = e.clientY || e.touches[0].clientY;
-                card.style.transition = 'none'; // Disable transition during drag
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('touchmove', drag);
-                document.addEventListener('mouseup', endDrag);
-                document.addEventListener('touchend', endDrag);
-            }
-
-            function drag(e) {
-                if (!isDragging) return;
-                const currentX = e.clientX || e.touches[0].clientX;
-                const deltaX = currentX - startX;
-                const rotation = deltaX / 20;
-
-                card.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
-            }
-
-            function endDrag(e) {
-                if (!isDragging) return;
-                isDragging = false;
-                card.style.transition = 'transform 0.3s ease-out';
-                const currentX = e.clientX || (e.changedTouches && e.changedTouches[0].clientX) || startX;
-                const deltaX = currentX - startX;
-
-                // Determine swipe
-                if (deltaX > threshold) {
-                    swipe('like'); // Right swipe (Keep)
-                } else if (deltaX < -threshold) {
-                    swipe('discard'); // Left swipe (Discard)
+            const cardElement = document.getElementById('flashcard');
+            cardElement.classList.add('swipe-out');
+            setTimeout(() => {
+                if (notes.length > 0) {
+                    currentNoteIndex = (currentNoteIndex + 1) % notes.length;
                 } else {
-                    // Snap back
-                    card.style.transform = `translate(0, 0) rotate(0deg)`;
+                    currentNoteIndex = 0;
                 }
-
-                document.removeEventListener('mousemove', drag);
-                document.removeEventListener('touchmove', drag);
-                document.removeEventListener('mouseup', endDrag);
-                document.removeEventListener('touchend', endDrag);
+                renderCurrentNote();
+                cardElement.classList.remove('swipe-out');
+            }, 300);
+        };
+        window.discardNote = async () => {
+            const currentNote = notes[currentNoteIndex];
+            if (currentNote) {
+                await updateDoc(doc(db, "notes", currentNote.id), { isTrashed: true, trashedBy: currentUserId, trashedAt: new Date().getTime() });
+                // The index adjustment and re-render will be handled automatically by fetchUserNotes/onSnapshot
             }
-        }
-
-        /**
-         * Toggles the like status of a note.
-         * @param {string} noteId
-         * @param {Event} event
-         */
-        async function toggleLike(noteId, event) {
-            event.stopPropagation();
-            const note = notes.find(n => n.id === noteId);
-            if (!note) return;
-
-            const newLikedState = !note.liked;
-            const newLikesCount = newLikedState ? (note.likes || 0) + 1 : Math.max(0, (note.likes || 0) - 1);
-
-            try {
-                await updateDoc(doc(db, getCollectionPath(NOTES_COLLECTION), noteId), {
-                    liked: newLikedState,
-                    likes: newLikesCount,
-                    isNew: false
+            // Move on to the next one, which handles the rendering
+            const cardElement = document.getElementById('flashcard');
+            cardElement.classList.add('swipe-out');
+            setTimeout(() => {
+                cardElement.classList.remove('swipe-out');
+            }, 300);
+        };
+        window.addNote = async () => {
+            const title = document.getElementById('new-note-title').value;
+            const description = document.getElementById('new-note-description').value;
+            if (title && description && currentUserProfile) {
+                await setDoc(doc(db, "notes", `note_${new Date().getTime()}_${Math.random().toString(36).substring(2, 9)}`), {
+                    title, description, profile: currentUserProfile, userId: currentUserId, isTrashed: false, isNew: true, likes: [], timestamp: new Date().getTime()
                 });
-            } catch (error) {
-                console.error("Error toggling like:", error);
+                document.getElementById('new-note-title').value = '';
+                document.getElementById('new-note-description').value = '';
+                window.toggleModal('add-note-modal');
             }
-        }
+        };
 
-        // --- CRUD / Modal Handlers ---
+        // [LIKES FUNCTION]
+        const updateLikeButton = (note) => {
+            const likeBtn = document.getElementById('like-btn');
+            if (!note || !likeBtn) return;
+            const isLiked = note.likes && note.likes.includes(currentUserId);
+            likeBtn.textContent = isLiked ? '❤️ Liked (Unlike)' : 'Like Note';
+            isLiked ? likeBtn.classList.add('liked') : likeBtn.classList.remove('liked');
+        };
+        window.toggleLike = async () => {
+            const currentNote = notes[currentNoteIndex];
+            if (!currentNote || !currentUserId) return;
+            const noteRef = doc(db, "notes", currentNote.id);
+            const isLiked = currentNote.likes?.includes(currentUserId);
+            if (isLiked) { await updateDoc(noteRef, { likes: arrayRemove(currentUserId) }); }
+            else { await updateDoc(noteRef, { likes: arrayUnion(currentUserId) }); }
+        };
 
-        function openAddNoteModal() {
-            if (!currentUser) {
-                // Use custom logging/UI instead of alert/confirm
-                console.warn('Please select a profile first.');
-                return;
-            }
-            document.getElementById('note-title').value = '';
-            document.getElementById('note-description').value = '';
-            document.getElementById('add-note-modal').style.display = 'flex';
-        }
-
-        async function saveNewNote() {
-            const title = document.getElementById('note-title').value.trim();
-            const description = document.getElementById('note-description').value.trim();
-
-            if (!title || !description) {
-                console.warn("Title and Description cannot be empty.");
-                return;
-            }
-
-            try {
-                await addDoc(collection(db, getCollectionPath(NOTES_COLLECTION)), {
-                    title: title,
-                    description: description,
-                    user: currentUser,
-                    liked: false,
-                    likes: 0,
-                    isNew: true,
-                    // Use serverTimestamp for Firestore consistency, though ISO string is used for local sort
-                    createdAt: new Date().toISOString()
-                });
-                closeModal('add-note-modal');
-            } catch (error) {
-                console.error("Error saving note:", error);
-            }
-        }
-
-        function renderTrashList() {
+        // [TRASH & RECOVER LOGIC]
+        const renderTrashNotes = () => {
             const list = document.getElementById('trash-list');
             list.innerHTML = '';
-            if (trashNotes.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">Trash is empty.</p>';
-                return;
-            }
-
+            if (trashNotes.length === 0) { list.innerHTML = '<p style="text-align: center; color: var(--color-dark); padding: 10px;">Trash is empty.</p>'; return; }
             trashNotes.forEach(note => {
-                const item = document.createElement('div');
-                item.className = 'trash-item';
-                item.innerHTML = `
-                    <span class="trash-item-title">${note.title}</span>
-                    <button class="recover-btn" title="Recover" onclick="recoverNote('${note.id}')">🔄</button>
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span style="flex-grow: 1;">${note.title}</span>
+                    <button onclick="recoverNote('${note.id}')" class="recover-btn">Recover</button>
+                    <button onclick="deleteNote('${note.id}')" class="delete-btn">Delete</button>
                 `;
-                list.appendChild(item);
+                list.appendChild(li);
             });
-        }
+        };
+        window.recoverNote = async (noteId) => { await updateDoc(doc(db, "notes", noteId), { isTrashed: false, trashedBy: null, trashedAt: null }); };
+        window.deleteNote = async (noteId) => {
+            if (confirm("Permanently delete this note?")) { await deleteDoc(doc(db, "notes", noteId)); }
+        };
 
-        async function recoverNote(trashId) {
-            const noteToRecover = trashNotes.find(n => n.id === trashId);
-            if (!noteToRecover) return;
-
-            try {
-                // 1. Add back to active notes
-                const recoveredNote = {
-                    title: noteToRecover.title,
-                    description: noteToRecover.description,
-                    user: noteToRecover.user,
-                    liked: noteToRecover.liked || false,
-                    likes: noteToRecover.likes || 0,
-                    isNew: true,
-                    createdAt: noteToRecover.createdAt
-                };
-                await addDoc(collection(db, getCollectionPath(NOTES_COLLECTION)), recoveredNote);
-
-                // 2. Delete from trash
-                await deleteDoc(doc(db, getCollectionPath(TRASH_COLLECTION), trashId));
-            } catch (error) {
-                console.error("Failed to recover note:", error);
-            }
-        }
-
-        function openTrashModal() {
-            document.getElementById('trash-modal').style.display = 'flex';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        // --- Import/Export ---
-
-        function openImportExportModal() {
-            document.getElementById('import-export-modal').style.display = 'flex';
-            document.getElementById('export-data').value = '';
-            document.getElementById('import-data').value = '';
-            document.getElementById('import-status').innerText = '';
-        }
-
-        function exportNotes() {
-            const exportArray = notes.map(note => ({
-                title: note.title,
-                description: note.description,
-                user: note.user,
-                liked: note.liked,
-                likes: note.likes,
-                isNew: note.isNew
-            }));
-            const exportString = JSON.stringify(exportArray, null, 2);
-            document.getElementById('export-data').value = exportString;
-            document.getElementById('import-status').style.color = 'var(--blue-user)';
-            document.getElementById('import-status').innerText = 'Data prepared. Copy the JSON from the text area above.';
-        }
-
-        async function importNotes() {
-            const jsonInput = document.getElementById('import-data').value.trim();
-            const status = document.getElementById('import-status');
-            status.innerText = '';
-
-            if (!jsonInput) {
-                status.innerText = 'Paste JSON data to import.';
-                status.style.color = 'var(--danger-color)';
-                return;
-            }
-
-            try {
-                const notesToImport = JSON.parse(jsonInput);
-                if (!Array.isArray(notesToImport)) {
-                    throw new Error("Data must be a JSON array of notes.");
-                }
-
-                let importedCount = 0;
-                for (const note of notesToImport) {
-                    if (note.title && note.description && (note.user === 'green' || note.user === 'blue')) {
-                        await addDoc(collection(db, getCollectionPath(NOTES_COLLECTION)), {
-                            title: note.title,
-                            description: note.description,
-                            user: note.user,
-                            liked: note.liked || false,
-                            likes: note.likes || 0,
-                            isNew: true,
-                            createdAt: new Date().toISOString()
+        // [IMPORT/EXPORT LOGIC]
+        window.exportNotes = () => {
+            const exportData = [...notes, ...trashNotes].map(({ id, title, description, profile, userId, likes }) => ({ title, description, profile, userId, likes: likes || [] }));
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', 'flashcard_notes_export.json');
+            linkElement.click();
+        };
+        window.importNotes = () => { document.getElementById('import-file').click(); };
+        window.handleImport = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const importedNotes = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedNotes)) throw new Error("Invalid file format.");
+                    for (const note of importedNotes) {
+                        if (!note.title || !note.description) continue;
+                        const noteId = `note_${new Date().getTime()}_${Math.random().toString(36).substring(2, 9)}`;
+                        await setDoc(doc(db, "notes", noteId), {
+                            title: note.title, description: note.description,
+                            profile: note.profile || currentUserProfile, userId: note.userId || currentUserId,
+                            isTrashed: false, isNew: true, likes: note.likes || [],
+                            timestamp: new Date().getTime()
                         });
-                        importedCount++;
                     }
-                }
-                status.style.color = 'var(--green-user)';
-                status.innerText = `Imported ${importedCount} notes!`;
-                document.getElementById('import-data').value = '';
+                    alert(`Successfully imported ${importedNotes.length} notes.`);
+                } catch (error) { console.error("Error importing notes: ", error); alert("Error importing notes. Check console for details."); }
+            };
+            reader.readAsText(file);
+        };
 
-            } catch (error) {
-                status.style.color = 'var(--danger-color)';
-                status.innerText = 'Import failed. Check JSON format.';
-                console.error("Import error:", error);
-            }
-        }
-
-        // --- Chat Box Logic ---
-
-        function toggleChatWindow() {
-            const chatWindow = document.getElementById('chat-window');
-            chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        async function sendChatMessage() {
+        // [CHAT LOGIC]
+        const setupChatListener = () => {
+            const messagesRef = collection(db, "chat");
+            const q = query(messagesRef, orderBy("timestamp", "asc"));
+            onSnapshot(q, (snapshot) => {
+                const chatBox = document.getElementById('chat-messages');
+                chatBox.innerHTML = '';
+                snapshot.docs.forEach(doc => {
+                    const msg = doc.data();
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('chat-message');
+                    messageElement.classList.add(msg.profile === 'green' ? 'message-green' : 'message-blue');
+                    messageElement.innerHTML = `<strong>${msg.profile}:</strong> ${msg.text}`;
+                    chatBox.appendChild(messageElement);
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        };
+        window.sendChat = async (event) => {
+            event.preventDefault();
             const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-
-            if (!message) return;
-
-            try {
-                await addDoc(collection(db, getCollectionPath(CHAT_COLLECTION)), {
-                    text: message,
-                    user: currentUser,
-                    timestamp: serverTimestamp() // Use serverTimestamp for accuracy
+            const text = input.value.trim();
+            if (text && currentUserProfile) {
+                await setDoc(doc(db, "chat", `msg_${new Date().getTime()}_${Math.random().toString(36).substring(2, 9)}`), {
+                    text, profile: currentUserProfile, userId: currentUserId, timestamp: new Date().getTime()
                 });
                 input.value = '';
-            } catch (error) {
-                console.error("Error sending chat message:", error);
+            }
+        };
+
+        // [UTILITY FUNCTIONS]
+        window.toggleModal = (id) => {
+            const modal = document.getElementById(id);
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        };
+        window.toggleChat = () => {
+            const chatBox = document.getElementById('chat-box-container');
+            const chatMin = document.getElementById('chat-minimize');
+            if (chatBox.style.display === 'flex') {
+                chatBox.style.display = 'none';
+                chatMin.style.display = 'flex';
+            } else {
+                chatBox.style.display = 'flex';
+                chatMin.style.display = 'none';
+                document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
             }
         }
-
-        function renderChatMessages(messages) {
-            const chatMessagesDiv = document.getElementById('chat-messages');
-            chatMessagesDiv.innerHTML = '';
-
-            messages.forEach(msg => {
-                const messageDiv = document.createElement('div');
-                // All chat messages are simple reminders, so keep the system style.
-                messageDiv.className = `chat-message chat-message-system`; 
-                messageDiv.innerText = msg.text;
-                chatMessagesDiv.appendChild(messageDiv);
-            });
-
-            // Scroll to the bottom
-            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-        }
-
-        // --- Initialisation ---
-        window.addEventListener('load', initApp);
     </script>
+
+    <!-- [LOGIN SCREEN] -->
+    <div id="login-screen" class="absolute inset-0 z-50 bg-gray-50 flex-col">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800">Select Your Profile</h1>
+        <p class="text-sm text-gray-600 mb-6">This sets the color-coding for your notes.</p>
+        <button class="profile-btn profile-green" onclick="selectProfile('green')">Green Profile</button>
+        <button class="profile-btn profile-blue" onclick="selectProfile('blue')">Blue Profile</button>
+    </div>
+
+    <!-- [MAIN APP CONTAINER] -->
+    <div id="app-container" class="relative">
+        <div class="flex justify-between items-center w-full mb-4">
+            <div id="tools-btn" class="utility-btn !relative !w-auto !h-auto !px-4 !py-2" onclick="toggleModal('tools-modal')" title="Tools">⚙️ Tools</div>
+        </div>
+
+        <!-- Utility Buttons -->
+        <div id="trash-btn" class="utility-btn top-5 right-5" onclick="toggleModal('trash-modal')" title="Trash">🗑️</div>
+        
+        <!-- Flashcard Wrapper -->
+        <div id="flashcard-wrapper">
+            <div id="flashcard">
+                <!-- Content will be rendered by JavaScript -->
+                <h2 class="card-title">Loading Notes...</h2>
+                <p class="card-description">Please wait while we connect to the database.</p>
+            </div>
+        </div>
+
+        <!-- Note Controls -->
+        <div id="note-controls" class="flex justify-between items-center w-full">
+            <button id="discard-btn" class="control-btn btn-discard flex-1 mr-2" onclick="discardNote()">Discard</button>
+            <button id="like-btn" class="control-btn btn-like" onclick="toggleLike()">Like Note</button>
+            <button id="swipe-btn" class="control-btn btn-swipe flex-1 ml-2" onclick="swipeNext()">Next Note &gt;</button>
+        </div>
+
+        <!-- Add Note Button -->
+        <div id="add-btn" class="utility-btn" onclick="toggleModal('add-note-modal')" title="Add Note">+</div>
+    </div>
+
+    <!-- [ADD NOTE MODAL] -->
+    <div id="add-note-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-bold">Add New Note/Flashcard</h2>
+                <span class="modal-close" onclick="toggleModal('add-note-modal')">&times;</span>
+            </div>
+            <input type="text" id="new-note-title" placeholder="Title (e.g., Key Concept 1)">
+            <textarea id="new-note-description" placeholder="Description/Advice (e.g., Remember to use active voice in all essays)" rows="5"></textarea>
+            <button class="form-btn" onclick="addNote()">Save Note</button>
+        </div>
+    </div>
+
+    <!-- [TRASH MODAL] -->
+    <div id="trash-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-bold">Trash Can (Trashed Notes)</h2>
+                <span class="modal-close" onclick="toggleModal('trash-modal')">&times;</span>
+            </div>
+            <ul id="trash-list">
+                <!-- Trashed notes rendered here -->
+            </ul>
+        </div>
+    </div>
+    
+    <!-- [TOOLS MODAL - Import/Export] -->
+    <div id="tools-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-bold">Data Management Tools</h2>
+                <span class="modal-close" onclick="toggleModal('tools-modal')">&times;</span>
+            </div>
+            
+            <div class="tools-section">
+                <h3 class="font-semibold mb-2">Export Notes (Backup)</h3>
+                <p class="text-sm mb-3 text-gray-600">Exports all active and trashed notes to a single JSON file.</p>
+                <button class="form-btn !bg-gray-500" onclick="exportNotes()">Download JSON Export</button>
+            </div>
+            
+            <div class="tools-section">
+                <h3 class="font-semibold mb-2">Import Notes</h3>
+                <p class="text-sm mb-3 text-gray-600">Import notes from a previously exported JSON file.</p>
+                <input type="file" id="import-file" accept=".json" onchange="handleImport(event)" style="display: none;">
+                <button class="form-btn !bg-purple-600" onclick="importNotes()">Select JSON File to Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- [CHAT BOX] -->
+    <div id="chat-box-container" class="fixed right-5 bottom-20 shadow-xl" style="display: none;">
+        <div id="chat-header" onclick="toggleChat()">Simple Reminders Chat (Click to Minimize)</div>
+        <div id="chat-messages">
+            <!-- Messages rendered by JS -->
+        </div>
+        <form id="chat-form" onsubmit="sendChat(event)">
+            <input type="text" id="chat-input" placeholder="Type a reminder..." required>
+            <button id="chat-send-btn" type="submit">Send</button>
+        </form>
+    </div>
+    
+    <!-- Chat Minimize Button -->
+    <div id="chat-minimize" class="utility-btn !bg-blue-600 fixed right-5 bottom-5" onclick="toggleChat()" title="Open Chat">💬</div>
+
 </body>
 </html>
