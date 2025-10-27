@@ -136,24 +136,20 @@
 
         <!-- Swipe Section -->
         <div id="swipe-area-container" class="w-full max-w-lg flex flex-col items-center">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Swipe to Review</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Swipe Left to Delete, Swipe Right to Cycle</h2>
             <div id="swipe-area">
                 <div class="no-cards">
                     Loading cards or database initialization...
                 </div>
             </div>
             <!-- Swipe Controls -->
-            <div class="swipe-controls flex justify-center gap-8 mt-10">
-                <button onclick="handleManualSwipe('left')" class="p-4 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition duration-150">
+            <div class="swipe-controls flex justify-center mt-10">
+                <button onclick="handleManualSwipe('delete')" class="p-4 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition duration-150">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <button onclick="handleManualSwipe('right')" class="p-4 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition duration-150">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                </button>
+                <!-- Removed the green checkmark button for 'Keep/Cycle' -->
             </div>
         </div>
     </div>
@@ -167,8 +163,17 @@
         // Enable debug logging for Firebase
         setLogLevel('debug');
 
+        // --- UTILITY FUNCTIONS ---
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
         // --- GLOBAL CONSTANTS ---
-        // This key forces all users onto the same public data path for shared notes.
         const GLOBAL_SYNC_KEY = 'GLOBAL_SHARED_FLASHCARDS';
 
         // --- MANDATORY GLOBAL VARIABLE SETUP (Prioritized over user-provided config) ---
@@ -201,7 +206,8 @@
         let userId = null;
         let isAuthReady = false;
         let flashcards = [];
-        let unsubscribeSnapshot = null; // To hold the listener cleanup function
+        let unsubscribeSnapshot = null;
+        let hasShuffled = false; // Flag to ensure we only shuffle on initial load
 
         // App initialization
         try {
@@ -223,10 +229,9 @@
                     }
                 } catch (error) {
                     console.error("Critical: Initial sign-in failed. Error:", error);
-                    document.getElementById('auth-status').textContent = 'Authentication Failed! Check console for errors (e.g., Firebase Anonymous Auth not enabled or API key restrictions).';
+                    document.getElementById('auth-status').textContent = 'Authentication Failed! Check console for errors.';
                 }
             }
-
 
             // 1. Authentication Check Listener
             onAuthStateChanged(auth, (user) => {
@@ -287,12 +292,30 @@
             
             // Start the new real-time listener
             unsubscribeSnapshot = onSnapshot(cardsRef, (snapshot) => {
-                flashcards = snapshot.docs.map(doc => ({
+                const newCards = snapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
-                })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)); // Sort by creation time
+                }));
 
-                console.log("Flashcards updated:", flashcards.length);
+                // Only shuffle the array the very first time it loads to establish a random order.
+                // Subsequent updates (add/delete) will maintain the current order for a smoother cycle.
+                if (!hasShuffled && newCards.length > 0) {
+                    flashcards = shuffleArray(newCards);
+                    hasShuffled = true;
+                } else if (newCards.length > flashcards.length) {
+                    // New card added: Find the new card(s) and append it to maintain order.
+                    const existingIds = new Set(flashcards.map(c => c.id));
+                    const addedCards = newCards.filter(c => !existingIds.has(c.id));
+                    flashcards = [...flashcards, ...addedCards];
+                } else if (newCards.length < flashcards.length) {
+                    // Card(s) deleted: Filter the local array to remove deleted IDs.
+                    const newIds = new Set(newCards.map(c => c.id));
+                    flashcards = flashcards.filter(c => newIds.has(c.id));
+                }
+                
+                // If there was an actual content change and not just an array manipulation, 
+                // we should re-render to reflect the deletion or addition.
+                console.log("Flashcards updated. Total:", flashcards.length);
                 renderCardStack();
             }, (error) => {
                 console.error("Error subscribing to flashcards:", error);
@@ -323,7 +346,7 @@
                 await addDoc(cardsRef, {
                     title: title,
                     description: description,
-                    createdAt: Date.now()
+                    createdAt: Date.now() // Used for stability/sorting in Firestore, not for local order
                 });
                 titleInput.value = '';
                 descriptionInput.value = '';
@@ -344,11 +367,21 @@
                 const cardDocRef = doc(cardsRef.parent, cardId);
                 await deleteDoc(cardDocRef);
                 
+                // The onSnapshot listener will handle the local array update and re-render
                 console.log(`Card with ID ${cardId} successfully deleted persistently.`);
             } catch (e) {
                 console.error("Error deleting document. Check Security Rules:", e);
                 document.getElementById('auth-status').textContent = 'Delete Failed. Check Security Rules.';
             }
+        }
+
+        function cycleCard() {
+            if (flashcards.length < 2) return;
+            // Move the last card (the one on top of the stack) to the beginning
+            const topCard = flashcards.pop();
+            flashcards.unshift(topCard);
+            renderCardStack();
+            console.log("Card cycled to the back of the deck.");
         }
 
         // --- Card Rendering and Swipe Logic ---
@@ -370,7 +403,7 @@
                 return;
             }
 
-            // Render cards (up to 3 for visual stack effect)
+            // Render cards (up to 3 for visual stack effect), showing the end of the shuffled array
             flashcards.slice(-3).reverse().forEach((card, index) => {
                 const cardEl = document.createElement('div');
                 cardEl.className = 'flashcard';
@@ -390,23 +423,17 @@
             });
         }
 
-        // Handles manual click on the buttons below the stack
+        // Handles manual click on the buttons below the stack (only delete remains)
         function handleManualSwipe(direction) {
-            if (!currentCardEl) return;
+            if (!currentCardEl || direction !== 'delete') return;
+
             const cardId = currentCardEl.dataset.id;
             
-            animateSwipeOut(currentCardEl, direction === 'right' ? 300 : -300);
-            
-            if (direction === 'right') {
-                // 'Keep' or 'Reviewed' - no persistent action for right swipe
-                console.log(`Card ${cardId} marked as reviewed.`);
-            } else {
-                // 'Discard' or 'Delete' - perform persistent delete
-                    deleteCard(cardId);
-            }
-
-            // Manually pop the card from the view to immediately clear the top card
-            flashcards.pop();
+            animateSwipeOut(currentCardEl, -300); // Animate left (delete)
+            deleteCard(cardId);
+            // Local removal is handled by the onSnapshot listener, but we remove the top card
+            // visually immediately here to avoid waiting for the round trip.
+            flashcards.pop(); 
             renderCardStack();
         }
 
@@ -448,10 +475,14 @@
             // Rotation effect based on horizontal drag distance
             const rotation = dragX / 25; 
             
+            // Adjust card scale slightly based on drag for a "smoother" feel
+            const scale = 1 - (Math.abs(dragX) / 400);
+
             currentCardEl.style.transform = `
                 translateX(${dragX}px) 
                 translateY(${dragY}px) 
                 rotate(${rotation}deg)
+                scale(${Math.max(0.9, scale)})
             `;
         }
 
@@ -466,21 +497,20 @@
 
             if (Math.abs(dragX) > swipeThreshold) {
                 // Swipe detected!
-                const direction = dragX > 0 ? 'right' : 'left';
+                const action = dragX > 0 ? 'cycle' : 'delete'; // Right = cycle, Left = delete
                 
                 animateSwipeOut(currentCardEl, dragX);
 
-                if (direction === 'right') {
-                    console.log(`Card ${cardId} marked as reviewed.`);
+                if (action === 'cycle') {
+                    cycleCard();
                 } else {
-                    // Left swipe = Delete/Discard
+                    // Delete
                     deleteCard(cardId);
+                    flashcards.pop(); // Remove locally for immediate visual effect
+                    renderCardStack();
                 }
-
-                flashcards.pop();
-                renderCardStack();
             } else {
-                // Reset card position
+                // Reset card position (smoothly snapping back)
                 currentCardEl.style.transform = '';
             }
             
@@ -490,11 +520,13 @@
         }
 
         function animateSwipeOut(cardEl, finalX) {
-            cardEl.style.transition = 'transform 0.5s ease-out';
+            // Apply fast animation for the fly-out effect
+            cardEl.style.transition = 'transform 0.5s ease-out, opacity 0.4s ease-out';
             cardEl.style.transform = `
                 translateX(${finalX * 3}px) 
                 translateY(${dragY * 3}px) 
                 rotate(${finalX / 10}deg)
+                scale(0.5)
             `;
             cardEl.style.opacity = '0';
         }
