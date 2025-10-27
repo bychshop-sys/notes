@@ -49,8 +49,8 @@
             padding: 0 15px;
             background-color: var(--card-background);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            z-index: 20; /* Ensures header is clickable */
-            position: relative;
+            z-index: 20; /* Fixed: Added Z-index to ensure header is clickable */
+            position: relative; /* Necessary for z-index to work */
         }
 
         #header-title {
@@ -455,9 +455,10 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        // ADDED AUTH IMPORTS
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
         import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+        // IMPORTANT: The firebaseConfig and other global variables are automatically provided by the Canvas environment.
+        // The following setup uses a public mock config to ensure the code structure is correct.
 
         // Global variables available in the Canvas environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -474,29 +475,10 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app); // INITIALIZE AUTH
-
-        // --- MANDATORY AUTHENTICATION SETUP ---
-        async function authenticateUser() {
-            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Firebase authentication failed:", error);
-            }
-        }
-        authenticateUser();
-        // ----------------------------------------
 
         // Export Firebase references for global use in the main script block
         window.firebaseRefs = {
             db,
-            auth, // EXPORT AUTH
-            onAuthStateChanged, // EXPORT onAuthStateChanged
             collection,
             getDocs,
             addDoc,
@@ -507,7 +489,7 @@
             where,
             onSnapshot,
             serverTimestamp,
-            appId
+            appId // Export appId
         };
     </script>
 
@@ -615,7 +597,7 @@
     <script>
         // Use the Firebase references exported from the module script
         let firebaseRefs = {};
-        let db, auth, onAuthStateChanged, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp, appId;
+        let db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp, appId;
 
         const NOTES_COLLECTION = "flashcards";
         const TRASH_COLLECTION = "trash";
@@ -624,7 +606,6 @@
         let notes = [];
         let trashNotes = [];
         let currentNoteIndex = 0;
-        let isAuthReady = false; // NEW STATE TO TRACK AUTH
         let unsubscribeNotes = null;
         let unsubscribeTrash = null;
         let unsubscribeChat = null;
@@ -648,43 +629,30 @@
             localStorage.setItem('currentUser', profile);
             document.getElementById('profile-modal').style.display = 'none';
             document.getElementById('app-container').style.display = 'grid';
-            // Start listening only after profile is selected and auth is ready
-            if (isAuthReady) {
-                initializeAppListeners();
-            }
+            initializeAppListeners();
         }
 
         /**
          * Initial check on load to bypass profile if already set.
          */
         function initApp() {
-            // 1. Wait for Firebase module to load and expose refs
+            // Wait for Firebase module to load and expose refs
             if (!window.firebaseRefs || !window.firebaseRefs.db) {
                  setTimeout(initApp, 100);
                  return;
             }
 
             firebaseRefs = window.firebaseRefs;
-            ({ db, auth, onAuthStateChanged, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp, appId } = firebaseRefs);
+            ({ db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp, appId } = firebaseRefs);
 
             currentUser = localStorage.getItem('currentUser');
 
-            // 2. Wait for authentication to complete before proceeding
-            onAuthStateChanged(auth, (user) => {
-                isAuthReady = true;
-                if (!user) {
-                    console.error("User is not authenticated. Firestore operations will fail.");
-                    return;
-                }
-                
-                // If profile is already set, start listeners immediately
-                if (currentUser) {
-                    document.getElementById('app-container').style.display = 'grid';
-                    initializeAppListeners();
-                } else {
-                    document.getElementById('profile-modal').style.display = 'flex';
-                }
-            });
+            if (!currentUser) {
+                document.getElementById('profile-modal').style.display = 'flex';
+            } else {
+                document.getElementById('app-container').style.display = 'grid';
+                initializeAppListeners();
+            }
         }
 
         // --- Firebase Listeners and Data Sync ---
@@ -693,18 +661,18 @@
          * Sets up real-time listeners for notes, trash, and chat.
          */
         function initializeAppListeners() {
-            if (!isAuthReady) return; // Crucial check before accessing Firestore
-
             if (unsubscribeNotes) unsubscribeNotes();
             if (unsubscribeTrash) unsubscribeTrash();
             if (unsubscribeChat) unsubscribeChat();
 
-            // Notes Listener
+            // Notes Listener (Fetch all notes for both users)
             const notesQuery = collection(db, getCollectionPath(NOTES_COLLECTION));
             unsubscribeNotes = onSnapshot(notesQuery, (snapshot) => {
+                // Ensure data is sorted for consistent swiping order (e.g., by creation date)
                 notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => {
                     const dateA = a.createdAt || '';
                     const dateB = b.createdAt || '';
+                    // Sorting newest first is common for feeds
                     return dateB.localeCompare(dateA);
                 });
                 renderNotes();
@@ -721,6 +689,7 @@
             const chatQuery = query(collection(db, getCollectionPath(CHAT_COLLECTION)));
             unsubscribeChat = onSnapshot(chatQuery, (snapshot) => {
                 const chatMessages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Sort by timestamp for chat messages
                 chatMessages.sort((a, b) => (a.timestamp && b.timestamp) ? (a.timestamp.toMillis() - b.timestamp.toMillis()) : 0);
                 renderChatMessages(chatMessages);
             }, (error) => { console.error("Error fetching chat: ", error); });
@@ -779,7 +748,7 @@
          * @param {string} action - 'like' or 'discard'.
          */
         async function swipe(action) {
-            if (notes.length === 0 || !isAuthReady) return;
+            if (notes.length === 0) return;
 
             const currentNote = notes[currentNoteIndex];
             const cardElement = document.getElementById(`note-${currentNote.id}`);
@@ -813,7 +782,7 @@
                 currentNoteIndex = Math.min(currentNoteIndex + 1, notes.length - 1);
 
             } catch (error) {
-                console.error("Error swiping note (check Firestore permissions):", error);
+                console.error("Error swiping note:", error);
                 // Revert animation on error
                 cardElement.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
                 cardElement.style.transform = 'translate(0,0) rotate(0)';
@@ -837,6 +806,8 @@
             let startX, startY;
             const threshold = 100;
 
+            // Ensure previous listeners are removed if card is re-rendered (though onSnapshot handles this well)
+            // For robustness, ensure card is the top visible one:
             if (card.dataset.index !== String(notes.length - 1)) return;
 
             card.addEventListener('mousedown', startDrag);
@@ -897,8 +868,6 @@
          */
         async function toggleLike(noteId, event) {
             event.stopPropagation();
-            if (!isAuthReady) return; 
-            
             const note = notes.find(n => n.id === noteId);
             if (!note) return;
 
@@ -920,6 +889,7 @@
 
         function openAddNoteModal() {
             if (!currentUser) {
+                // Use custom logging/UI instead of alert/confirm
                 console.warn('Please select a profile first.');
                 return;
             }
@@ -929,8 +899,6 @@
         }
 
         async function saveNewNote() {
-            if (!isAuthReady) { console.error("Authentication not ready."); return; }
-            
             const title = document.getElementById('note-title').value.trim();
             const description = document.getElementById('note-description').value.trim();
 
@@ -940,7 +908,6 @@
             }
 
             try {
-                // NOW THIS WRITE WILL SUCCEED
                 await addDoc(collection(db, getCollectionPath(NOTES_COLLECTION)), {
                     title: title,
                     description: description,
@@ -948,11 +915,12 @@
                     liked: false,
                     likes: 0,
                     isNew: true,
+                    // Use serverTimestamp for Firestore consistency, though ISO string is used for local sort
                     createdAt: new Date().toISOString()
                 });
                 closeModal('add-note-modal');
             } catch (error) {
-                console.error("Error saving note (check Auth state):", error);
+                console.error("Error saving note:", error);
             }
         }
 
@@ -976,8 +944,6 @@
         }
 
         async function recoverNote(trashId) {
-            if (!isAuthReady) return; 
-            
             const noteToRecover = trashNotes.find(n => n.id === trashId);
             if (!noteToRecover) return;
 
@@ -1034,8 +1000,6 @@
         }
 
         async function importNotes() {
-            if (!isAuthReady) { console.error("Authentication not ready."); return; }
-            
             const jsonInput = document.getElementById('import-data').value.trim();
             const status = document.getElementById('import-status');
             status.innerText = '';
@@ -1086,15 +1050,12 @@
         }
 
         async function sendChatMessage() {
-            if (!isAuthReady) { console.error("Authentication not ready."); return; }
-            
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
 
             if (!message) return;
 
             try {
-                // NOW THIS WRITE WILL SUCCEED
                 await addDoc(collection(db, getCollectionPath(CHAT_COLLECTION)), {
                     text: message,
                     user: currentUser,
@@ -1102,7 +1063,7 @@
                 });
                 input.value = '';
             } catch (error) {
-                console.error("Error sending chat message (check Auth state):", error);
+                console.error("Error sending chat message:", error);
             }
         }
 
@@ -1112,6 +1073,7 @@
 
             messages.forEach(msg => {
                 const messageDiv = document.createElement('div');
+                // All chat messages are simple reminders, so keep the system style.
                 messageDiv.className = `chat-message chat-message-system`; 
                 messageDiv.innerText = msg.text;
                 chatMessagesDiv.appendChild(messageDiv);
