@@ -158,14 +158,16 @@
 
     <!-- Firebase SDK Imports -->
     <script type="module">
+        // FIX: Added deleteDoc to the Firestore imports.
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, getDoc, setDoc, query, where, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, setDoc, query, where, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Enable debug logging for Firebase
         setLogLevel('debug');
 
         // --- MANDATORY GLOBAL VARIABLE SETUP (Prioritized over user-provided config) ---
+        // Your provided firebaseConfig is used here as the default/fallback config.
         const userProvidedConfig = {
             apiKey: "AIzaSyCgWmuOquxwwHCG2u6FNZrb-zrBics3HWk",
             authDomain: "notes-d7918.firebaseapp.com",
@@ -309,19 +311,12 @@
             if (!isAuthReady || !db || !userId || !cardId) return;
 
             try {
-                // A simplified path for deleting is not directly provided in the context, 
-                // but the card's document path is /artifacts/{appId}/users/{userId}/flashcards/{cardId}
-                // However, Firebase V9+ does not support a deleteDoc import from 11.6.1 directly.
-                // For this version, we will focus on just swiping for review, and if the user wants to truly
-                // delete, it would require a specific Firestore command not available in the v11.6.1 subset.
-                // To keep this runnable, we will implement the 'delete' function (as swiping left) as a console log
-                // action and only remove the card visually. For persistent deletion, the app would need `deleteDoc`.
-                // I will temporarily remove the card from the local array and rely on the next onSnapshot for re-sync.
+                // Perform robust, persistent deletion using deleteDoc on the private data path.
+                const cardDocRef = doc(getFlashcardsCollectionRef(userId), cardId);
+                await deleteDoc(cardDocRef);
                 
-                // For a robust, persistent delete (which 'left swipe' should imply):
-                // await deleteDoc(doc(getFlashcardsCollectionRef(userId), cardId));
-                
-                console.warn(`Card with ID ${cardId} would be deleted persistently now.`);
+                console.log(`Card with ID ${cardId} successfully deleted persistently.`);
+                // The onSnapshot listener will update the local 'flashcards' array and re-render the stack automatically.
 
             } catch (e) {
                 console.error("Error deleting document: ", e);
