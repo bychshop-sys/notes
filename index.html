@@ -153,13 +153,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
-            transition: background-color 0.3s ease;
-            z-index: 9999;
+            background: rgba(0, 0, 0, 0.8);
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 9997;
             display: none;
         }
         #tour-overlay.active {
-            display: block;
+            display: block; /* Use opacity to fade in/out */
         }
         
         #tour-overlay.faded {
@@ -190,7 +191,7 @@
         /* Highlight effect for tour target elements */
         .tour-highlight {
             position: relative;
-            z-index: 9998;
+            z-index: 9998; /* Must be higher than the overlay */
             box-shadow: 0 0 0 4px #FF5F00, 0 0 30px rgba(255,95,0,0.8);
             border-radius: 0.5rem;
         }
@@ -201,8 +202,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 9999;
+            background: rgba(0,0,0,0.8);
+            z-index: 9997;
             display: none;
         }
         #tour-overlay.active {
@@ -233,7 +234,7 @@
         /* Highlight effect for tour target elements */
         .tour-highlight {
             position: relative;
-            z-index: 9998;
+            z-index: 9998; /* Must be higher than the overlay */
             box-shadow: 0 0 0 4px #FF5F00, 0 0 30px rgba(255,95,0,0.8);
             border-radius: 0.5rem;
             /* Add transition for smooth highlighting */
@@ -1223,12 +1224,15 @@
 
         // Complete tour and save to localStorage
         function completeTour() {
-            document.getElementById('tour-overlay').classList.remove('active');
-            document.getElementById('tour-overlay').classList.add('faded');
+            const overlay = document.getElementById('tour-overlay');
+            overlay.style.opacity = '0'; // Fade out
             document.querySelectorAll('.tour-highlight').forEach(el => {
                 el.classList.remove('tour-highlight');
             });
             localStorage.setItem('puckerfuel_tour_completed', 'true');
+            setTimeout(() => {
+                overlay.classList.remove('active'); // Hide after fade
+            }, 300); // Match transition duration
         }
 
         // Start tour check when page loads
