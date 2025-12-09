@@ -224,7 +224,7 @@
     </style>
     
     <!-- Brevo Form Styles - Injected from provided form code -->
-<style>
+    <style>
   @font-face {
     font-display: block;
     font-family: Roboto;
@@ -267,7 +267,7 @@
     text-decoration: underline;
     color: #2BB2FC;
   }
-</style>
+    </style>
     <link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
 </head>
 <body class="bg-pf-black text-white overflow-x-hidden">
@@ -636,39 +636,6 @@
         </div>
     </section>
 
-    <!-- HERO SECTION - Main landing area with 3D model and countdown -->
-    <section class="relative flex flex-col justify-center items-center text-center px-4 pt-12 pb-20 bg-grid-pattern overflow-hidden">
-      
-        <!-- Glowing orange orb background effect -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pf-orange/20 rounded-full blur-[120px] -z-10"></div>
-
-        <!-- 3D Product Model - Embedded Sketchfab viewer with floating animation -->
-        <div class="w-full max-w-[350px] md:max-w-[400px] aspect-square relative mb-10 animate-float">
-            <iframe 
-                title="Puckerfuel" 
-                frameborder="0" 
-                allowfullscreen 
-                mozallowfullscreen="true" 
-                webkitallowfullscreen="true" 
-                allow="autoplay; fullscreen; xr-spatial-tracking" 
-                xr-spatial-tracking 
-                execution-while-out-of-viewport 
-                execution-while-not-rendered 
-                web-share 
-                src="https://sketchfab.com/models/f8e0bcaa6be149288c4b15a1fe170405/embed?autospin=0.5&autostart=1&ui_infos=0&ui_watermark=0&transparent=1"
-                class="w-full h-full z-10 relative">
-            </iframe>
-        </div>
-
-        <!-- Primary CTA Button -->
-        <div class="flex flex-col gap-4 w-full max-w-md z-20">
-            <button onclick="scrollToSignup()" class="bg-pf-orange hover:bg-orange-600 text-black font-display font-black text-xl py-4 px-8 rounded-lg uppercase tracking-wide shadow-[0_0_30px_rgba(255,95,0,0.4)] transition-all hover:scale-105">
-                ↑ CLAIM MY FREE REWARDS ↑
-            </button>
-            <p class="text-xs text-gray-500 uppercase tracking-widest">Limited Spots for Founders Wall status remain.</p>
-        </div>
-    </section>
-      
     <!-- SOUR CHALLENGE / SOCIAL PROOF SECTION -->
     <section class="py-16 bg-pf-gray border-y border-white/5">
         <div class="container mx-auto px-4 text-center">
@@ -701,51 +668,70 @@
             <p class="mt-6 text-gray-400">Join 1,000+ athletes taking the <span class="text-white font-bold">#PuckerChallenge</span></p>
         </div>
     </section> 
-
-    <!-- FORMULA BREAKDOWN - Mobile Optimized Grid -->
-    <section class="py-20 px-4">
+    
+    <!-- NEW: DETAILED PRODUCT DESCRIPTION SECTION -->
+    <section id="product-details" class="py-20 px-4 bg-pf-black">
         <div class="container mx-auto max-w-4xl">
-            <h2 class="font-display font-black text-3xl md:text-5xl mb-12 text-center">WHAT'S INSIDE?</h2>
+            <h2 class="font-display font-black text-4xl md:text-5xl mb-12 text-center">UNLEASH YOUR POTENTIAL: THE <span class="text-pf-orange">PUCKERFUEL</span> FORMULA</h2>
             
-            <!-- Grid of key ingredients with hover effects -->
-            <div class="grid md:grid-cols-2 gap-6">
+            <!-- 3D Product Model - Embedded Sketchfab viewer with floating animation -->
+            <div class="w-full max-w-[350px] md:max-w-[400px] aspect-square relative mx-auto mb-16 animate-float">
+                <iframe 
+                    title="Puckerfuel" 
+                    frameborder="0" 
+                    allowfullscreen 
+                    mozallowfullscreen="true" 
+                    webkitallowfullscreen="true" 
+                    allow="autoplay; fullscreen; xr-spatial-tracking" 
+                    xr-spatial-tracking 
+                    execution-while-out-of-viewport 
+                    execution-while-not-rendered 
+                    web-share 
+                    src="https://sketchfab.com/models/f8e0bcaa6be149288c4b15a1fe170405/embed?autospin=0.5&autostart=1&ui_infos=0&ui_watermark=0&transparent=1"
+                    class="w-full h-full z-10 relative">
+                </iframe>
+            </div>
+
+            <h3 class="font-display font-black text-3xl md:text-4xl mb-8 text-center">WHAT'S INSIDE? A DEEP DIVE</h3>
+            
+            <div class="grid md:grid-cols-2 gap-6 text-left">
                 <!-- Energy Complex Card -->
                 <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors">
-                    <div class="text-pf-orange text-3xl mb-2">⚡</div>
-                    <h3 class="font-display font-bold text-2xl mb-1">Explosive Energy</h3>
-                    <p class="text-sm text-gray-400 mb-4">350mg Caffeine Anhydrous + 200mg Theobromine</p>
-                    <p class="text-gray-300">Instant wake-up call. No jitters, just pure, aggressive drive to lift heavier.</p>
+                    <div class="text-pf-orange text-4xl mb-2">⚡</div>
+                    <h4 class="font-display font-bold text-2xl mb-1">Explosive Energy Complex</h4>
+                    <p class="text-sm text-gray-400 mb-4"><strong>350mg Caffeine Anhydrous + 200mg Theobromine</strong></p>
+                    <p class="text-gray-300">Experience an immediate and sustained surge of energy without the jitters or crash. Our potent blend of fast-acting Caffeine Anhydrous and the smoother, longer-lasting stimulant Theobromine ensures you're powered through your toughest workouts. This isn't just a wake-up call; it's a full-throttle ignition for peak performance, helping you push past limits and lift heavier with aggressive drive.</p>
                 </div>
 
                 <!-- Pump Complex Card -->
                 <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors">
-                    <div class="text-pf-orange text-3xl mb-2">💪</div>
-                    <h3 class="font-display font-bold text-2xl mb-1">Massive Pumps</h3>
-                    <p class="text-sm text-gray-400 mb-4">6000mg L-Citrulline</p>
-                    <p class="text-gray-300">Clinical dosage for maximum blood flow and vein-popping vascularity.</p>
+                    <div class="text-pf-orange text-4xl mb-2">💪</div>
+                    <h4 class="font-display font-bold text-2xl mb-1">Massive Vascular Pumps</h4>
+                    <p class="text-sm text-gray-400 mb-4"><strong>6000mg L-Citrulline</strong></p>
+                    <p class="text-gray-300">Achieve skin-splitting pumps and enhanced vascularity with a clinical dosage of 6000mg L-Citrulline. This powerful amino acid is a precursor to nitric oxide, promoting superior blood flow to your muscles. The result? Increased nutrient delivery, improved endurance, and a visually impressive, full muscle look that lasts throughout your entire training session.</p>
                 </div>
 
                 <!-- Focus Complex Card -->
                 <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors">
-                    <div class="text-pf-orange text-3xl mb-2">🎯</div>
-                    <h3 class="font-display font-bold text-2xl mb-1">Razor Focus</h3>
-                    <p class="text-sm text-gray-400 mb-4">1000mg L-Tyrosine</p>
-                    <p class="text-gray-300">Tunnel vision for your sets. Lock in and block out distractions.</p>
+                    <div class="text-pf-orange text-4xl mb-2">🎯</div>
+                    <h4 class="font-display font-bold text-2xl mb-1">Razor-Sharp Focus</h4>
+                    <p class="text-sm text-gray-400 mb-4"><strong>1000mg L-Tyrosine</strong></p>
+                    <p class="text-gray-300">Eliminate distractions and enter a state of intense concentration. L-Tyrosine is a key amino acid that supports the production of neurotransmitters like dopamine and norepinephrine, crucial for mental clarity and focus. With 1000mg, you'll experience tunnel vision for your sets, allowing you to establish a powerful mind-muscle connection and execute every rep with precision.</p>
                 </div>
 
                 <!-- Endurance Complex Card -->
                 <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors">
-                    <div class="text-pf-orange text-3xl mb-2">🔋</div>
-                    <h3 class="font-display font-bold text-2xl mb-1">Endurance</h3>
-                    <p class="text-sm text-gray-400 mb-4">4200mg Beta-Alanine</p>
-                    <p class="text-gray-300">Fight fatigue. Yes, it tingles. That means it's working.</p>
+                    <div class="text-pf-orange text-4xl mb-2">🔋</div>
+                    <h4 class="font-display font-bold text-2xl mb-1">Unrivaled Endurance</h4>
+                    <p class="text-sm text-gray-400 mb-4"><strong>4200mg Beta-Alanine</strong></p>
+                    <p class="text-gray-300">Push beyond your limits and fight fatigue with 4200mg of Beta-Alanine. This ingredient is renowned for increasing muscle carnosine levels, which helps buffer lactic acid buildup during high-intensity exercise. Yes, you'll feel the characteristic "tingles" – that's how you know it's working, allowing you to squeeze out more reps, extend your sets, and dominate your workout.</p>
                 </div>
             </div>
 
             <!-- Collapsible Full Supplement Facts -->
             <div class="mt-8 text-center">
                 <details class="group">
-                    <summary class="cursor-pointer text-sm text-gray-500 hover:text-white transition-colors list-none">
+                    <summary class="cursor-pointer text-sm text-gray-500 hover:text-white transition-colors list-none flex items-center justify-center">
                         <span class="border-b border-gray-700 pb-1">View Full Supplement Facts +</span>
                     </summary>
                     <div class="mt-6 bg-black p-6 rounded-lg text-left border border-white/10 text-sm text-gray-300 font-mono">
@@ -758,12 +744,13 @@
                             <li class="flex justify-between"><span>Theobromine</span> <span>200 mg</span></li>
                             <li class="flex justify-between"><span>Caffeine Anhydrous</span> <span>350 mg</span></li>
                         </ul>
-                        <p class="mt-4 text-xs text-gray-500">Other Ingredients: Citric Acid, Malic Acid, Natural Flavor, Silicon Dioxide, Sucralose.</p>
+                        <p class="mt-4 text-xs text-gray-500">Other Ingredients: Citric Acid, Malic Acid, Natural Flavor, Silicon Dioxide, Sucralose, Acesulfame Potassium.</p>
                     </div>
                 </details>
             </div>
         </div>
     </section>
+
     <!-- DETAILED REWARDS BREAKDOWN SECTION -->
     <section id="rewards-details" class="py-20 px-4 bg-pf-gray/30">
         <div class="container mx-auto max-w-4xl">
@@ -1183,11 +1170,22 @@
                 left = window.innerWidth - tooltipWidth - 20;
             }
 
+            // Keep tooltip on screen (vertical) - if 'top' position goes off-screen, switch to 'bottom'
+            if (top < window.scrollY + 20 && step.position === 'top') {
+                top = rect.bottom + window.scrollY + 20; // Position below target instead
+                tooltip.classList.remove('arrow-down');
+                tooltip.classList.add('arrow-up');
+            } else if (top + tooltipHeight > window.innerHeight + window.scrollY - 20 && step.position === 'bottom') {
+                top = rect.top + window.scrollY - tooltipHeight - 20; // Position above target instead
+                tooltip.classList.remove('arrow-up');
+                tooltip.classList.add('arrow-down');
+            }
+
             tooltip.style.top = top + 'px';
             tooltip.style.left = left + 'px';
             
-            // Scroll to element smoothly
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Scroll to element smoothly, ensuring it's visible
+            target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         // Advance to next tour step
