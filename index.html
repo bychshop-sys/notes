@@ -154,6 +154,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.9);
+            transition: background-color 0.3s ease;
             z-index: 9999;
             display: none;
         }
@@ -161,6 +162,10 @@
             display: block;
         }
         
+        #tour-overlay.faded {
+            background: rgba(0,0,0,0);
+        }
+
         /* Tour tooltip styling */
         .tour-tooltip {
             position: absolute;
@@ -1004,7 +1009,7 @@
     
     <!-- FIRST TIME VISITOR TOUR OVERLAY -->
     <div id="tour-overlay">
-        <div id="tour-tooltip" class="tour-tooltip">
+        <div id="tour-tooltip" class="tour-tooltip ">
             <h3 class="font-display font-bold text-xl mb-2" id="tour-title"></h3>
             <p class="mb-4 text-sm" id="tour-text"></p>
             <div class="flex gap-3">
@@ -1219,6 +1224,7 @@
         // Complete tour and save to localStorage
         function completeTour() {
             document.getElementById('tour-overlay').classList.remove('active');
+            document.getElementById('tour-overlay').classList.add('faded');
             document.querySelectorAll('.tour-highlight').forEach(el => {
                 el.classList.remove('tour-highlight');
             });
