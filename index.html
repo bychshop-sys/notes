@@ -1,915 +1,1232 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
-    <title>Notepad</title>
-    <!-- Google Fonts for Sleek Design -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PuckerFuel - The World's Most Sour Pre-Workout</title>
+    <meta name="description" content="Join the waitlist for PuckerFuel. 350mg caffeine, extreme sour flavor. Win a free tub now.">
+    <link rel="icon" href="https://i.ibb.co/VY5Ykhgz/New-Project-4.png" type="image/png">
+    
+    <!-- Preload critical fonts for faster rendering -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind configuration - customizes brand colors and animations
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pf-orange': '#FF5F00',
+                        'pf-black': '#050505',
+                        'pf-gray': '#1F1F1F',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'display': ['Montserrat', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                        'jiggle': 'jiggle 0.5s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        jiggle: {
+                            '0%': { transform: 'rotate(-1deg)' },
+                            '100%': { transform: 'rotate(1deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            --green-user: #4CAF50;
-            --blue-user: #2196F3;
-            --background-color: #f7f7f7;
-            --card-background: #ffffff;
-            --text-color: #333;
-            --secondary-color: #666;
-            --danger-color: #f44336;
-            --success-color: #00bcd4;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --border-radius: 12px;
+        /* Custom gradient text effect for headers */
+        .text-stroke {
+            -webkit-text-stroke: 1px rgba(255,255,255,0.1);
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
+        
+        /* Dotted grid background pattern */
+        .bg-grid-pattern {
+            background-image: radial-gradient(rgba(255, 95, 0, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
-
-        body, html {
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--background-color);
+        
+        /* Brevo Form Override - Make form blend with our design */
+        #sib-container {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
         }
-
-        /* --- Global App Layout --- */
-        #app-container {
-            height: 100vh;
-            display: grid;
-            grid-template-rows: 50px 1fr;
-            background-color: var(--background-color);
+        #sib-form-container {
+            max-width: 100% !important;
+            padding: 0 !important;
         }
-
-        /* --- Header/Navigation --- */
-        #header {
+        .sib-form {
+            text-align: left !important;
+            background-color: transparent !important;
+        }
+        .sib-input {
+            padding: 0 !important;
+        }
+        .form__entry {
+            margin-bottom: 1rem !important;
+        }
+        
+        /* Input field styling - dark theme with orange accent */
+        .entry__field input {
+            background-color: #1F1F1F !important;
+            border: 2px solid #333 !important;
+            color: white !important;
+            border-radius: 0.5rem !important;
+            height: 3.5rem !important;
+            padding-left: 1rem !important;
+            font-size: 1.1rem !important;
+            width: 100% !important;
+        }
+        .entry__field input:focus {
+            border-color: #FF5F00 !important;
+            outline: none !important;
+        }
+        .entry__field input::placeholder {
+            color: #999 !important;
+        }
+        
+        /* Submit button styling */
+        .sib-form-block__button {
+            background-color: #FF5F00 !important;
+            border-radius: 0.5rem !important;
+            height: 3.5rem !important;
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 900 !important;
+            text-transform: uppercase !important;
+            font-size: 1.2rem !important;
+            transition: transform 0.1s !important;
+            width: 100% !important;
+        }
+        .sib-form-block__button:active {
+            transform: scale(0.98) !important;
+        }
+        
+        /* Hide checkbox visual but keep functionality */
+        .sib-optin .entry__choice {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 0 15px;
-            background-color: var(--card-background);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            z-index: 20;
-            position: relative;
         }
-
-        #header-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-color);
+        .sib-optin input[type="checkbox"] {
+            margin-right: 0.5rem;
         }
-
-        #header-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .header-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--secondary-color);
-            transition: color 0.2s;
-            line-height: 1;
-        }
-
-        .header-btn:hover {
-            color: var(--text-color);
-        }
-
-        /* --- Main Content Area (Swipe/Flashcard) --- */
-        #main-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            z-index: 10;
-        }
-
-        .flashcard-stack {
-            width: 100%;
-            max-width: 400px;
-            height: 100%;
-            max-height: 600px;
-            position: relative;
-        }
-
-        .flashcard {
-            width: 100%;
-            height: 100%;
-            padding: 25px;
-            background-color: var(--card-background);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            position: absolute;
-            top: 0;
-            left: 0;
+        
+        /* Countdown display styling */
+        .countdown-item {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            align-items: flex-start;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: grab;
-            user-select: none;
-        }
-
-        .flashcard-header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-
-        .flashcard-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-color);
-            word-wrap: break-word;
-            max-width: 80%;
-        }
-
-        .flashcard-description {
-            font-size: 1rem;
-            color: var(--secondary-color);
-            flex-grow: 1;
-            overflow-y: auto;
-            max-height: calc(100% - 150px);
-            line-height: 1.6;
-        }
-
-        .flashcard-footer {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-            margin-top: 15px;
-        }
-
-        .swipe-btns {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 30px;
-            z-index: 5;
-        }
-
-        .swipe-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
-            font-size: 1.8rem;
-            color: var(--card-background);
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s, opacity 0.2s;
-        }
-
-        .swipe-btn:active {
-            transform: scale(0.9);
-        }
-
-        #like-btn { background-color: var(--green-user); }
-        #discard-btn { background-color: var(--danger-color); }
-
-        .new-tag {
-            background-color: var(--success-color);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .like-indicator {
-            font-size: 1.2rem;
-            color: var(--danger-color);
-            cursor: pointer;
-        }
-
-        /* User Color Coding (kept for styling compatibility but app is single-user) */
-        .card-green { border-left: 8px solid var(--green-user); }
-        .card-blue { border-left: 8px solid var(--blue-user); }
-        .user-tag {
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 5px;
-            font-weight: 600;
-        }
-        .user-tag-green { background-color: rgba(76, 175, 80, 0.2); color: var(--green-user); }
-        .user-tag-blue { background-color: rgba(33, 150, 243, 0.2); color: var(--blue-user); }
-
-        /* --- Modals (Add Note, Trash, Import/Export) --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: var(--card-background);
-            margin: auto;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-        }
-
-        .modal-close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
             line-height: 1;
         }
-
-        .modal-close:hover,
-        .modal-close:focus {
-            color: var(--text-color);
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        h2 { margin-bottom: 20px; color: var(--text-color); font-weight: 600; text-align: center;}
-
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0 15px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .modal-btn {
-            background-color: var(--green-user);
+        .countdown-number {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 2.5rem;
             color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
+        }
+        .countdown-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #FF5F00;
             font-weight: 600;
-            transition: background-color 0.2s;
+            margin-top: 0.25rem;
+        }
+        
+        /* Tour overlay for first-time visitor guide */
+        #tour-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none;
+        }
+        #tour-overlay.active {
+            display: block;
+        }
+        
+        /* Tour tooltip styling */
+        .tour-tooltip {
+            position: absolute;
+            background: linear-gradient(135deg, #FF5F00, #ff8c3a);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            max-width: 350px;
+            box-shadow: 0 10px 40px rgba(255,95,0,0.5);
+            z-index: 10000;
+        }
+        
+        /* Arrow pointer for tour tooltip */
+        .tour-tooltip::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+        
+        /* Highlight effect for tour target elements */
+        .tour-highlight {
+            position: relative;
+            z-index: 9998;
+            box-shadow: 0 0 0 4px #FF5F00, 0 0 30px rgba(255,95,0,0.8);
+            border-radius: 0.5rem;
+        }
+        /* Tour overlay for first-time visitor guide */
+        #tour-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none;
+        }
+        #tour-overlay.active {
+            display: block;
+        }
+        
+        /* Tour tooltip styling */
+        .tour-tooltip {
+            position: absolute;
+            background: linear-gradient(135deg, #FF5F00, #ff8c3a);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            max-width: 350px;
+            box-shadow: 0 10px 40px rgba(255,95,0,0.5);
+            z-index: 10000;
+        }
+        
+        /* Arrow pointer for tour tooltip */
+        .tour-tooltip::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+        
+        /* Highlight effect for tour target elements */
+        .tour-highlight {
+            position: relative;
+            z-index: 9998;
+            box-shadow: 0 0 0 4px #FF5F00, 0 0 30px rgba(255,95,0,0.8);
+            border-radius: 0.5rem;
+            /* Add transition for smooth highlighting */
+            transition: box-shadow 0.3s ease-in-out;
         }
 
-        .modal-btn:hover {
-            background-color: #45a049;
+        /* Ensure highlighted element is clickable */
+        .tour-highlight {
+            pointer-events: all;
         }
 
-        /* Trash List */
-        #trash-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 15px;
-        }
-        .trash-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .trash-item:last-child { border-bottom: none; }
-        .trash-item-title { font-weight: 500; font-size: 0.95rem; }
-        .recover-btn {
-            background: none;
-            border: none;
-            color: var(--success-color);
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
 
-        /* Import/Export */
-        #import-export-modal textarea {
-            height: 150px;
-        }
-        #import-btn { background-color: var(--blue-user); margin-top: 10px;}
-        #export-btn { background-color: var(--secondary-color); margin-bottom: 15px;}
-        #import-btn:hover { background-color: #1a7bbd; }
-        #export-btn:hover { background-color: #555; }
-
-        /* --- Mobile Responsiveness (Sleek/Synchronized) --- */
-        @media (max-width: 600px) {
-            #main-content {
-                padding: 10px;
-            }
-            .flashcard-stack {
-                max-height: 80vh;
-            }
-            .swipe-btns {
-                gap: 20px;
-                bottom: 15px;
-            }
-            .swipe-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
-            }
-        }
     </style>
+    
+    <!-- Brevo Form Styles - Injected from provided form code -->
+<style>
+  @font-face {
+    font-display: block;
+    font-family: Roboto;
+    src: url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/7529907e9eaf8ebb5220c5f9850e3811.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/25c678feafdc175a70922a116c9be3e7.woff) format("woff")
+  }
+
+  @font-face {
+    font-display: fallback;
+    font-family: Roboto;
+    font-weight: 600;
+    src: url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/6e9caeeafb1f3491be3e32744bc30440.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/71501f0d8d5aa95960f6475d5487d4c2.woff) format("woff")
+  }
+
+  @font-face {
+    font-display: fallback;
+    font-family: Roboto;
+    font-weight: 700;
+    src: url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/3ef7cf158f310cf752d5ad08cd0e7e60.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/ece3a1d82f18b60bcce0211725c476aa.woff) format("woff")
+  }
+
+  #sib-container input:-ms-input-placeholder {
+    text-align: left;
+    font-family: Helvetica, sans-serif;
+    color: #c0ccda;
+  }
+
+  #sib-container input::placeholder {
+    text-align: left;
+    font-family: Helvetica, sans-serif;
+    color: #c0ccda;
+  }
+
+  #sib-container textarea::placeholder {
+    text-align: left;
+    font-family: Helvetica, sans-serif;
+    color: #c0ccda;
+  }
+
+  #sib-container a {
+    text-decoration: underline;
+    color: #2BB2FC;
+  }
+</style>
+    <link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
 </head>
-<body>
+<body class="bg-pf-black text-white overflow-x-hidden">
 
-    <!-- 2. Main Application Container -->
-    <div id="app-container">
-        <!-- Header -->
-        <header id="header">
-            <span id="header-title">NOTEPAD</span>
-            <div id="header-actions">
-                <button class="header-btn" title="Add Note" onclick="openAddNoteModal()">➕</button>
-                <button class="header-btn" title="Import/Export" onclick="openImportExportModal()">📦</button>
-                <button class="header-btn" title="Trash" onclick="openTrashModal()">🗑️</button>
+    <!-- Top warning banner - Sticky to stay visible while scrolling -->
+    <div class="bg-pf-orange text-black font-bold text-xs md:text-sm py-2 text-center uppercase tracking-widest sticky top-0 z-50">
+        ⚠️ Warning: Extreme Sourness • High Caffeine (350mg) • ⚠️
+    </div>
+
+    <!-- WAITLIST SIGNUP SECTION (The Converter) - VISUALLY ENHANCED -->
+    <section id="signup" class="py-20 px-4 relative overflow-hidden">
+        <!-- Background Glow -->
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-t from-pf-orange/10 to-transparent -z-10"></div>
+
+        <div class="container mx-auto max-w-lg bg-pf-gray/50 border border-pf-orange/30 rounded-2xl p-6 md:p-10 shadow-2xl backdrop-blur-sm">
+            
+            <div class="text-center">
+                <h1 class="font-display font-black text-5xl md:text-7xl tracking-tighter leading-none mb-2">
+                    PUCKER<span class="text-pf-orange">FUEL</span>
+                </h1>
+                <p class="text-xl md:text-2xl font-medium text-gray-300 mb-6 max-w-2xl mx-auto">
+                    Get <span class="text-pf-orange font-bold">$95+</span> in FREE rewards when you join the waitlist for the World's Most Sour Pre-Workout.
+                </p>
             </div>
-        </header>
 
-        <!-- Main Content (Flashcard Swiping) -->
-        <main id="main-content">
-            <div class="flashcard-stack" id="flashcard-stack">
-                <!-- Flashcards will be dynamically inserted here -->
-                <div id="no-notes-placeholder" class="flashcard" style="align-items: center; justify-content: center; text-align: center; opacity: 1; transform: translate(0,0);">
-                    <h2 style="margin-bottom: 0;">All Caught Up!</h2>
-                    <p style="margin-top: 10px;">No active notes. Use ➕ to add a new one.</p>
+            <!-- PROMINENT COUNTDOWN -->
+            <div id="countdown-hero" class="bg-pf-gray/90 border-2 border-pf-orange p-4 md:p-6 rounded-2xl mb-8 shadow-2xl backdrop-blur-sm w-full max-w-2xl mx-auto">
+                <p class="text-xl md:text-2xl font-display font-black uppercase tracking-widest mb-4 text-pf-orange text-center">
+                    ⏰ Waitlist Closes In:
+                </p>
+                <div id="countdown" class="flex justify-around items-center">
+                    <div class="countdown-item">
+                        <span id="days" class="countdown-number text-3xl md:text-4xl">00</span>
+                        <span class="countdown-label">Days</span>
+                    </div>
+                    <span class="countdown-number text-pf-orange text-2xl">:</span>
+                    <div class="countdown-item">
+                        <span id="hours" class="countdown-number text-3xl md:text-4xl">00</span>
+                        <span class="countdown-label">Hours</span>
+                    </div>
+                    <span class="countdown-number text-pf-orange text-2xl">:</span>
+                    <div class="countdown-item">
+                        <span id="minutes" class="countdown-number text-3xl md:text-4xl">00</span>
+                        <span class="countdown-label">Minutes</span>
+                    </div>
+                    <span class="countdown-number text-pf-orange text-2xl">:</span>
+                    <div class="countdown-item">
+                        <span id="seconds" class="countdown-number text-3xl md:text-4xl">00</span>
+                        <span class="countdown-label">Seconds</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Swipe Buttons -->
-            <div class="swipe-btns" id="swipe-btns" style="display: none;">
-                <button class="swipe-btn" id="discard-btn" title="Discard" onclick="discardCurrent()">❌</button>
-                <button class="swipe-btn" id="like-btn" title="Keep/Like" onclick="likeCurrent()">❤️</button>
+            <!-- FULL LIST OF GUARANTEED BONUSES - UPDATED WITH HOVER TOOLTIPS -->
+            <h3 class="font-bold text-lg text-gray-400 mb-4 text-center uppercase tracking-wider">PLUS, ALL 10 GUARANTEED PERKS:</h3>
+            <ul class="space-y-3 mb-8 text-left" id="rewards-list-summary">
+                <!-- 1. 20% OFF Launch Discount -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">1</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">20% OFF Launch Discount</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="Guaranteed discount code for your first purchase. ($8 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    Guaranteed discount code for your first purchase.
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$8 Value</span>
+                    </div>
+                </li>
+
+                <!-- 2. Founders Wall Status -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">2</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">Founders Wall Status</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="Your name permanently displayed on our Founders Wall (status gain). ($10 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    Your name permanently displayed on our Founders Wall (status gain).
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$10 Value</span>
+                    </div>
+                </li>
+
+                <!-- 3. Entry into Exclusive Giveaway -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">3</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">Entry into Exclusive Giveaway</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="Chance to win a free tub or other top-tier PuckerFuel merch. ($50 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    Chance to win a free tub or other top-tier PuckerFuel merch.
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$50 Value</span>
+                    </div>
+                </li>
+
+                <!-- 4. Exclusive Community Discord -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">4</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">Exclusive Community Discord</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="Direct access to the founders and other members. ($5 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    Direct access to the founders and other members.
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$5 Value</span>
+                    </div>
+                </li>
+
+                <!-- 5. First-to-Know Drop Notification -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">5</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">First-to-Know Drop Notification</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="VIP Early Access to purchase 24 hours before public launch. ($5 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    VIP Early Access to purchase 24 hours before public launch.
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$5 Value</span>
+                    </div>
+                </li>
+
+                <!-- 6. Exclusive Product Detail Brochure -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">6</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">Exclusive Product Detail Brochure</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="In-depth guide to every ingredient and its benefit. ($2 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    In-depth guide to every ingredient and its benefit.
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$2 Value</span>
+                    </div>
+                </li>
+
+                <!-- 7. Weekly Progress Newsletter -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">7</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">Weekly Progress Newsletter</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="Behind-the-scenes look at the PuckerFuel journey. ($1 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    Behind-the-scenes look at the PuckerFuel journey.
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$1 Value</span>
+                    </div>
+                </li>
+
+                <!-- 8. Free "How to Adjust Sourness" Guide -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">8</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">Free "How to Adjust Sourness" Guide</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="Brochure with tips on making the pre-workout more or less sour. ($5 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    Brochure with tips on making the pre-workout more or less sour.
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$5 Value</span>
+                    </div>
+                </li>
+
+                <!-- 9. Free PuckerFuel Challenge Brochure -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">9</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">Free PuckerFuel Challenge Brochure</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="Your official guide to taking (and surviving) the #PuckerChallenge. ($5 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    Your official guide to taking (and surviving) the #PuckerChallenge.
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$5 Value</span>
+                    </div>
+                </li>
+
+                <!-- 10. Delete Information Guarantee -->
+                <li class="flex items-start gap-3">
+                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">10</span>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center group relative">
+                            <span class="font-semibold text-white">Delete Information Guarantee</span>
+                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
+                                <span class="inline-block align-middle" title="Full control over your data; delete your info whenever you want. ($5 Value)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                                <!-- Tooltip Content -->
+                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                    Full control over your data; delete your info whenever you want.
+                                </div>
+                            </div>
+                        </div>
+                        <span class="font-bold text-pf-orange ml-2">$5 Value</span>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- BREVO FORM EMBED (Anchored Low) -->
+            <div class="mt-8 bg-gradient-to-r from-pf-orange/20 to-pf-orange/5 border-2 border-pf-orange rounded-2xl p-6 text-center">
+                <h3 class="font-display font-black text-2xl mb-2">TOTAL PACKAGE VALUE</h3>
+                <p class="text-4xl font-display font-black text-gray-500 line-through mb-1">$96.00</p>
+                <p class="text-5xl font-display font-black text-green-400 mb-4">YOURS FREE!</p>
+                <p class="text-gray-300 mb-6">Enter your email below to claim all 10 rewards instantly.</p>
+            
+
+
+            <!-- Begin Brevo Form -->
+<div class="sib-form mt-10" style="text-align: center;" id="sib-form">
+  <div id="sib-form-container" class="sib-form-container">
+    <div id="error-message" class="sib-form-message-panel" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;max-width:540px;">
+      <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
+        <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon">
+          <path d="M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-11.49 120h22.979c6.823 0 12.274 5.682 11.99 12.5l-7 168c-.268 6.428-5.556 11.5-11.99 11.5h-8.979c-6.433 0-11.722-5.073-11.99-11.5l-7-168c-.283-6.818 5.167-12.5 11.99-12.5zM256 340c-15.464 0-28 12.536-28 28s12.536 28 28 28 28-12.536 28-28-12.536-28-28-28z" />
+        </svg>
+        <span class="sib-form-message-panel__inner-text">
+                          Your subscription could not be saved.
+                      </span>
+      </div>
+    </div>
+    <div></div>
+    <div id="success-message" class="sib-form-message-panel" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#085229; background-color:#e7faf0; border-radius:3px; border-color:#13ce66;max-width:540px;">
+      <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
+        <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon">
+          <path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 464c-118.664 0-216-96.055-216-216 0-118.663 96.055-216 216-216 118.664 0 216 96.055 216 216 0 118.663-96.055 216-216 216zm141.63-274.961L217.15 376.071c-4.705 4.667-12.303 4.637-16.97-.068l-85.878-86.572c-4.667-4.705-4.637-12.303.068-16.97l8.52-8.451c4.705-4.667 12.303-4.637 16.97.068l68.976 69.533 163.441-162.13c4.705-4.667 12.303-4.637 16.97.068l8.451 8.52c4.668 4.705 4.637 12.303-.068 16.97z" />
+        </svg>
+        <span class="sib-form-message-panel__inner-text">
+                          Welcome to the club, check your email! (CHECK PROMOTION & SPAM FOLDERS)
+                      </span>
+      </div>
+    </div>
+    <div></div>
+    <div id="sib-container" class="sib-container--large sib-container--vertical" style="direction:ltr">
+      <form id="sib-form" method="POST" action="https://de9c0110.sibforms.com/serve/MUIFANcro60Whlk73aTts_atNzyK029bixMfcQ1xTO8sKG5DXhIfuQOCz0Y_g1FBZyOnHOjnti4pzZNW_creeHAbjudnyI3lZz_UdUztmxoGFtASCqYw8rKQ5KAlnrVJhZLUo9mmSnoG2R44qplVAgWTiDQ8Ady8Y8Ee19lMhYel5cNF2jX8gnePJfqDR_jBNUhBJslKsRCLRLFI" data-type="subscription">
+        <div style="padding: 8px 0;">
+          <div class="sib-input sib-form-block">
+            <div class="form__entry entry_block">
+              <div class="form__label-row ">
+
+                <div class="entry__field">
+                  <input class="input " type="text" id="EMAIL" name="EMAIL" autocomplete="off" placeholder="EMAIL" data-required="true" required />
+                </div>
+              </div>
+
+              <label class="entry__error entry__error--primary" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;">
+              </label>
             </div>
-        </main>
-    </div>
-
-    <!-- 3. Add Note Modal -->
-    <div id="add-note-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('add-note-modal')">&times;</span>
-            <h2>Add Note</h2>
-            <input type="text" id="note-title" placeholder="Title" maxlength="50">
-            <textarea id="note-description" placeholder="Description / Advice..."></textarea>
-            <button class="modal-btn" onclick="saveNewNote()">Add Note</button>
+          </div>
         </div>
-    </div>
+        <div style="padding: 8px 0;">
+          <div class="sib-input sib-form-block">
+            <div class="form__entry entry_block">
+              <div class="form__label-row ">
 
-    <!-- 4. Trash Modal -->
-    <div id="trash-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('trash-modal')">&times;</span>
-            <h2>Trashed Notes</h2>
-            <div id="trash-list">
-                <!-- Trashed notes will be dynamically inserted here -->
+                <div class="entry__field">
+                  <input class="input " maxlength="200" type="text" id="FIRSTNAME" name="FIRSTNAME" autocomplete="off" placeholder="NAME" />
+                </div>
+              </div>
+
+              <label class="entry__error entry__error--primary" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;">
+              </label>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 8px 0;">
+          <div class="sib-optin sib-form-block">
+            <div class="form__entry entry_mcq">
+              <div class="form__label-row ">
+                <div class="entry__choice" style="">
+                  <label>
+                    <input type="checkbox" class="input_replaced" value="1" id="OPT_IN" name="OPT_IN" />
+                    <span class="checkbox checkbox_tick_positive"
+            style="margin-left:"
+            ></span><span style="font-size:14px; text-align:left; font-family:Helvetica, sans-serif; color:#3C4858; background-color:transparent;"><p><strong>Weekly Progress Newsletter</strong></p></span> </label>
+                </div>
+              </div>
+              <label class="entry__error entry__error--primary" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;">
+              </label>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 8px 0;">
+          <div class="sib-form-block" style="text-align: center">
+            <button class="sib-form-block__button sib-form-block__button-with-loader" form="sib-form" type="submit">
+              <svg class="icon clickable__icon progress-indicator__icon sib-hide-loader-icon" viewBox="0 0 512 512" style="">
+                <path d="M460.116 373.846l-20.823-12.022c-5.541-3.199-7.54-10.159-4.663-15.874 30.137-59.886 28.343-131.652-5.386-189.946-33.641-58.394-94.896-95.833-161.827-99.676C261.028 55.961 256 50.751 256 44.352V20.309c0-6.904 5.808-12.337 12.703-11.982 83.556 4.306 160.163 50.864 202.11 123.677 42.063 72.696 44.079 162.316 6.031 236.832-3.14 6.148-10.75 8.461-16.728 5.01z" />
+              </svg>
+              GET 20% OFF
+            </button>
+          </div>
+        </div>
+
+        <input type="text" name="email_address_check" value="" class="input--hidden">
+        <input type="hidden" name="locale" value="en">
+      </form>
+    </div>
+  </div>
+</div>
+<!-- End Brevo Form -->
+            
+                <button onclick="scrollToNoEmail()" class="mt-4 w-full bg-pf-gray hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors" id="no-email-button">
+                    Stay up to date without an email
+                </button>
+
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- HERO SECTION - Main landing area with 3D model and countdown -->
+    <section class="relative flex flex-col justify-center items-center text-center px-4 pt-12 pb-20 bg-grid-pattern overflow-hidden">
+      
+        <!-- Glowing orange orb background effect -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pf-orange/20 rounded-full blur-[120px] -z-10"></div>
+
+        <!-- 3D Product Model - Embedded Sketchfab viewer with floating animation -->
+        <div class="w-full max-w-[350px] md:max-w-[400px] aspect-square relative mb-10 animate-float">
+            <iframe 
+                title="Puckerfuel" 
+                frameborder="0" 
+                allowfullscreen 
+                mozallowfullscreen="true" 
+                webkitallowfullscreen="true" 
+                allow="autoplay; fullscreen; xr-spatial-tracking" 
+                xr-spatial-tracking 
+                execution-while-out-of-viewport 
+                execution-while-not-rendered 
+                web-share 
+                src="https://sketchfab.com/models/f8e0bcaa6be149288c4b15a1fe170405/embed?autospin=0.5&autostart=1&ui_infos=0&ui_watermark=0&transparent=1"
+                class="w-full h-full z-10 relative">
+            </iframe>
+        </div>
+
+        <!-- Primary CTA Button -->
+        <div class="flex flex-col gap-4 w-full max-w-md z-20">
+            <button onclick="scrollToSignup()" class="bg-pf-orange hover:bg-orange-600 text-black font-display font-black text-xl py-4 px-8 rounded-lg uppercase tracking-wide shadow-[0_0_30px_rgba(255,95,0,0.4)] transition-all hover:scale-105">
+                ↑ CLAIM MY FREE REWARDS ↑
+            </button>
+            <p class="text-xs text-gray-500 uppercase tracking-widest">Limited Spots for Founders Wall status remain.</p>
+        </div>
+    </section>
+      
+    <!-- SOUR CHALLENGE / SOCIAL PROOF SECTION -->
+    <section class="py-16 bg-pf-gray border-y border-white/5">
+        <div class="container mx-auto px-4 text-center">
+            <!-- Trending badge -->
+            <div class="inline-block bg-black/50 rounded-full px-4 py-1 text-pf-orange font-bold text-sm mb-4 border border-pf-orange/30">
+                🔥 TRENDING ON TIKTOK
+            </div>
+            <h2 class="font-display font-black text-3xl md:text-5xl mb-8">CAN YOU HANDLE THE SOUR?</h2>
+            
+            <!-- Horizontal scrolling video gallery - Mobile optimized -->
+            <div class="flex justify-center gap-6 mb-8">
+                <a href="#" class="text-gray-400 hover:text-white">Instagram</a>
+                <a href="#" class="text-gray-400 hover:text-white">TikTok</a>
+                <a href="#" class="text-gray-400 hover:text-white">Contact</a>
+            </div>
+            <!-- Horizontal scrolling video gallery - Mobile optimized -->
+            <div class="flex flex-nowrap overflow-x-auto gap-4 pb-4 md:justify-center snap-x">
+                <!-- Video placeholders - Replace with actual TikTok embeds -->
+                <div class="min-w-[200px] md:min-w-[250px] aspect-[9/16] bg-black rounded-xl border border-white/10 flex items-center justify-center shrink-0 snap-center">
+                    <span class="text-gray-600 font-bold">TikTok Video #1</span>
+                </div>
+                <div class="min-w-[200px] md:min-w-[250px] aspect-[9/16] bg-black rounded-xl border border-white/10 flex items-center justify-center shrink-0 snap-center">
+                    <span class="text-gray-600 font-bold">TikTok Video #2</span>
+                </div>
+                <div class="min-w-[200px] md:min-w-[250px] aspect-[9/16] bg-black rounded-xl border border-white/10 flex items-center justify-center shrink-0 snap-center">
+                    <span class="text-gray-600 font-bold">TikTok Video #3</span>
+                </div>
+            </div>
+            
+            <p class="mt-6 text-gray-400">Join 1,000+ athletes taking the <span class="text-white font-bold">#PuckerChallenge</span></p>
+        </div>
+    </section> 
+
+    <!-- FORMULA BREAKDOWN - Mobile Optimized Grid -->
+    <section class="py-20 px-4">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="font-display font-black text-3xl md:text-5xl mb-12 text-center">WHAT'S INSIDE?</h2>
+            
+            <!-- Grid of key ingredients with hover effects -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Energy Complex Card -->
+                <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors">
+                    <div class="text-pf-orange text-3xl mb-2">⚡</div>
+                    <h3 class="font-display font-bold text-2xl mb-1">Explosive Energy</h3>
+                    <p class="text-sm text-gray-400 mb-4">350mg Caffeine Anhydrous + 200mg Theobromine</p>
+                    <p class="text-gray-300">Instant wake-up call. No jitters, just pure, aggressive drive to lift heavier.</p>
+                </div>
+
+                <!-- Pump Complex Card -->
+                <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors">
+                    <div class="text-pf-orange text-3xl mb-2">💪</div>
+                    <h3 class="font-display font-bold text-2xl mb-1">Massive Pumps</h3>
+                    <p class="text-sm text-gray-400 mb-4">6000mg L-Citrulline</p>
+                    <p class="text-gray-300">Clinical dosage for maximum blood flow and vein-popping vascularity.</p>
+                </div>
+
+                <!-- Focus Complex Card -->
+                <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors">
+                    <div class="text-pf-orange text-3xl mb-2">🎯</div>
+                    <h3 class="font-display font-bold text-2xl mb-1">Razor Focus</h3>
+                    <p class="text-sm text-gray-400 mb-4">1000mg L-Tyrosine</p>
+                    <p class="text-gray-300">Tunnel vision for your sets. Lock in and block out distractions.</p>
+                </div>
+
+                <!-- Endurance Complex Card -->
+                <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors">
+                    <div class="text-pf-orange text-3xl mb-2">🔋</div>
+                    <h3 class="font-display font-bold text-2xl mb-1">Endurance</h3>
+                    <p class="text-sm text-gray-400 mb-4">4200mg Beta-Alanine</p>
+                    <p class="text-gray-300">Fight fatigue. Yes, it tingles. That means it's working.</p>
+                </div>
+            </div>
+
+            <!-- Collapsible Full Supplement Facts -->
+            <div class="mt-8 text-center">
+                <details class="group">
+                    <summary class="cursor-pointer text-sm text-gray-500 hover:text-white transition-colors list-none">
+                        <span class="border-b border-gray-700 pb-1">View Full Supplement Facts +</span>
+                    </summary>
+                    <div class="mt-6 bg-black p-6 rounded-lg text-left border border-white/10 text-sm text-gray-300 font-mono">
+                        <p class="mb-2"><strong class="text-white">Serving Size:</strong> 1 Scoop (18.5g)</p>
+                        <ul class="space-y-1">
+                            <li class="flex justify-between"><span>L-Citrulline</span> <span>6000 mg</span></li>
+                            <li class="flex justify-between"><span>Beta-Alanine</span> <span>4200 mg</span></li>
+                            <li class="flex justify-between"><span>L-Tyrosine</span> <span>1000 mg</span></li>
+                            <li class="flex justify-between"><span>Taurine</span> <span>500 mg</span></li>
+                            <li class="flex justify-between"><span>Theobromine</span> <span>200 mg</span></li>
+                            <li class="flex justify-between"><span>Caffeine Anhydrous</span> <span>350 mg</span></li>
+                        </ul>
+                        <p class="mt-4 text-xs text-gray-500">Other Ingredients: Citric Acid, Malic Acid, Natural Flavor, Silicon Dioxide, Sucralose.</p>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+    <!-- DETAILED REWARDS BREAKDOWN SECTION -->
+    <section id="rewards-details" class="py-20 px-4 bg-pf-gray/30">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="font-display font-black text-4xl md:text-5xl mb-4 text-center text-pf-orange">COMPLETE WAITLIST REWARDS BREAKDOWN</h2>
+            <p class="text-center text-gray-300 mb-12 text-lg">Everything you get for FREE when you join the waitlist</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Reward 1 - 20% OFF -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">🏷️</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">20% OFF Launch Discount</h3>
+                            <p class="text-gray-300 mb-3">You'll receive a unique discount code via email that gives you 20% off your first PuckerFuel purchase. This code is stackable with other promotions and never expires. At regular price of ~$40/tub, this saves you approximately $8.00 on your first order.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">💰 VALUE: ~$8.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward 2 - Founders Wall -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">⭐</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">Founders Wall Status</h3>
+                            <p class="text-gray-300 mb-3">Your name will be permanently displayed on our digital Founders Wall - a public hall of fame showcasing the original supporters who believed in PuckerFuel from day one. This is exclusive status that can never be earned again after launch. You'll also receive a special "Founder" badge in our community Discord.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">⭐ VALUE: Priceless (Status Symbol)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward 3 - Giveaway Entry -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">🎁</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">Exclusive Giveaway Entry</h3>
+                            <p class="text-gray-300 mb-3">Automatic entry into our pre-launch giveaway where we're giving away free tubs of PuckerFuel, premium branded shaker bottles, gym bags, and exclusive merchandise. Winners will be announced via email before public launch. The more friends you refer to the waitlist, the more entries you receive.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">🎁 VALUE: ~$49.90 (Prize Value)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward 4 - Discord -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">💬</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">Exclusive Community Discord Access</h3>
+                            <p class="text-gray-300 mb-3">Join our private Discord server with direct access to the PuckerFuel founders and early adopters. Get insider updates, participate in flavor voting, share workout tips, and connect with a community of dedicated athletes. This is a members-only space that won't be available to the general public.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">💬 VALUE: ~$5.00/month (Community Access)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward 5 - Early Access -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">⏰</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">VIP Early Access Notification</h3>
+                            <p class="text-gray-300 mb-3">Receive an exclusive email notification 24 hours before public launch, giving you first access to purchase PuckerFuel before it sells out. Our first production run is limited, and waitlist members get guaranteed access to secure their order before the general public even knows we're live.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">⏰ VALUE: VIP Early Access (Priceless)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward 6 - Product Brochure -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">📚</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">Exclusive Product Detail Brochure</h3>
+                            <p class="text-gray-300 mb-3">Download our comprehensive 12-page digital brochure that breaks down every ingredient in PuckerFuel, their scientific benefits, optimal dosing, and how they work synergistically. Includes citations to peer-reviewed research and detailed explanations of why we chose each component. Perfect for the science-minded athlete.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">📚 VALUE: ~$2.00 (Educational Content)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward 7 - Newsletter -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">📧</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">Weekly Progress Newsletter</h3>
+                            <p class="text-gray-300 mb-3">Receive weekly email updates throughout the pre-launch journey showing behind-the-scenes production, ingredient sourcing, packaging design decisions, and brand development. See exactly how PuckerFuel is being built from the ground up. Opt-in during signup or manage preferences anytime.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">📧 VALUE: Free Exclusive Content</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward 8 - Sourness Guide -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">📖</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">Free "How to Adjust Sourness" Guide</h3>
+                            <p class="text-gray-300 mb-3">Not everyone wants maximum sour every time. This digital guide teaches you simple mixing techniques to dial the sourness up or down based on your preference and tolerance. Includes water ratios, ice techniques, flavor pairing suggestions, and tips for building sour tolerance over time.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">📖 VALUE: ~$5.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward 9 - Challenge Brochure -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">🎬</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">Free PuckerFuel Challenge Brochure</h3>
+                            <p class="text-gray-300 mb-3">Your official guide to taking the #PuckerChallenge that's going viral on TikTok. Includes safety guidelines, filming tips for social media, challenge variations (beginner to extreme), and how to tag us for a chance to be featured on our official channels. Plus bonus: strategies for not making "the face" on camera.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">🎬 VALUE: ~$5.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward 10 - Delete Guarantee -->
+                <div class="bg-pf-gray border border-pf-orange/30 rounded-xl p-6 hover:border-pf-orange transition-all">
+                    <div class="flex items-start gap-4">
+                        <span class="text-pf-orange text-4xl w-12 text-center shrink-0">🔒</span>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl text-white mb-2">Delete Information Guarantee</h3>
+                            <p class="text-gray-300 mb-3">You have complete control over your data. At any time, you can request to have your information permanently deleted from our systems - no questions asked, no hoops to jump through. Simply email us and we'll remove you within 24 hours. Your privacy is guaranteed and we never sell your information to third parties.</p>
+                            <div class="bg-black/50 p-3 rounded-lg">
+                                <p class="text-sm text-pf-orange font-bold">🔒 VALUE: Privacy Guarantee (Priceless)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+ 
+
+    <!-- HOW TO STAY UPDATED WITHOUT SIGNING UP -->
+    <section id="no-email-signup" class="py-20 px-4 bg-pf-black">
+        <div class="container mx-auto max-w-3xl">
+            <h2 class="font-display font-black text-3xl md:text-4xl mb-4 text-center">DON'T WANT TO SHARE YOUR EMAIL?</h2>
+            <p class="text-center text-gray-400 mb-12">No problem! Here's how you can still follow along with the PuckerFuel journey:</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Website Updates -->
+                <div class="bg-pf-gray border border-white/10 rounded-xl p-6 hover:border-pf-orange/50 transition-all">
+                    <div class="text-4xl mb-4">🌐</div>
+                    <h3 class="font-bold text-xl mb-2">Check This Website</h3>
+                    <p class="text-gray-300 text-sm mb-4">Bookmark this page and visit regularly. We update the countdown and post major announcements right here on the landing page.</p>
+                    <button onclick="window.scrollTo(0,0)" class="text-pf-orange font-semibold text-sm hover:underline">↑ Back to Top</button>
+                </div>
+
+                <!-- Instagram -->
+                <div class="bg-pf-gray border border-white/10 rounded-xl p-6 hover:border-pf-orange/50 transition-all">
+                    <div class="text-4xl mb-4">📸</div>
+                    <h3 class="font-bold text-xl mb-2">Follow on Instagram</h3>
+                    <p class="text-gray-300 text-sm mb-4">@PuckerFuel - Daily stories, behind-the-scenes content, and launch announcements. We're most active here!</p>
+                    <a href="https://instagram.com/puckerfuel" target="_blank" class="text-pf-orange font-semibold text-sm hover:underline">Follow Us →</a>
+                </div>
+
+                <!-- TikTok -->
+                <div class="bg-pf-gray border border-white/10 rounded-xl p-6 hover:border-pf-orange/50 transition-all">
+                    <div class="text-4xl mb-4">🎵</div>
+                    <h3 class="font-bold text-xl mb-2">TikTok Updates</h3>
+                    <p class="text-gray-300 text-sm mb-4">@PuckerFuel - Watch the #PuckerChallenge videos and get notified about launch via our pinned video.</p>
+                    <a href="https://tiktok.com/@puckerfuel" target="_blank" class="text-pf-orange font-semibold text-sm hover:underline">Follow Us →</a>
+                </div>
+
+                <!-- YouTube -->
+                <div class="bg-pf-gray border border-white/10 rounded-xl p-6 hover:border-pf-orange/50 transition-all">
+                    <div class="text-4xl mb-4">▶️</div>
+                    <h3 class="font-bold text-xl mb-2">YouTube Channel</h3>
+                    <p class="text-gray-300 text-sm mb-4">Long-form content, product breakdowns, and the official launch announcement video will be posted here first.</p>
+                    <a href="https://youtube.com/@puckerfuel" target="_blank" class="text-pf-orange font-semibold text-sm hover:underline">Subscribe →</a>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center p-6 bg-pf-orange/10 border border-pf-orange/30 rounded-xl">
+                <p class="text-gray-300 text-sm mb-3">⚠️ <strong>Note:</strong> Social followers won't receive the exclusive waitlist rewards or 20% discount code.</p>
+                <p class="text-xs text-gray-500">Only email waitlist members get the full rewards package worth $69.90+</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-8 border-t border-white/5">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="font-display font-black text-3xl mb-4">
+                PUCKER<span class="text-pf-orange">FUEL</span>
+            </h3>
+            <nav class="flex justify-center gap-6 mb-4 text-sm font-medium text-gray-400">
+                <a href="#" class="hover:text-white">Privacy Policy</a>
+                <a href="#" class="hover:text-white">Terms of Service</a>
+                <a href="#" class="hover:text-white">Contact</a>
+            </nav>
+            <p class="text-gray-600 text-xs">
+                &copy; <span id="current-year">2025</span> PuckerFuel S.à r.l.-S. All rights reserved.<br>
+                2 rue Jean Engling, L-1466 Dommeldange, Luxembourg.
+            </p>
+        </div>
+    </footer>
+    
+    <!-- FIRST TIME VISITOR TOUR OVERLAY -->
+    <div id="tour-overlay">
+        <div id="tour-tooltip" class="tour-tooltip">
+            <h3 class="font-display font-bold text-xl mb-2" id="tour-title"></h3>
+            <p class="mb-4 text-sm" id="tour-text"></p>
+            <div class="flex gap-3">
+                <button onclick="skipTour()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-semibold transition-colors">Skip Tour</button>
+                <button onclick="nextTourStep()" class="px-6 py-2 bg-white hover:bg-gray-200 text-black rounded-lg text-sm font-bold transition-colors flex-1">Next →</button>
             </div>
         </div>
     </div>
 
-    <!-- 5. Import/Export Modal -->
-    <div id="import-export-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('import-export-modal')">&times;</span>
-            <h2>Import / Export</h2>
-
-            <button id="export-btn" class="modal-btn" onclick="exportNotes()">Export Notes</button>
-            <p style="font-size: 0.9rem; margin: 10px 0;">Copy the data below:</p>
-            <textarea id="export-data" readonly placeholder="Exported JSON will appear here..."></textarea>
-
-            <p style="margin-top: 20px; font-size: 0.9rem;">Paste JSON to import:</p>
-            <textarea id="import-data" placeholder="Paste your note JSON here..."></textarea>
-            <button id="import-btn" class="modal-btn" onclick="importNotes()">Import Notes</button>
-            <p id="import-status" style="margin-top: 10px; text-align: center;"></p>
-        </div>
-    </div>
-
+    <!-- SCRIPTS -->
+    <!-- START - We recommend to place the below code in footer or bottom of your website html  -->
 <script>
-/*
-  Local-only Notepad
-  - Stores notes in localStorage under key NOTES_STORAGE_KEY
-  - Single-user mode (no profile selection)
-  - Swipe gestures (touch/mouse): both left/right cycle randomly to another note (no deletion)
-  - Discard button moves a note to Trash
-  - Like button toggles like and marks note not-new
-  - Import/Export works with JSON arrays
-*/
+  window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
+  window.LOCALE = 'en';
+  window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The information provided is invalid.";
 
-const NOTES_STORAGE_KEY = 'notepad_notes_v1';
+  window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank. ";
 
-/* Application state */
-let notes = []; // includes trashed notes flagged with trashed: true
-let currentNoteIndex = 0; // index into activeNotes (not including trashed)
-let activeNotes = []; // derived
-const stackContainer = document.getElementById('flashcard-stack');
+  window.GENERIC_INVALID_MESSAGE = "The information provided is invalid.";
 
-/* Utility */
-function uid() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
 
-function saveToStorage() {
-    try {
-        localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
-    } catch (e) {
-        console.error('Failed to save notes to localStorage', e);
+
+
+  window.translation = {
+    common: {
+      selectedList: '{quantity} list selected',
+      selectedLists: '{quantity} lists selected',
+      selectedOption: '{quantity} selected',
+      selectedOptions: '{quantity} selected',
     }
-}
+  };
 
-function loadFromStorage() {
-    try {
-        const raw = localStorage.getItem(NOTES_STORAGE_KEY);
-        notes = raw ? JSON.parse(raw) : [];
-    } catch (e) {
-        console.error('Failed to load notes from storage', e);
-        notes = [];
-    }
-    normalizeNotes();
-}
-
-function normalizeNotes() {
-    // Ensure each note has required fields
-    notes = notes.map(n => ({
-        id: n.id || uid(),
-        title: n.title || '',
-        description: n.description || '',
-        liked: !!n.liked,
-        likes: typeof n.likes === 'number' ? n.likes : 0,
-        isNew: n.isNew !== false, // default true unless explicitly false
-        createdAt: n.createdAt || new Date().toISOString(),
-        trashed: !!n.trashed
-    }));
-    saveToStorage();
-}
-
-function getActiveNotes() {
-    return notes.filter(n => !n.trashed);
-}
-
-function renderNotes() {
-    activeNotes = getActiveNotes();
-    stackContainer.innerHTML = '';
-
-    const placeholder = document.createElement('div');
-    placeholder.id = 'no-notes-placeholder';
-    placeholder.className = 'flashcard';
-    placeholder.style.alignItems = 'center';
-    placeholder.style.justifyContent = 'center';
-    placeholder.style.textAlign = 'center';
-    placeholder.style.opacity = activeNotes.length ? '0' : '1';
-    placeholder.style.transform = 'translate(0,0)';
-    placeholder.innerHTML = `
-        <h2 style="margin-bottom: 0;">All Caught Up!</h2>
-        <p style="margin-top: 10px;">No active notes. Use ➕ to add a new one.</p>
-    `;
-    stackContainer.appendChild(placeholder);
-
-    if (activeNotes.length === 0) {
-        document.getElementById('swipe-btns').style.display = 'none';
-        return;
-    } else {
-        document.getElementById('swipe-btns').style.display = 'flex';
-    }
-
-    // Render stack: top card should be last appended, so we append from bottom to top
-    activeNotes.forEach((note, index) => {
-        const card = document.createElement('div');
-        card.className = 'flashcard';
-        // keep color-left border classes in case styling expects them; single-user default to green style
-        card.classList.add('card-green');
-        card.id = `note-${note.id}`;
-        card.dataset.noteId = note.id;
-        card.dataset.index = index;
-
-        // Position / stacking
-        const zIndex = index + 1; // lower index = bottom
-        const depth = Math.min((activeNotes.length - 1 - index) * 5, 20); // top card has depth 0
-        const scale = 1 - Math.min((activeNotes.length - 1 - index) * 0.03, 0.2);
-
-        card.style.zIndex = zIndex;
-        card.style.transform = `translateY(${depth}px) scale(${scale})`;
-
-        card.innerHTML = `
-            <div class="flashcard-header">
-                <span class="flashcard-title">${escapeHtml(note.title)}</span>
-                <span class="user-tag user-tag-green">${note.isNew ? 'NEW' : ''}</span>
-            </div>
-            <div class="flashcard-description">${escapeHtml(note.description)}</div>
-            <div class="flashcard-footer">
-                <div>
-                    ${note.isNew ? '<span class="new-tag">NEW</span>' : ''}
-                </div>
-                <span class="like-indicator" data-liked="${note.liked}" onclick="toggleLike('${note.id}', event)">${note.liked ? '❤️' : '🤍'} ${note.likes || 0}</span>
-            </div>
-        `;
-        stackContainer.appendChild(card);
-    });
-
-    // The topmost card will be the last .flashcard appended (highest z-index)
-    setupSwipeGestures();
-    // Ensure currentNoteIndex stays in range; set to 0 (top) if out of range
-    if (currentNoteIndex >= activeNotes.length) currentNoteIndex = 0;
-}
-
-/* Basic HTML-escape to avoid injection into DOM from imported JSON */
-function escapeHtml(text) {
-    if (!text && text !== 0) return '';
-    return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-}
-
-/* Add note */
-function openAddNoteModal() {
-    document.getElementById('note-title').value = '';
-    document.getElementById('note-description').value = '';
-    document.getElementById('add-note-modal').style.display = 'flex';
-}
-
-function saveNewNote() {
-    const title = document.getElementById('note-title').value.trim();
-    const description = document.getElementById('note-description').value.trim();
-
-    if (!title || !description) {
-        console.warn('Title and Description cannot be empty.');
-        return;
-    }
-
-    const newNote = {
-        id: uid(),
-        title,
-        description,
-        liked: false,
-        likes: 0,
-        isNew: true,
-        createdAt: new Date().toISOString(),
-        trashed: false
-    };
-    notes.push(newNote);
-    saveToStorage();
-    closeModal('add-note-modal');
-    // show newly added on top by re-rendering and placing it as last element (top)
-    renderNotes();
-}
-
-/* Like toggle */
-function toggleLike(noteId, event) {
-    event.stopPropagation();
-    const n = notes.find(x => x.id === noteId);
-    if (!n) return;
-    n.liked = !n.liked;
-    n.likes = n.liked ? (n.likes || 0) + 1 : Math.max(0, (n.likes || 1) - 1);
-    n.isNew = false;
-    saveToStorage();
-    renderNotes();
-}
-
-/* Discard current (via button) -> move to trash */
-function discardCurrent() {
-    activeNotes = getActiveNotes();
-    if (activeNotes.length === 0) return;
-    const topNote = activeNotes[activeNotes.length - 1];
-    if (!topNote) return;
-    const note = notes.find(n => n.id === topNote.id);
-    if (!note) return;
-    note.trashed = true;
-    note.trashedAt = new Date().toISOString();
-    saveToStorage();
-    // After discarding, show next random available note (if any)
-    // We'll shuffle active notes so top changes
-    shuffleActiveNotes();
-    renderNotes();
-}
-
-/* Like current (via button) -> toggle like on topmost note */
-function likeCurrent() {
-    activeNotes = getActiveNotes();
-    if (activeNotes.length === 0) return;
-    const topNote = activeNotes[activeNotes.length - 1];
-    if (!topNote) return;
-    const note = notes.find(n => n.id === topNote.id);
-    if (!note) return;
-    note.liked = !note.liked;
-    note.likes = note.liked ? (note.likes || 0) + 1 : Math.max(0, (note.likes || 1) - 1);
-    note.isNew = false;
-    saveToStorage();
-    renderNotes();
-}
-
-/* Shuffle active notes array in-memory to randomize cycle - does not affect trashed notes */
-function shuffleActiveNotes() {
-    const active = getActiveNotes();
-    // Fisher-Yates
-    for (let i = active.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [active[i], active[j]] = [active[j], active[i]];
-    }
-    // Reconstruct notes array: keep trashed ones as before, replace active ones with shuffled order while preserving identifers/content
-    const trashed = notes.filter(n => n.trashed);
-    notes = [...trashed, ...active];
-    saveToStorage();
-}
-
-/* Swipe gestures: both left and right cycle randomly (do NOT delete on gesture) */
-function setupSwipeGestures() {
-    // Remove previous gesture listeners by cloning top card node if needed
-    const cards = Array.from(document.querySelectorAll('.flashcard-stack .flashcard'));
-    if (cards.length === 0) return;
-
-    // Topmost card: last .flashcard in container (excluding placeholder)
-    // We'll pick the element with highest z-index or last in DOM
-    const topCard = cards.filter(c => c.id && c.id.startsWith('note-')).slice(-1)[0];
-    if (!topCard) return;
-
-    // Remove previous listeners by replacing node (simple cleanup)
-    const newCard = topCard.cloneNode(true);
-    topCard.parentNode.replaceChild(newCard, topCard);
-
-    let startX = 0;
-    let startY = 0;
-    let isDragging = false;
-    const threshold = 80;
-    let currentX = 0;
-
-    newCard.addEventListener('touchstart', startDrag, {passive: true});
-    newCard.addEventListener('mousedown', startDrag);
-
-    function startDrag(e) {
-        if (e.type === 'mousedown') {
-            startX = e.clientX;
-            startY = e.clientY;
-            document.addEventListener('mousemove', onDrag);
-            document.addEventListener('mouseup', endDrag);
-        } else {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            document.addEventListener('touchmove', onDrag, {passive: false});
-            document.addEventListener('touchend', endDrag);
-        }
-        isDragging = true;
-        newCard.style.transition = 'none';
-    }
-
-    function onDrag(e) {
-        if (!isDragging) return;
-        if (e.type === 'mousemove') {
-            currentX = e.clientX;
-        } else {
-            // touchmove
-            currentX = e.touches[0].clientX;
-            e.preventDefault(); // avoid page scroll while dragging
-        }
-        const deltaX = currentX - startX;
-        const rotation = deltaX / 20;
-        newCard.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
-    }
-
-    function endDrag(e) {
-        if (!isDragging) return;
-        isDragging = false;
-
-        // get final X from mouseup/touchend
-        let endClientX = startX;
-        if (e.type === 'mouseup') {
-            endClientX = (e.clientX !== undefined) ? e.clientX : startX;
-            document.removeEventListener('mousemove', onDrag);
-            document.removeEventListener('mouseup', endDrag);
-        } else {
-            endClientX = (e.changedTouches && e.changedTouches[0] && e.changedTouches[0].clientX) ? e.changedTouches[0].clientX : startX;
-            document.removeEventListener('touchmove', onDrag);
-            document.removeEventListener('touchend', endDrag);
-        }
-
-        const deltaX = endClientX - startX;
-
-        if (Math.abs(deltaX) > threshold) {
-            // Gesture swipe detected — both directions should cycle randomly
-            const toRight = deltaX > 0;
-            const translateX = toRight ? '400%' : '-400%';
-            const rotate = toRight ? '10deg' : '-10deg';
-            newCard.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
-            newCard.style.transform = `${translateX} rotate(${rotate})`;
-            newCard.style.opacity = '0';
-            // mark as not new
-            const noteId = newCard.dataset.noteId;
-            const n = notes.find(x => x.id === noteId);
-            if (n) {
-                n.isNew = false;
-                saveToStorage();
-            }
-            // after animation, reshuffle active notes and re-render
-            setTimeout(() => {
-                shuffleActiveNotes();
-                renderNotes();
-            }, 300);
-        } else {
-            // Snap back
-            newCard.style.transition = 'transform 0.25s ease-out';
-            newCard.style.transform = 'translate(0,0) rotate(0deg)';
-        }
-    }
-}
-
-/* Trash modal rendering and actions */
-function openTrashModal() {
-    renderTrashList();
-    document.getElementById('trash-modal').style.display = 'flex';
-}
-
-function renderTrashList() {
-    const list = document.getElementById('trash-list');
-    const trashed = notes.filter(n => n.trashed).sort((a,b) => (b.trashedAt||'').localeCompare(a.trashedAt||''));
-    list.innerHTML = '';
-    if (trashed.length === 0) {
-        list.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">Trash is empty.</p>';
-        return;
-    }
-    trashed.forEach(note => {
-        const item = document.createElement('div');
-        item.className = 'trash-item';
-        item.innerHTML = `
-            <div style="display:flex;flex-direction:column;">
-                <span class="trash-item-title">${escapeHtml(note.title)}</span>
-                <small style="color:var(--secondary-color)">${note.trashedAt ? new Date(note.trashedAt).toLocaleString() : ''}</small>
-            </div>
-            <div style="display:flex; gap:8px; align-items:center;">
-                <button class="recover-btn" title="Recover" onclick="recoverNote('${note.id}')">🔄</button>
-                <button class="recover-btn" title="Delete Permanently" onclick="deletePermanently('${note.id}')" style="color:var(--danger-color)">🗑️</button>
-            </div>
-        `;
-        list.appendChild(item);
-    });
-}
-
-function recoverNote(id) {
-    const note = notes.find(n => n.id === id);
-    if (!note) return;
-    note.trashed = false;
-    note.trashedAt = undefined;
-    note.isNew = true;
-    saveToStorage();
-    renderTrashList();
-    renderNotes();
-}
-
-function deletePermanently(id) {
-    notes = notes.filter(n => n.id !== id);
-    saveToStorage();
-    renderTrashList();
-    renderNotes();
-}
-
-/* Import / Export */
-function openImportExportModal() {
-    document.getElementById('import-export-modal').style.display = 'flex';
-    document.getElementById('export-data').value = '';
-    document.getElementById('import-data').value = '';
-    document.getElementById('import-status').innerText = '';
-}
-
-function exportNotes() {
-    // Export ALL notes (including trashed) to JSON
-    const exportArray = notes.map(n => ({
-        id: n.id,
-        title: n.title,
-        description: n.description,
-        liked: n.liked,
-        likes: n.likes,
-        isNew: n.isNew,
-        createdAt: n.createdAt,
-        trashed: n.trashed,
-        trashedAt: n.trashedAt || null
-    }));
-    const exportString = JSON.stringify(exportArray, null, 2);
-    document.getElementById('export-data').value = exportString;
-    document.getElementById('import-status').style.color = 'var(--blue-user)';
-    document.getElementById('import-status').innerText = 'Data prepared. Copy the JSON from the text area above.';
-}
-
-function importNotes() {
-    const jsonInput = document.getElementById('import-data').value.trim();
-    const status = document.getElementById('import-status');
-    status.innerText = '';
-
-    if (!jsonInput) {
-        status.innerText = 'Paste JSON data to import.';
-        status.style.color = 'var(--danger-color)';
-        return;
-    }
-
-    try {
-        const parsed = JSON.parse(jsonInput);
-        if (!Array.isArray(parsed)) {
-            throw new Error("Data must be a JSON array of notes.");
-        }
-
-        let importedCount = 0;
-        for (const item of parsed) {
-            if (item.title && item.description) {
-                const newNote = {
-                    id: item.id || uid(),
-                    title: item.title,
-                    description: item.description,
-                    liked: !!item.liked,
-                    likes: typeof item.likes === 'number' ? item.likes : 0,
-                    isNew: item.isNew !== false,
-                    createdAt: item.createdAt || new Date().toISOString(),
-                    trashed: !!item.trashed,
-                    trashedAt: item.trashedAt || null
-                };
-                notes.push(newNote);
-                importedCount++;
-            }
-        }
-        normalizeNotes();
-        status.style.color = 'var(--green-user)';
-        status.innerText = `Imported ${importedCount} notes!`;
-        document.getElementById('import-data').value = '';
-        renderNotes();
-    } catch (err) {
-        status.style.color = 'var(--danger-color)';
-        status.innerText = 'Import failed. Check JSON format.';
-        console.error('Import error', err);
-    }
-}
-
-/* Modal helper */
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-}
-
-/* Initialization */
-function init() {
-    loadFromStorage();
-    renderNotes();
-    // ensure that tapping outside modals closes them
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    });
-
-    // Prevent page scrolling on mobile to keep app feel
-    document.addEventListener('touchmove', function(e) {
-        // if a modal is open or interacting with a scrollable element, allow; otherwise prevent
-        const modalOpen = Array.from(document.querySelectorAll('.modal')).some(m => m.style.display === 'flex');
-        if (!modalOpen) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-}
-
-// Load and start
-window.addEventListener('load', init);
-
-// Expose a couple of helpers to window scope for inline onclick handlers in markup
-window.openAddNoteModal = openAddNoteModal;
-window.openImportExportModal = openImportExportModal;
-window.openTrashModal = openTrashModal;
-window.closeModal = closeModal;
-window.saveNewNote = saveNewNote;
-window.discardCurrent = discardCurrent;
-window.likeCurrent = likeCurrent;
-window.toggleLike = toggleLike;
-window.recoverNote = recoverNote;
-window.deletePermanently = deletePermanently;
-window.exportNotes = exportNotes;
-window.importNotes = importNotes;
-
-/* Utility: if you want to debug quickly from console */
-window._NOTEPAD = {
-    notes,
-    saveToStorage,
-    loadFromStorage
-};
+  var AUTOHIDE = Boolean(1);
 </script>
+
+<script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
+<!-- END - We recommend to place the above code in footer or bottom of your website html  -->
+
+    <!-- Custom Page Scripts -->
+    <script>
+        // Dynamically set the current year in the footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // SMOOTH SCROLL NAVIGATION - Helper functions for CTA buttons
+        function scrollToSignup() {
+            document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToDetails() {
+            document.getElementById('rewards-details').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToNoEmail() {
+            document.getElementById('no-email-signup').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // COUNTDOWN TIMER - Updates every second until January 1, 2026
+        const countdownDate = new Date("January 1, 2026 00:00:00").getTime();
+
+        const countdownInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+
+            // Calculate time units
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Update countdown display with zero-padding
+            document.getElementById("days").innerHTML = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerHTML = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerHTML = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerHTML = seconds.toString().padStart(2, '0');
+
+            // Handle countdown expiration
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("countdown").innerHTML = '<span class="text-2xl font-display font-black text-red-500">WAITLIST CLOSED!</span>';
+                
+                // Update signup section to show closed message
+                const signupSection = document.getElementById("signup");
+                if(signupSection) {
+                    signupSection.querySelector('h2').innerHTML = 'WAITLIST IS NOW CLOSED';
+                    signupSection.querySelector('.sib-form').innerHTML = '<p class="text-center text-red-400 font-bold text-xl">Sorry, the waitlist and all associated rewards are no longer available.</p>';
+                    const grayText = signupSection.querySelector('p.text-gray-300');
+                    if(grayText) grayText.remove();
+                }
+            }
+        }, 1000);
+
+        // Helper function to generate an info icon SVG (moved from HTML)
+        function getInfoIcon() {
+            return `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            `;
+        }
+
+        // FIRST TIME VISITOR TOUR SYSTEM
+        // Tour steps configuration - guides new visitors through signup process
+        const tourSteps = [
+            {
+                target: 'countdown-hero',
+                title: '⏰ Time is Running Out!',
+                text: 'The waitlist closes on January 1st. After that, no more entries and all rewards expire forever.',
+                position: 'bottom'
+            },
+            {
+                target: 'sib-form', // Target the actual form container
+                title: '📝 Claim Your FREE Rewards!',
+                text: 'Enter your email here to instantly unlock all 10 exclusive bonuses worth over $95, including a 20% discount and a spot on the Founders Wall.',
+                position: 'top'
+            },
+            {
+                target: 'rewards-list-summary',
+                title: '🎁 See What You Get',
+                text: 'Here\'s the complete breakdown of every reward in the package. It\'s all free for joining the waitlist!',
+                position: 'top'
+            },
+            {
+                target: 'no-email-button',
+                title: '🚫 No Email? No Problem!',
+                text: 'If you prefer not to share your email, click here to find other ways to stay updated. Note: rewards are only for email subscribers!',
+                position: 'top'
+            }
+        ];
+
+        let currentTourStep = 0;
+
+        // Check if user has seen tour before (using localStorage)
+        function checkFirstVisit() {
+            if (!localStorage.getItem('puckerfuel_tour_completed')) {
+                // Start tour immediately for first-time visitors
+                startTour();
+            }
+        }
+
+        // Initialize tour system
+        function startTour() {
+            currentTourStep = 0;
+            document.getElementById('tour-overlay').classList.add('active');
+            showTourStep(currentTourStep);
+        }
+
+        // Display specific tour step with positioning
+        function showTourStep(stepIndex) {
+            if (stepIndex >= tourSteps.length) {
+                completeTour();
+                return;
+            }
+
+            const step = tourSteps[stepIndex];
+            const target = document.getElementById(step.target);
+            const tooltip = document.getElementById('tour-tooltip');
+
+            if (!target) {
+                nextTourStep();
+                return;
+            }
+
+            // Remove previous highlights
+            document.querySelectorAll('.tour-highlight').forEach(el => {
+                if (el !== target) el.classList.remove('tour-highlight');
+            });
+
+            // Highlight target element
+            target.classList.add('tour-highlight');
+
+            // Update tooltip content
+            document.getElementById('tour-title').textContent = step.title;
+            document.getElementById('tour-text').textContent = step.text;
+
+            // Position tooltip relative to target
+            const rect = target.getBoundingClientRect();
+            const tooltipWidth = tooltip.offsetWidth;
+            const tooltipHeight = tooltip.offsetHeight;
+
+            let top, left;
+
+            if (step.position === 'bottom') {
+                top = rect.bottom + window.scrollY + 20; // 20px below target
+                left = rect.left + window.scrollX + (rect.width / 2) - (tooltipWidth / 2); // Centered horizontally
+            } else { // top
+                top = rect.top + window.scrollY - tooltipHeight - 20; // 20px above target
+                left = rect.left + window.scrollX + (rect.width / 2) - (tooltipWidth / 2); // Centered horizontally
+            }
+
+            // Keep tooltip on screen
+            if (left < 20) left = 20;
+            if (left + tooltipWidth > window.innerWidth - 20) {
+                left = window.innerWidth - tooltipWidth - 20;
+            }
+
+            tooltip.style.top = top + 'px';
+            tooltip.style.left = left + 'px';
+            
+            // Scroll to element smoothly
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Advance to next tour step
+        function nextTourStep() {
+            currentTourStep++;
+            showTourStep(currentTourStep);
+        }
+
+        // Skip entire tour
+        function skipTour() {
+            completeTour();
+        }
+
+        // Complete tour and save to localStorage
+        function completeTour() {
+            document.getElementById('tour-overlay').classList.remove('active');
+            document.querySelectorAll('.tour-highlight').forEach(el => {
+                el.classList.remove('tour-highlight');
+            });
+            localStorage.setItem('puckerfuel_tour_completed', 'true');
+        }
+
+        // Start tour check when page loads
+        window.addEventListener('load', checkFirstVisit);
+    </script>
 </body>
 </html>
