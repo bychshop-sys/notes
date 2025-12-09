@@ -169,11 +169,11 @@
         /* Tour tooltip styling */
         .tour-tooltip {
             position: absolute;
-            background: linear-gradient(135deg, #FF5F00, #ff8c3a);
-            color: white;
+            background: linear-gradient(135deg, #ff8c3a, #FF5F00); /* Adjusted gradient */
+            color: black; /* Improved text contrast */
             padding: 1.5rem;
             border-radius: 1rem;
-            max-width: 350px;
+            max-width: calc(100vw - 40px); /* Responsive width for mobile */
             box-shadow: 0 10px 40px rgba(255,95,0,0.5);
             z-index: 10000;
             pointer-events: auto; /* Tooltip itself should be interactive */
@@ -203,49 +203,6 @@
             transform: translateX(-50%);
             border-width: 0 10px 10px 10px;
             border-color: transparent transparent #FF5F00 transparent;
-        }
-        
-        /* Highlight effect for tour target elements */
-        .tour-highlight {
-            position: relative;
-            z-index: 9998; /* Must be higher than the overlay */
-            box-shadow: 0 0 0 4px #FF5F00, 0 0 30px rgba(255,95,0,0.8);
-            border-radius: 0.5rem;
-        }
-        /* Tour overlay for first-time visitor guide */
-        #tour-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%; /* This is a duplicate, can be removed but leaving for safety */
-            background: transparent;
-            z-index: 9997;
-            display: none;
-        }
-        #tour-overlay.active {
-            display: block;
-        }
-        
-        /* Tour tooltip styling */
-        .tour-tooltip {
-            position: absolute;
-            background: linear-gradient(135deg, #FF5F00, #ff8c3a);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            max-width: 350px;
-            box-shadow: 0 10px 40px rgba(255,95,0,0.5);
-            z-index: 10000;
-        }
-        
-        /* Arrow pointer for tour tooltip */
-        .tour-tooltip::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-style: solid;
         }
         
         /* Highlight effect for tour target elements */
