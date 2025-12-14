@@ -1,1293 +1,460 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PuckerFuel - The World's Most Sour Pre-Workout</title>
-    <meta name="description" content="Join the waitlist for PuckerFuel. 350mg caffeine, extreme sour flavor. Win a free tub now.">
-    <link rel="icon" href="https://i.ibb.co/VY5Ykhgz/New-Project-4.png" type="image/png">
-    
-    <!-- Preload critical fonts for faster rendering -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    
+    <title data-key="title">SMILE Coffee Roasters</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a cozy feel */
+        .cozy-text-shadow {
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .social-icon:hover svg {
+            fill: #fcf7f3;
+            transform: scale(1.1);
+        }
+        .social-icon {
+            transition: all 0.2s ease;
+        }
+    </style>
     <script>
-        // Tailwind configuration - customizes brand colors and animations
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'pf-orange': '#FF5F00',
-                        'pf-black': '#050505',
-                        'pf-gray': '#1F1F1F',
+                        'coffee-dark': '#4b3832', /* Dark Brown */
+                        'coffee-medium': '#6f4e37', /* Medium Brown/Coffee */
+                        'coffee-light': '#b59786', /* Muted Beige/Light Brown */
+                        'cream-cozy': '#fcf7f3', /* Off-White/Cream */
+                        'smile-yellow': '#F9C74F', /* Accent for SMILE */
                     },
                     fontFamily: {
-                        'sans': ['Inter', 'sans-serif'],
-                        'sans': ['Open Sans', 'sans-serif'],
-                        'display': ['Montserrat', 'sans-serif'],
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 4s ease-in-out infinite',
-                        'jiggle': 'jiggle 0.5s ease-in-out infinite alternate',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        jiggle: {
-                            '0%': { transform: 'rotate(-1deg)' },
-                            '100%': { transform: 'rotate(1deg)' },
-                        }
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Georgia', 'serif'],
                     }
                 }
             }
         }
+
+        // --- CORE DATA & TRANSLATIONS ---
+
+        const coffees = [
+            {
+                key: "guatemala_ceiba",
+                name: "Guatemala Ceiba",
+                origin: "Huehuetenango, Guatemala",
+                notes: "Dark chocolate, dried cherry, sweet toffee",
+                process: "Washed",
+                description: "Born at 1,500 MASL, named after Guatemala’s national Ceiba tree, this coffee represents dedication and lifts your mood from the first sip. Bright, smooth, and warmly comforting.",
+            },
+            {
+                key: "colombia_palmera",
+                name: "Colombia Palmera",
+                origin: "Huila, Colombia",
+                notes: "Nougat, citrus, caramel, brown sugar",
+                process: "Washed",
+                description: "Grown at 1,500 MASL, shaped by the Andes and rich volcanic soil, Palmera is a smooth and vibrant cup that delivers a comforting and lively experience.",
+            },
+            {
+                key: "brazil_pau",
+                name: "Brazil Pau Natural",
+                origin: "Cerrado Mineiro, Brazil",
+                notes: "Milk chocolate, peanut brittle, brown sugar",
+                process: "Natural",
+                description: "A smooth, sunny classic from 1,100 MASL with Certified Designation of Origin. Silky, balanced, and delightfully sweet, perfect for any brew style.",
+            },
+            {
+                key: "ethiopia_danche",
+                name: "Ethiopia Danche Natural",
+                origin: "Yirgacheffe – Gedeo Zone, Ethiopia",
+                notes: "Berry compote, floral, vanilla",
+                process: "Natural",
+                description: "A vibrant gem from 2,300 MASL. This complex and expressive profile offers green grape, juicy strawberry, red apple, and a big SMILE.",
+            },
+        ];
+        
+        // Placeholders for coffee images
+        const coffeePlaceholders = {
+            "guatemala_ceiba": "https://i.ibb.co/LXNbKW8K/image-2025-12-14-161757581.png",
+            "colombia_palmera": "https://i.ibb.co/HTvsq48V/image-2025-12-14-161715533.png",
+            "brazil_pau": "https://i.ibb.co/LD9SP4w1/image-2025-12-14-161648402.png",
+            "ethiopia_danche": "https://i.ibb.co/xS2MwfjT/image-2025-12-14-161351866.png",
+        };
+
+
+        // Simplified translation structure using data-key attributes
+        const translations = {
+            en: {
+                title: "SMILE Coffee Roasters",
+                brand_name: "SMILE Coffee Roasters",
+                nav_roasts: "Roasts",
+                nav_story: "Our Story",
+                nav_testimonials: "Testimonials", 
+                nav_contact: "Contact", // Simplified for navigation
+                shop_now: "Shop Now",
+                // Updated Hero Section Text
+                hero_tagline: "SMILE Coffee Roasters", 
+                hero_subtext: "100% Electric Roasts, Big Comfort. Hand-selected, ethically sourced, and roasted emission-free in Luxembourg for your perfect cup.", 
+                explore_roasts: "Explore Our Roasts",
+                story_title: "Our Emission-Free Adventure",
+                story_subheader: "The Future of Roasting is Here",
+                story_content: "She's finally here! Our Bellwether machine has made its debut, marking the first 100% electric and emission-free roaster in Luxembourg. This new adventure allows us to bring you freshly roasted coffee, ethically sourced from farms around the world. Our philosophy centers on sustainability, precision, and that signature SMILE in every single bean. Discover the video to live this moment with us and listen to the testimonies of other roasters already conquered by Bellwether Coffee!",
+                roasts_title: "Our Signature Comfort Roasts",
+                testimonials_title: "What Others Are Saying About Us", 
+                testimonial_1: "The Ethiopia Danche is an explosion of flavor! I've never tasted a coffee so vibrant and complex. Truly a perfect start to my day, every day.",
+                testimonial_2: "Knowing the coffee is roasted emission-free is a game-changer. Great coffee and great values. SMILE is doing it right in Luxembourg.",
+                testimonial_3: "I ordered the Brazil Pau, and it is the definition of a comforting, everyday cup. Smooth, chocolatey, and always delivers a big SMILE!",
+                testimonial_4: "The delivery was so fast, and the coffee arrived perfectly fresh. The Guatemala Ceiba is my new favorite morning ritual.",
+                testimonial_5: "I love the concept of an emission-free roaster. It makes the coffee taste even better! The team is super friendly and passionate.",
+                view_details: "View Details",
+                cta_title: "Visit us at",
+                cta_location: "Find Our Cafe & Check Out the Roaster",
+                location_text: "Visit us at our cozy location in Esch-sur-Alzette, or order online to get your SMILE delivered right to your door.",
+                location_address: "4 Pl. de l'Hotel de Ville, 4138 Esch-sur-Alzette, Luxembourg",
+                process: "Process",
+                copyright: "© 2025 SMILE Coffee Roasters. Handcrafted with comfort in Luxembourg.",
+                privacy: "Privacy Policy",
+                shipping: "Shipping Info"
+            },
+            fr: {
+                title: "SMILE Coffee Roasters",
+                brand_name: "SMILE Coffee Roasters",
+                nav_roasts: "Torréfactions",
+                nav_story: "Notre Histoire",
+                nav_testimonials: "Témoignages", 
+                nav_contact: "Contact",
+                shop_now: "Acheter",
+                hero_tagline: "SMILE Coffee Roasters", 
+                hero_subtext: "Torréfaction 100% Électrique, Grand Confort. Sélectionnés, éthiques et torréfiés sans émissions au Luxembourg pour votre tasse parfaite.",
+                explore_roasts: "Découvrir Nos Cafés",
+                story_title: "Notre Aventure Zéro Émission",
+                story_subheader: "L'Avenir de la Torréfaction est Là",
+                story_content: "Elle est enfin là ! Notre machine Bellwether a fait ses débuts, marquant la première torréfactrice 100% électrique et sans émission au Luxembourg. Cette nouvelle aventure nous permet de vous apporter du café fraîchement torréfié, provenant de fermes éthiques du monde entier. Notre philosophie est centrée sur la durabilité, la précision, et ce SMILE signature dans chaque grain. Découvrez la vidéo pour vivre ce moment avec nous et écouter les témoignages d'autres torréfacteurs déjà conquis par Bellwether Coffee !",
+                roasts_title: "Nos Torréfactions Signature",
+                testimonials_title: "Ce que les Autres Disent de Nous", 
+                testimonial_1: "L'Éthiopie Danche est une explosion de saveurs ! Je n'ai jamais goûté un café aussi vibrant et complexe. Vraiment un début de journée parfait, tous les jours.",
+                testimonial_2: "Savoir que le café est torréfié sans émission change la donne. Excellent café et excellentes valeurs. SMILE fait les choses correctement au Luxembourg.",
+                testimonial_3: "J'ai commandé le Brésil Pau, et c'est la définition d'une tasse réconfortante et quotidienne. Doux, chocolaté, et il offre toujours un grand SMILE !",
+                testimonial_4: "La livraison a été si rapide et le café est arrivé parfaitement frais. Le Guatemala Ceiba est mon nouveau rituel du matin préféré.",
+                testimonial_5: "J'adore le concept d'un torréfacteur sans émission. Le café n'en est que meilleur ! L'équipe est super sympathique et passionnée.",
+                view_details: "Voir Détails",
+                cta_title: "Visitez-nous à",
+                cta_location: "Trouver Notre Café & Voir la Torréfactrice",
+                location_text: "Venez nous rendre visite à Esch-sur-Alzette, ou commandez en ligne pour recevoir votre SMILE directement chez vous.",
+                location_address: "4 Pl. de l'Hotel de Ville, 4138 Esch-sur-Alzette, Luxembourg",
+                process: "Procédé",
+                copyright: "© 2025 SMILE Coffee Roasters. Fabriqué avec réconfort au Luxembourg.",
+                privacy: "Politique de Confidentialité",
+                shipping: "Informations de Livraison"
+            },
+            de: {
+                title: "SMILE Coffee Roasters",
+                brand_name: "SMILE Coffee Roasters",
+                nav_roasts: "Röstungen",
+                nav_story: "Unsere Geschichte",
+                nav_testimonials: "Kundenstimmen", 
+                nav_contact: "Kontakt",
+                shop_now: "Jetzt Kaufen",
+                hero_tagline: "SMILE Coffee Roasters",
+                hero_subtext: "100% Elektrische Röstung, Großer Komfort. Handverlesen, ethisch beschafft und emissionsfrei in Luxemburg für Ihre perfekte Tasse geröstet.",
+                explore_roasts: "Unsere Röstungen Entdecken",
+                story_title: "Unser Emissionsfreies Abenteuer",
+                story_subheader: "Die Zukunft der Röstung ist Hier",
+                story_content: "Sie ist endlich da! Unsere Bellwether-Maschine hat ihr Debüt gegeben und ist die erste 100% elektrische und emissionsfreie Kaffeerösterei in Luxemburg. Dieses neue Abenteuer ermöglicht es uns, Ihnen frisch gerösteten Kaffee aus ethisch geführten Farmen weltweit anzubieten. Unsere Philosophie konzentriert sich auf Nachhaltigkeit, Präzision und dieses besondere SMILE in jeder Bohne. Entdecken Sie das Video, um diesen Moment mit uns zu erleben und die Zeugnisse anderer Röster zu hören, die bereits von Bellwether Coffee überzeugt sind!",
+                roasts_title: "Unsere Signature Komfort Röstungen",
+                testimonials_title: "Was Andere Über Uns Sagen", 
+                testimonial_1: "Der Äthiopien Danche ist eine Geschmacksexplosion! Ich habe noch nie einen so lebendigen und komplexen Kaffee probiert. Wirklich ein perfekter Start in meinen Tag, jeden Tag.",
+                testimonial_2: "Zu wissen, dass der Kaffee emissionsfrei geröstet wird, ist ein Wendepunkt. Toller Kaffee und tolle Werte. SMILE macht es in Luxemburg richtig.",
+                testimonial_3: "Ich habe den Brasilien Pau bestellt und er ist die Definition einer tröstlichen Alltagstasse. Sanft, schokoladig und liefert immer ein großes Lächeln (SMILE)!",
+                testimonial_4: "Die Lieferung war so schnell und der Kaffee kam perfekt frisch an. Der Guatemala Ceiba ist mein neues Lieblingsmorgenritual.",
+                testimonial_5: "Ich liebe das Konzept einer emissionsfreien Rösterei. Das macht den Kaffee noch besser! Das Team ist super freundlich und leidenschaftlich.",
+                view_details: "Details Ansehen",
+                cta_title: "Besuchen Sie uns bei",
+                cta_location: "Unser Café Finden & Die Röstmaschine Sehen",
+                location_text: "Besuchen Sie uns an unserem gemütlichen Standort in Esch-sur-Alzette oder bestellen Sie online, um Ihr SMILE direkt an Ihre Tür geliefert zu bekommen.",
+                location_address: "4 Pl. de l'Hotel de Ville, 4138 Esch-sur-Alzette, Luxembourg",
+                process: "Verarbeitung",
+                copyright: "© 2025 SMILE Coffee Roasters. Mit Komfort in Luxemburg handgefertigt.",
+                privacy: "Datenschutzerklärung",
+                shipping: "Versandinformationen"
+            },
+            lu: {
+                title: "SMILE Coffee Roasters",
+                brand_name: "SMILE Coffee Roasters",
+                nav_roasts: "Réischteren",
+                nav_story: "Eis Geschicht",
+                nav_testimonials: "Testimonialen", 
+                nav_contact: "Kontakt",
+                shop_now: "Elo Kafen",
+                hero_tagline: "SMILE Coffee Roasters",
+                hero_subtext: "100% Elektresch Réischteren, Grousse Komfort. Handselektéiert, ethesch kaaft an Emissiounsfräi zu Lëtzebuerg fir Är perfekt Taass geréischtert.",
+                explore_roasts: "Entdeckt Eis Réischteren",
+                story_title: "Eis Emissiounsfräi Aventure",
+                story_subheader: "D'Zukunft vum Réischteren Ass Hei",
+                story_content: "Si ass endlech hei! Eis Bellwether-Maschinn huet hiren Debut gemaach an ass déi éischt 100% elektresch an Emissiounsfräi Kaffisréischterei zu Lëtzebuerg. Dës nei Aventure erlaabt eis Iech frësch geréischterte Kaffi aus ethesche Bauerenhäff weltwäit unzebidden. Eis Philosophie konzentréiert sech op Nohaltegkeet, Präzisioun an dee speziellen SMILE an all Kaffisboun. Entdeckt de Video fir dëse Moment mat eis ze erliewen an d'Zeegnes vun anere Réischter ze lauschteren, déi scho vum Bellwether Coffee iwwerzeegt sinn!",
+                roasts_title: "Eis Signature Komfort Réischteren",
+                testimonials_title: "Wat Anerer Iwwer Eis Soen", 
+                testimonial_1: "Den Äthiopien Danche ass eng Explosioun vu Goût! Ech hu nach ni esou e liewege a komplexe Kaffi geschmaacht. Wierklech e perfekte Start a mäin Dag, all Dag.",
+                testimonial_2: "Wësse, datt de Kaffi Emissiounsfräi geréischtert gëtt, ass e Spillwiessel. Super Kaffi a super Wäerter. SMILE mécht et zu Lëtzebuerg richteg.",
+                testimonial_3: "Ech hunn de Brasilien Pau bestallt, an et ass d'Definitioun vun enger tréischterend alldeeglecher Taass. Glat, schokoladeg, a liwwert ëmmer e grousse SMILE!",
+                testimonial_4: "D'Liwwerung war sou séier, an de Kaffi ass perfekt frësch ukomm. De Guatemala Ceiba ass mäin neie Liiblingsmoiesritual.",
+                testimonial_5: "Ech hunn d'Konzept vun engem Emissiounsfräie Réischter gär. Et mécht de Kaffi nach besser! D'Team ass super frëndlech a passionéiert.",
+                view_details: "Detailer Kucken",
+                cta_title: "Besicht eis op",
+                cta_location: "Fannt Eis Café & Kuckt de Réischter",
+                location_text: "Besicht eis op eiser gemittlecher Plaz zu Esch-sur-Alzette, oder bestellt online fir Äert SMILE direkt un Är Dier geliwwert ze kréien. Du hues gär gudde Kaffi a Kontakt mat Leit? Da komm bei SMILE Coffee Roasters!",
+                location_address: "4 Pl. de l'Hotel de Ville, 4138 Esch-sur-Alzette, Lëtzebuerg",
+                process: "Veraarbechtung",
+                copyright: "© 2025 SMILE Coffee Roasters. Mat Komfort zu Lëtzebuerg hiergestallt.",
+                privacy: "Dateschutzbestëmmungen",
+                shipping: "Liwwerinformatiounen"
+            }
+        };
+
+        const updateContent = (lang) => {
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            // Update dynamic content elements (like address/socials that don't need translation)
+            document.getElementById('location-address').textContent = translations.en.location_address;
+        };
+
+        const changeLanguage = (event) => {
+            const lang = event.target.value;
+            localStorage.setItem('coffeeroaster_lang', lang);
+            updateContent(lang);
+            renderCoffeeCards(lang);
+            renderTestimonials(lang);
+        };
+
+        // Render coffee cards dynamically
+        const renderCoffeeCards = (lang) => {
+            const container = document.getElementById('coffee-cards-container');
+            if (!container) return;
+            container.innerHTML = coffees.map(coffee => `
+                <div class="bg-cream-cozy p-6 rounded-xl shadow-xl border-t-4 border-coffee-medium transform hover:scale-[1.02] transition-transform w-80 flex-shrink-0">
+                    <!-- Image Section -->
+                    <div class="mb-4 rounded-lg overflow-hidden border border-coffee-light">
+                        <img src="${coffeePlaceholders[coffee.key]}" alt="Bag of ${coffee.name}" class="w-full h-auto object-cover">
+                    </div>
+
+                    <span class="text-xs font-semibold uppercase tracking-wider text-coffee-light">${translations[lang]['process']}: ${coffee.process}</span>
+                    <h3 class="text-2xl font-bold mb-2 text-coffee-dark">${coffee.name}</h3>
+                    <p class="text-coffee-medium italic mb-4">Origin: ${coffee.origin}</p>
+                    
+                    <p class="mb-3 text-lg font-medium text-smile-yellow">Tasting Notes:</p>
+                    <p class="mb-4 text-coffee-dark font-serif italic">
+                        ${coffee.notes}
+                    </p>
+                    <p class="mb-6 text-sm leading-relaxed">${coffee.description}</p>
+                </div>
+            `).join('');
+        };
+        
+        // Render testimonial cards dynamically
+        const renderTestimonials = (lang) => {
+            const container = document.getElementById('testimonials-container');
+            if (!container) return;
+            // Static names used for simplicity in this dynamic rendering
+            const testimonials = [
+                { textKey: 'testimonial_1', author: '- Alex B., Coffee Enthusiast' },
+                { textKey: 'testimonial_2', author: '- Sarah M., Local Customer' },
+                { textKey: 'testimonial_3', author: '- Jean-Pierre L., Online Buyer' },
+                { textKey: 'testimonial_4', author: '- Maria G., Happy Customer' },
+                { textKey: 'testimonial_5', author: '- Tom F., Eco-conscious Drinker' },
+            ];
+            
+            container.innerHTML = testimonials.map(t => `
+                <div class="bg-coffee-light bg-opacity-30 p-6 rounded-xl shadow-md border-l-4 border-smile-yellow w-80 flex-shrink-0">
+                    <p class="italic text-lg mb-4 text-coffee-dark" data-key="${t.textKey}">${translations[lang][t.textKey]}</p>
+                    <p class="font-bold text-coffee-medium">${t.author}</p>
+                </div>
+            `).join('');
+        };
+
+
+        window.onload = function () {
+            const initialLang = localStorage.getItem('coffeeroaster_lang') || 'en';
+            
+            // Set initial language in selector
+            const langSelector = document.getElementById('lang-selector');
+            if (langSelector) {
+                langSelector.value = initialLang;
+                langSelector.addEventListener('change', (event) => {
+                    changeLanguage(event);
+                });
+            }
+            
+            // Render content based on initial language
+            updateContent(initialLang);
+            renderCoffeeCards(initialLang);
+            renderTestimonials(initialLang);
+        };
+
     </script>
-
-    <style>
-        /* Custom gradient text effect for headers */
-        .text-stroke {
-            -webkit-text-stroke: 1px rgba(255,255,255,0.1);
-        }
-        
-        /* Dotted grid background pattern */
-        .bg-grid-pattern {
-            background-image: radial-gradient(rgba(255, 95, 0, 0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-        
-        /* Brevo Form Override - Make form blend with our design */
-        #sib-container {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-        }
-        #sib-form-container {
-            max-width: 100% !important;
-            padding: 0 !important;
-        }
-        .sib-form {
-            text-align: left !important;
-            background-color: transparent !important;
-        }
-        .sib-input {
-            padding: 0 !important;
-        }
-        .form__entry {
-            margin-bottom: 0.3rem !important;
-        }
-        
-        /* Input field styling - dark theme with orange accent */
-        .entry__field input {
-            background-color: #1F1F1F !important;
-            border: 2px solid #333 !important;
-            color: white !important;
-            border-radius: 0.5rem !important;
-            height: 3.5rem !important;
-            padding-left: 0.5rem !important;
-            font-size: 1.1rem !important;
-            width: 100% !important;
-        }
-        .entry__field input:focus {
-            border-color: #FF5F00 !important;
-            outline: none !important;
-        }
-        .entry__field input::placeholder {
-            color: #999 !important;
-        }
-        
-        /* Submit button styling */
-        .sib-form-block__button {
-            background-color: #FF5F00 !important;
-            border-radius: 0.5rem !important;
-            height: 3.5rem !important;
-            font-family: 'Montserrat', sans-serif !important;
-            font-weight: 900 !important;
-            text-transform: uppercase !important;
-            font-size: 1.2rem !important;
-            transition: transform 0.1s !important;
-            width: 100% !important;
-        }
-        .sib-form-block__button:active {
-            transform: scale(0.98) !important;
-        }
-        
-        /* Hide checkbox visual but keep functionality */
-        .sib-optin .entry__choice {
-            display: flex;
-            align-items: center;
-        }
-        .sib-optin input[type="checkbox"] {
-            margin-right: 0.5rem;
-        }
-        
-        /* Countdown display styling */
-        .countdown-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            line-height: 1;
-        }
-        .countdown-number {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 2.5rem;
-            color: white;
-        }
-        .countdown-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #FF5F00;
-            font-weight: 600;
-            margin-top: 0.25rem;
-        }
-        
-        /* Tour overlay for first-time visitor guide */
-        #tour-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent; /* Remove the dark overlay */
-            z-index: 9997;
-            display: none;
-            pointer-events: none; /* Allow clicks on the page */
-        }
-        #tour-overlay.active {
-            display: block; /* Use opacity to fade in/out */
-        }
-        
-        #tour-overlay.faded {
-            background: rgba(0,0,0,0);
-        }
-
-        /* Tour tooltip styling */
-        .tour-tooltip {
-            position: absolute;
-            background: linear-gradient(135deg, #ff8c3a, #FF5F00); /* Adjusted gradient */
-            color: black; /* Improved text contrast */
-            padding: 1.5rem;
-            border-radius: 1rem;
-            max-width: calc(100vw - 40px); /* Responsive width for mobile */
-            box-shadow: 0 10px 40px rgba(255,95,0,0.5);
-            z-index: 10000;
-            pointer-events: auto; /* Tooltip itself should be interactive */
-        }
-        
-        /* Arrow pointer for tour tooltip */
-        .tour-tooltip::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-style: solid;
-        }
-
-        /* Arrow pointing down (when tooltip is above the element) */
-        .tour-tooltip.arrow-down::after {
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 10px 10px 0 10px;
-            border-color: #FF5F00 transparent transparent transparent;
-        }
-        /* Arrow pointing up (when tooltip is below the element) */
-        .tour-tooltip.arrow-up::after {
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 0 10px 10px 10px;
-            border-color: transparent transparent #FF5F00 transparent;
-        }
-        
-        /* Highlight effect for tour target elements */
-        .tour-highlight {
-            position: relative;
-            z-index: 9998; /* Must be higher than the overlay */
-            box-shadow: 0 0 0 4px #FF5F00, 0 0 30px rgba(255,95,0,0.8);
-            border-radius: 0.5rem;
-            /* Add transition for smooth highlighting */
-            transition: box-shadow 0.3s ease-in-out;
-        }
-
-        /* Ensure highlighted element is clickable */
-        .tour-highlight {
-            pointer-events: all;
-        }
-
-
-    </style>
-    
-    <!-- Brevo Form Styles - Injected from provided form code -->
-    <style>
-  @font-face {
-    font-display: block;
-    font-family: Roboto;
-    src: url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/7529907e9eaf8ebb5220c5f9850e3811.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/25c678feafdc175a70922a116c9be3e7.woff) format("woff")
-  }
-
-  @font-face {
-    font-display: fallback;
-    font-family: Roboto;
-    font-weight: 600;
-    src: url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/6e9caeeafb1f3491be3e32744bc30440.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/71501f0d8d5aa95960f6475d5487d4c2.woff) format("woff")
-  }
-
-  @font-face {
-    font-display: fallback;
-    font-family: Roboto;
-    font-weight: 700;
-    src: url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/3ef7cf158f310cf752d5ad08cd0e7e60.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/ece3a1d82f18b60bcce0211725c476aa.woff) format("woff")
-  }
-
-  #sib-container input:-ms-input-placeholder {
-    text-align: left;
-    font-family: Helvetica, sans-serif;
-    color: #c0ccda;
-  }
-
-  #sib-container input::placeholder {
-    text-align: left;
-    font-family: Helvetica, sans-serif;
-    color: #c0ccda;
-  }
-
-  #sib-container textarea::placeholder {
-    text-align: left;
-    font-family: Helvetica, sans-serif;
-    color: #c0ccda;
-  }
-
-  #sib-container a {
-    text-decoration: underline;
-    color: #2BB2FC;
-  }
-    </style>
-    <!-- Brevo Unsubscribe Form Styles -->
-    <style>
-  @font-face {
-    font-display: block;
-    font-family: Roboto;
-    src: url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/7529907e9eaf8ebb5220c5f9850e3811.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/25c678feafdc175a70922a116c9be3e7.woff) format("woff")
-  }
-
-  @font-face {
-    font-display: fallback;
-    font-family: Roboto;
-    font-weight: 600;
-    src: url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/6e9caeeafb1f3491be3e32744bc30440.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/71501f0d8d5aa95960f6475d5487d4c2.woff) format("woff")
-  }
-
-  @font-face {
-    font-display: fallback;
-    font-family: Roboto;
-    font-weight: 700;
-    src: url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/3ef7cf158f310cf752d5ad08cd0e7e60.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/ece3a1d82f18b60bcce0211725c476aa.woff) format("woff")
-  }
-
-  /* These styles are for the unsubscribe form and will override existing Brevo styles if they target the same elements */
-  #sib-container input:-ms-input-placeholder {
-    text-align: left;
-    font-family: Helvetica, sans-serif;
-    color: #c0ccda;
-  }
-
-  #sib-container input::placeholder {
-    text-align: left;
-    font-family: Helvetica, sans-serif;
-    color: #c0ccda;
-  }
-
-  #sib-container textarea::placeholder {
-    text-align: left;
-    font-family: Helvetica, sans-serif;
-    color: #c0ccda;
-  }
-
-  #sib-container a {
-    text-decoration: underline;
-    color: #2BB2FC;
-  }
-    </style>
-    <link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
 </head>
-<body class="bg-pf-black text-white overflow-x-hidden">
+<body class="bg-cream-cozy font-sans text-coffee-dark antialiased">
 
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-10 bg-cream-cozy bg-opacity-95 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <!-- Logo / Brand Name -->
+            <div class="text-2xl sm:text-3xl font-serif font-bold cozy-text-shadow text-coffee-medium flex items-center">
+                <!-- Logo Image -->
+                <img src="https://i.ibb.co/0ptYSZH5/image-2025-12-14-160909024.png" alt="SMILE Coffee Roasters Logo" class="h-10 sm:h-12 w-auto rounded-full">
+            </div>
 
+            <!-- Navigation Links and Language Selector -->
+            <nav class="flex items-center space-x-2 sm:space-x-4">
+                
+                <!-- Language Selector (Adjusted size for mobile) -->
+                <select id="lang-selector" class="bg-coffee-light text-coffee-dark rounded-lg p-1 text-xs sm:text-sm focus:ring-coffee-medium focus:border-coffee-medium">
+                    <option value="en">EN</option>
+                    <option value="fr">FR</option>
+                    <option value="de">DE</option>
+                    <option value="lu">LU</option>
+                </select>
 
-    <!-- HEADER SECTION -->
-    <div class="bg-pf-black sticky d:text-sm py-2 text-center uppercase tracking-widest top-0 z-50 border-b border-white/10">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" class="font-display font-black text-2xl tracking-tighter">
-                PUCKER<span class="text-pf-orange">FUEL</span>
-            </a>
-            <nav>
-                <a href="#unsubscribe-section" class="bg-red-800/50 hover:bg-red-700/60 border border-red-600/50 text-white font-bold py-2 px-4 rounded-lg text-xs md:text-sm transition-colors">
-                    Delete My Email
+                <!-- Shop Button (Adjusted size for mobile) -->
+                <a href="#contact" class="inline-block text-center px-3 py-1 sm:px-4 sm:py-2 bg-smile-yellow text-coffee-dark rounded-lg shadow-md hover:bg-coffee-medium hover:text-cream-cozy transition-all font-bold text-sm sm:text-base active:bg-yellow-300 active:shadow-inner" data-key="shop_now">
+                    Shop Now
                 </a>
             </nav>
         </div>
-    </div>
-  
-  
+    </header>
 
-  
-  
-  
-    <!-- WAITLIST SIGNUP SECTION (The Converter) - VISUALLY ENHANCED -->
-    <section id="signup" class="py-20 px-4 relative overflow-hidden">
-      
-        <!-- Background Glow -->
-        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-t from-pf-orange/10 to-transparent -z-10"></div>
-
-                  <div class="text-center">
-                <h1 class="font-display font-black text-5xl md:text-7xl tracking-tighter leading-none mb-2">
-                    PUCKER<span class="text-pf-orange">FUEL</span>
+    <main>
+        <!-- Hero Section -->
+        <section class="relative h-96 sm:h-[60vh] flex items-center justify-center text-center bg-cover bg-center" 
+                 style="background-image: url('https://i.ibb.co/bM1sqL6X/image-2025-12-14-155654995.png');">
+            <!-- Overlay for better text readability -->
+            <div class="absolute inset-0 bg-coffee-dark opacity-70"></div>
+            
+            <div class="relative z-10 p-4 max-w-4xl">
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-serif font-extrabold text-cream-cozy mb-3 cozy-text-shadow" data-key="hero_tagline">
+                    SMILE Coffee Roasters
                 </h1>
-                <p class="text-xl md:text-2xl font-medium text-gray-300 mb-6 max-w-2xl mx-auto"> The World's Most Sour Pre-Workout
-                </p>
             </div>
-      
-        <div class="container mx-auto max-w-lg bg-pf-gray/50 border border-pf-orange/30 rounded-2xl p-6 md:p-10 shadow-2xl backdrop-blur-sm">
-            
+        </section>
 
-
-            <!-- FULL LIST OF GUARANTEED BONUSES - UPDATED WITH HOVER TOOLTIPS -->
-            <h3 class="font-bold text-lg text-gray-400 mb-4 text-center uppercase tracking-wider">Join the Waitlist & Get:</h3>
-            <ul class="space-y-3 mb-8 text-left" id="rewards-list-summary">
-                <!-- 1. 20% OFF Launch Discount -->
-                <li class="flex items-start gap-3">
-                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">1</span>
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center group relative">
-                            <span class="font-semibold text-white">Founders Wall Status</span>
-                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
-                                <span class="inline-block align-middle">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </span>
-                                <!-- Tooltip Content -->
-                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
-                                    Your name will be displayed on our Founders Wall on the officail website when we launch (status gain).
-                                </div>
-                            </div>
-                        </div>
-                        <span class="font-bold text-pf-orange ml-2">Priceless</span>
-                    </div>
-                </li>
-
-                <!-- 2. Founders Wall Status -->
-                <li class="flex items-start gap-3">
-                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">2</span>
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center group relative">
-                            <span class="font-semibold text-white">Exclusive Giveaway</span>
-                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
-                                <span class="inline-block align-middle" >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </span>
-                                <!-- Tooltip Content -->
-                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
-                                    Get a chance to win a free tub that will be decided on launch date.
-                                </div>
-                            </div>
-                        </div>
-                        <span class="font-bold text-pf-orange ml-2">€40 Value</span>
-                    </div>
-                </li>
-
-
-                <!-- 4. Exclusive Community Discord -->
-                <li class="flex items-start gap-3">
-                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">3</span>
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center group relative">
-                            <span class="font-semibold text-white">Exclusive Community Discord</span>
-                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
-                                <span class="inline-block align-middle">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </span>
-                                <!-- Tooltip Content -->
-                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
-                                    Direct access to the founders and other members in our Exclusive discord server.
-                                </div>
-                            </div>
-                        </div>
-                        <span class="font-bold text-pf-orange ml-2">€10 Value</span>
-                    </div>
-                </li>
-              
-                              <!-- 3. Entry into Exclusive Giveaway -->
-                <li class="flex items-start gap-3">
-                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">4</span>
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center group relative">
-                            <span class="font-semibold text-white">20% OFF</span>
-                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
-                                <span class="inline-block align-middle" >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </span>
-                                <!-- Tooltip Content -->
-                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
-                                    20% OFF discount code on the puckerfuel preworkout when we launch for your first purchase.
-                                </div>
-                            </div>
-                        </div>
-                        <span class="font-bold text-pf-orange ml-2">€8 Value</span>
-                    </div>
-                </li>
-
-                <!-- 5. First-to-Know Drop Notification -->
-                <li class="flex items-start gap-3">
-                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">5</span>
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center group relative">
-                            <span class="font-semibold text-white">Early Access</span>
-                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
-                                <span class="inline-block align-middle" >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </span>
-                                <!-- Tooltip Content -->
-                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
-                                    VIP Early Access to purchase 24 hours before public launch.
-                                </div>
-                            </div>
-                        </div>
-                        <span class="font-bold text-pf-orange ml-2">€5 Value</span>
-                    </div>
-                </li>
-
-                <!-- 6. Exclusive Product Detail Brochure -->
-                <li class="flex items-start gap-3">
-                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">6</span>
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center group relative">
-                            <span class="font-semibold text-white">Exclusive Puckerfuel Brochure</span>
-                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
-                                <span class="inline-block align-middle" >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </span>
-                                <!-- Tooltip Content -->
-                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
-                                    In-depth explanation to the product ingredient and its benefit. And also the challenge guide.
-                                </div>
-                            </div>
-                        </div>
-                        <span class="font-bold text-pf-orange ml-2">€2 Value</span>
-                    </div>
-                </li>
-
-
-                <!-- 7. Free "How to Adjust Sourness" Guide -->
-                <li class="flex items-start gap-3">
-                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">7</span>
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center group relative">
-                            <span class="font-semibold text-white">Free "How to Adjust Sourness" Guide</span>
-                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
-                                <span class="inline-block align-middle" >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </span>
-                                <!-- Tooltip Content -->
-                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
-                                    Brochure with tips on making the pre-workout more or less sour.
-                                </div>
-                            </div>
-                        </div>
-                        <span class="font-bold text-pf-orange ml-2">€2 Value</span>
-                    </div>
-                </li>
-
-
-                <!-- 8. Delete Information Guarantee -->
-                <li class="flex items-start gap-3">
-                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">8</span>
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center group relative">
-                            <span class="font-semibold text-white">Delete Information Guarantee</span>
-                            <div class="ml-2 cursor-pointer text-gray-500 hover:text-pf-orange transition-colors">
-                                <span class="inline-block align-middle" title="Full control over your data; delete your info whenever you want. ($5 Value)">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </span>
-                                <!-- Tooltip Content -->
-                                <div class="absolute right-0 md:left-full top-1/2 transform -translate-y-1/2 md:translate-x-4 w-64 p-3 bg-pf-black border border-pf-orange/50 rounded-lg text-xs text-gray-300 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
-                                    Full control over your data; delete your info whenever you want. Just submit the email through the form and all your infomation is gone.
-                                </div>
-                            </div>
-                        </div>
-                        <span class="font-bold text-pf-orange ml-2">-</span>
-                    </div>
-                </li>
-              
-                              <!-- 10. Delete Information Guarantee -->
-                <li class="flex items-start gap-3">
-                    <span class="bg-pf-orange text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-sm shrink-0 mt-0.5">€</span>
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center group relative">
-                            <span class="font-semibold text-white">TOTAL VALUE</span>
-                        </div>
-                      
-
-<p class="font-display font-bold text-orange-500 line-through ml-2">€67</p>                 
-<span class="font-display font-bold text-green-400 ml-2">YOURS FREE!</span>
-
-                   </div>
-                </li>
-            </ul>
-
-            <!-- BREVO FORM EMBED (Anchored Low) -->
-            <div class="mt-4 bg-gradient-to-r from-pf-orange/20 to-pf-orange/5 border-2 border-pf-orange rounded-2xl p-3 text-center">
-
-            
-           <!-- PROMINENT COUNTDOWN -->
-            <div id="countdown-hero" class="bg-pf-gray/90 border-2 border-pf-orange p-4 md:p-2 rounded-2xl mb-0 shadow-2xl backdrop-blur-sm w-full max-w-2xl mx-auto">
-                <p class="text-xl md:text-2xl font-display font-black uppercase tracking-widest mb-4 text-pf-orange text-center">
-                    ⏰ Waitlist Closes In:
-                </p>
-                <div id="countdown" class="flex justify-around items-center">
-                    <div class="countdown-item">
-                        <span id="days" class="countdown-number text-3xl md:text-4xl">00</span>
-                        <span class="countdown-label">Days</span>
-                    </div>
-                    <span class="countdown-number text-pf-orange text-2xl">:</span>
-                    <div class="countdown-item">
-                        <span id="hours" class="countdown-number text-3xl md:text-4xl">00</span>
-                        <span class="countdown-label">Hours</span>
-                    </div>
-                    <span class="countdown-number text-pf-orange text-2xl">:</span>
-                    <div class="countdown-item">
-                        <span id="minutes" class="countdown-number text-3xl md:text-4xl">00</span>
-                        <span class="countdown-label">Minutes</span>
-                    </div>
-                    <span class="countdown-number text-pf-orange text-2xl">:</span>
-                    <div class="countdown-item">
-                        <span id="seconds" class="countdown-number text-3xl md:text-4xl">00</span>
-                        <span class="countdown-label">Seconds</span>
-                    </div>
+        <!-- Feature Section: Philosophy & Bellwether Video -->
+        <section id="story" class="py-12 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl sm:text-4xl font-serif font-bold text-center mb-10 text-coffee-medium" data-key="story_title">Our Emission-Free Adventure</h2>
+            <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div class="bg-coffee-light bg-opacity-20 p-6 rounded-xl shadow-lg order-2 md:order-1">
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3 text-coffee-dark" data-key="story_subheader">The Future of Roasting is Here</h3>
+                    <p class="text-base sm:text-lg leading-relaxed text-coffee-dark" data-key="story_content">
+                        She's finally here! Our Bellwether machine has made its debut, marking the first 100% electric and emission-free roaster in Luxembourg. This new adventure allows us to bring you freshly roasted coffee, ethically sourced from farms around the world. Our philosophy centers on sustainability, precision, and that signature SMILE in every single bean. Discover the video to live this moment with us and listen to the testimonies of other roasters already conquered by Bellwether Coffee!
+                    </p>
+                </div>
+                <!-- Video Section - Moved and Integrated -->
+                <div class="aspect-[9/16] mx-auto w-full max-w-[320px] rounded-xl shadow-2xl order-1 md:order-2 overflow-hidden">
+                    <iframe
+                        class="w-full h-full"
+                        src="https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/reel/1150369893237960/?s=single_unit&show_text=0&width=560"
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen>
+                    </iframe>
                 </div>
             </div>
+        </section>
 
-              
-              
-            <!-- Begin Brevo Form -->
-<div class="sib-form" id="sib-form" style="text-align: center; position: relative;">
-  <div id="sib-form-container" class="sib-form-container">
-    <div id="error-message" class="sib-form-message-panel" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;max-width:540px;">
-      <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
-        <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon">
-          <path d="M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-11.49 120h22.979c6.823 0 12.274 5.682 11.99 12.5l-7 168c-.268 6.428-5.556 11.5-11.99 11.5h-8.979c-6.433 0-11.722-5.073-11.99-11.5l-7-168c-.283-6.818 5.167-12.5 11.99-12.5zM256 340c-15.464 0-28 12.536-28 28s12.536 28 28 28 28-12.536 28-28-12.536-28-28-28z" />
-        </svg>
-        <span class="sib-form-message-panel__inner-text">
-          Your subscription could not be saved.
-        </span>
-      </div>
-    </div>
-    <div></div>
-    <div id="success-message" class="sib-form-message-panel" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#085229; background-color:#e7faf0; border-radius:3px; border-color:#13ce66;max-width:540px;">
-      <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
-        <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon">
-          <path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 464c-118.664 0-216-96.055-216-216 0-118.663 96.055-216 216-216 118.664 0 216 96.055 216 216 0 118.663-96.055 216-216 216zm141.63-274.961L217.15 376.071c-4.705 4.667-12.303 4.637-16.97-.068l-85.878-86.572c-4.667-4.705-4.637-12.303.068-16.97l8.52-8.451c4.705-4.667 12.303-4.637 16.97.068l68.976 69.533 163.441-162.13c4.705-4.667 12.303-4.637 16.97.068l8.451 8.52c4.668 4.705 4.637 12.303-.068 16.97z" />
-        </svg>
-        <span class="sib-form-message-panel__inner-text">
-          Welcome to the club, check your email! (CHECK PROMOTION & SPAM FOLDERS)
-        </span>
-      </div>
-    </div>
-    <div></div>
-    <div id="sib-container" class="sib-container--large sib-container--vertical" style="direction:ltr">
-      <form id="sib-form" method="POST" action="https://de9c0110.sibforms.com/serve/MUIFANcro60Whlk73aTts_atNzyK029bixMfcQ1xTO8sKG5DXhIfuQOCz0Y_g1FBZyOnHOjnti4pzZNW_creeHAbjudnyI3lZz_UdUztmxoGFtASCqYw8rKQ5KAlnrVJhZLUo9mmSnoG2R44qplVAgWTiDQ8Ady8Y8Ee19lMhYel5cNF2jX8gnePJfqDR_jBNUhBJslKsRCLRLFI" data-type="subscription">
-        <div style="padding: 0;"> <div class="sib-input sib-form-block">
-            <div class="form__entry entry_block">
-              <div class="form__label-row ">
-                <div class="entry__field">
-                  <input class="input " type="text" id="EMAIL" name="EMAIL" autocomplete="off" placeholder="EMAIL" data-required="true" required />
+        <!-- Product Preview Section: Top 4 Beans -->
+        <section id="roasts" class="py-12 bg-coffee-light bg-opacity-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl sm:text-4xl font-serif font-bold text-center mb-10 text-coffee-medium" data-key="roasts_title">Our Signature Comfort Roasts</h2>
+                
+                <!-- Coffee Cards Container - dynamically rendered by JS -->
+                <div id="coffee-cards-container" class="flex overflow-x-auto space-x-6 sm:space-x-8 pb-4">
+                    <!-- Content will be injected here by the renderCoffeeCards function -->
                 </div>
-              </div>
-              <label class="entry__error entry__error--primary" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;">
-              </label>
             </div>
-          </div>
-        </div>
-        <div style="padding: 0;"> <div class="sib-input sib-form-block">
-            <div class="form__entry entry_block">
-              <div class="form__label-row ">
-                <div class="entry__field">
-                  <input class="input " maxlength="200" type="text" id="FIRSTNAME" name="FIRSTNAME" autocomplete="off" placeholder="NAME" />
-                </div>
-              </div>
-              <label class="entry__error entry__error--primary" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;">
-              </label>
-            </div>
-          </div>
-        </div>
-        <div style="padding: 0;"> <div class="sib-optin sib-form-block">
-            <div class="form__entry entry_mcq">
-              <div class="form__label-row ">
-                <div class="entry__choice" style="">
-                  <label>
-                    <input type="checkbox" class="input_replaced" value="1" id="OPT_IN" name="OPT_IN" />
-                    <span class="checkbox checkbox_tick_positive"
-                      style="margin-left:"
-                      ></span><span style="font-size:14px; text-align:left; font-family:Helvetica, sans-serif; color:ORANGE; background-color:transparent;"><p><strong>Weekly Progress Newsletter</strong></p></span> </label>
-                </div>
-              </div>
-              <label class="entry__error entry__error--primary" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;">
-              </label>
-            </div>
-          </div>
-        </div>
-        <div style="padding: 0;">
-            <div class="sib-form-block" style="text-align: center">
-                <button class="sib-form-block__button sib-form-block__button-with-loader" form="sib-form" type="submit" 
-                    style="
-                        width: 100%; /* Make it full width again */
-                        background-color: #ff6600; /* Orange color */
-                        color: white;
-                        font-weight: 600;
-                        padding: 12px 15px;
-                        border: none;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        text-align: center;
-                        display: inline-flex;
-                        justify-content: center;
-                        align-items: center;
-                    ">
-                    <svg class="icon clickable__icon progress-indicator__icon sib-hide-loader-icon" viewBox="0 0 512 512" style="fill: currentColor; width: 18px; height: 18px; margin-right: 5px;">
-                        <path d="M460.116 373.846l-20.823-12.022c-5.541-3.199-7.54-10.159-4.663-15.874 30.137-59.886 28.343-131.652-5.386-189.946-33.641-58.394-94.896-95.833-161.827-99.676C261.028 55.961 256 50.751 256 44.352V20.309c0-6.904 5.808-12.337 12.703-11.982 83.556 4.306 160.163 50.864 202.11 123.677 42.063 72.696 44.079 162.316 6.031 236.832-3.14 6.148-10.75 8.461-16.728 5.01z" />
-                    </svg>
-                    JOIN THE WAITLIST
-                </button>
-            </div>
-        </div>
-        <input type="text" name="email_address_check" value="" class="input--hidden">
-        <input type="hidden" name="locale" value="en">
-      </form>
-    </div>
-  </div>
-    <button onclick="scrollToNoEmail()" id="no-email-button"
-        style="
-            position: absolute; /* Position relative to .sib-form */
-            right: 0;
-            bottom: -20px; /* Pull it slightly below the bottom edge */
-            z-index: 10;
-            width: 100px; /* Adjusted size */
-            height: 40px;
-            background-color: #6c757d; /* Gray color */
-            color: white;
-            font-weight: 600;
-            padding: 0px 0px;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            text-align: center;
-            line-height: 1.1;
-            /* Bent/Tag Effect: large radius on top-left, zero everywhere else */
-            border-top-left-radius: 20px; 
-            border-top-right-radius: 0;
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-            transform: skewX(-10deg); /* Apply a slight horizontal skew (bent look) */
-        ">
-        No Email?
-    </button>
-</div>
-<!-- End Brevo Form -->
-
-
-            </div>
-        </div>            
-</section>
-
-<section class="py-16 bg-pf-gray border-y border-white/5">
-    <div class="container mx-auto px-4 text-center">
-        <div class="inline-block bg-black/50 rounded-full px-4 py-1 text-pf-orange font-bold text-sm mb-4 border border-pf-orange/30">
-            🔥 WHAT OTHERS THINK 🔥
-        </div>
+        </section>
         
-        <div class="flex flex-nowrap overflow-x-auto gap-4 pb-4 md:justify-center snap-x">
-            
-            <div class="min-w-[200px] md:min-w-[250px] aspect-[9/16] bg-black rounded-xl border border-white/10 shrink-0 snap-center overflow-hidden">
-                <iframe 
-                    class="w-full h-full" 
-                    src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID_1" 
-                    title="YouTube video player" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    referrerpolicy="strict-origin-when-cross-origin" 
-                    allowfullscreen>
-                </iframe>
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl sm:text-4xl font-serif font-bold text-center mb-10 text-coffee-medium" data-key="testimonials_title">What Others Are Saying About Us</h2>
+            <!-- Testimonials stack on mobile, move to 3 columns on desktop -->
+            <div id="testimonials-container" class="flex overflow-x-auto space-x-6 sm:space-x-8 pb-4">
+                <!-- Content will be injected here by the renderTestimonials function -->
             </div>
+        </section>
 
-            <div class="min-w-[200px] md:min-w-[250px] aspect-[9/16] bg-black rounded-xl border border-white/10 shrink-0 snap-center overflow-hidden">
-                <iframe 
-                    class="w-full h-full" 
-                    src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID_2" 
-                    title="YouTube video player" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    referrerpolicy="strict-origin-when-cross-origin" 
-                    allowfullscreen>
-                </iframe>
-            </div>
-
-            <div class="min-w-[200px] md:min-w-[250px] aspect-[9/16] bg-black rounded-xl border border-white/10 shrink-0 snap-center overflow-hidden">
-                <iframe 
-                    class="w-full h-full" 
-                    src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID_3" 
-                    title="YouTube video player" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    referrerpolicy="strict-origin-when-cross-origin" 
-                    allowfullscreen>
-                </iframe>
-            </div>
-        </div>
-    </div>
-</section>
-    
-    <!-- NEW: DETAILED PRODUCT DESCRIPTION SECTION -->
-    <section id="product-details" class="py-20 px-4 bg-pf-black">
-        <div class="container mx-auto max-w-4xl">
-            <h2 class="font-display font-black text-4xl md:text-5xl mb-12 text-center">UNLEASH YOUR POTENTIAL: THE <span class="text-pf-orange">PUCKERFUEL</span> FORMULA</h2>
-            
-            <!-- 3D Product Model - Embedded Sketchfab viewer with floating animation -->
-            <div class="w-full max-w-[350px] md:max-w-[400px] aspect-square relative mx-auto mb-16 animate-float">
-                <iframe 
-                    title="Puckerfuel" 
-                    frameborder="0" 
-                    allowfullscreen 
-                    mozallowfullscreen="true" 
-                    webkitallowfullscreen="true" 
-                    allow="autoplay; fullscreen; xr-spatial-tracking" 
-                    xr-spatial-tracking 
-                    execution-while-out-of-viewport 
-                    execution-while-not-rendered 
-                    web-share 
-                    src="https://sketchfab.com/models/f8e0bcaa6be149288c4b15a1fe170405/embed?autospin=0.5&autostart=1&ui_infos=0&ui_watermark=0&transparent=1"
-                    class="w-full h-full z-10 relative">
-                </iframe>
-            </div>
-            <div class="grid md:grid-cols-3 gap-6 text-left">
-    
-    <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors text-center">
-        <div class="text-pf-orange text-4xl mb-2">⚡</div>
-        <h4 class="font-display font-bold text-2xl mb-1">Caffeine</h4>
-        <p class="text-sm text-gray-400">Energy & Focus</p>
-        <p class="text-pf-orange font-black text-3xl mt-2">350mg</p>
-    </div>
-
-    <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors text-center">
-        <div class="text-pf-orange text-4xl mb-2">💪</div>
-        <h4 class="font-display font-bold text-2xl mb-1">L-Citrulline</h4>
-        <p class="text-sm text-gray-400">Pump & Blood Flow</p>
-        <p class="text-pf-orange font-black text-3xl mt-2">6g</p>
-    </div>
-
-    <div class="bg-pf-gray p-6 rounded-xl border border-white/5 hover:border-pf-orange/50 transition-colors text-center">
-        <div class="text-pf-orange text-4xl mb-2">🔋</div>
-        <h4 class="font-display font-bold text-2xl mb-1">Beta-Alanine</h4>
-        <p class="text-sm text-gray-400">Endurance & Stamina</p>
-        <p class="text-pf-orange font-black text-3xl mt-2">4.2g</p>
-    </div>
-</div>
-
-            <!-- Collapsible Full Supplement Facts -->
-            <div class="mt-8 text-center">
-                <details class="group">
-                    <summary class="cursor-pointer text-sm text-gray-500 hover:text-white transition-colors list-none flex items-center justify-center">
-                        <span class="border-b border-gray-700 pb-1">View Full Supplement Facts +</span>
-                    </summary>
-                    <div class="mt-6 bg-black p-6 rounded-lg text-left border border-white/10 text-sm text-gray-300 font-mono">
-                        <p class="mb-2"><strong class="text-white">Serving Size:</strong> 2 Scoop (37g)</p>
-                        <ul class="space-y-1">
-                            <li class="flex justify-between"><span>L-Citrulline</span> <span>6000 mg</span></li>
-                            <li class="flex justify-between"><span>Beta-Alanine</span> <span>4200 mg</span></li>
-                            <li class="flex justify-between"><span>L-Tyrosine</span> <span>1000 mg</span></li>
-                            <li class="flex justify-between"><span>Taurine</span> <span>500 mg</span></li>
-                            <li class="flex justify-between"><span>Theobromine</span> <span>200 mg</span></li>
-                            <li class="flex justify-between"><span>Caffeine Anhydrous</span> <span>350 mg</span></li>
-                        </ul>
-                        <p class="mt-4 text-xs text-gray-500">Other Ingredients: Citric Acid, Malic Acid, Natural Flavor, Silicon Dioxide, Sucralose, Acesulfame Potassium.</p>
-                    </div>
-                </details>
-            </div>
-        </div>
-    </section>
-
-    <!-- HOW TO FIND OUR EMAILS SECTION -->
-    <section id="find-emails" class="py-20 px-4 bg-pf-gray/30">
-        <div class="container mx-auto max-w-3xl text-center">
-            <h2 class="font-display font-black text-3xl md:text-4xl mb-4 text-pf-orange">HOW TO FIND OUR EMAILS</h2>
-            <div class="bg-pf-black p-6 rounded-xl border border-white/10 shadow-lg mb-8">
-                <p class="text-lg font-bold text-white mb-4">Our emails always start with:</p>
-                <p class="text-2xl font-display font-black text-pf-orange mb-6">"Puckerfuel -"</p>
-
-
-                <!-- Example Inbox Simulation -->
-                <div class="bg-pf-gray p-4 rounded-lg border border-white/5 text-left space-y-2">
-                    <div class="flex items-center justify-between p-3 bg-pf-black rounded-md border border-white/5">
-                        <div>
-                            <p class="font-semibold text-gray-400">Other Sender</p>
-                            <p class="text-gray-500 text-sm">An important subject line...</p>
+        <!-- CTA / Contact & Location Section -->
+        <section id="contact" class="py-12 md:py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl sm:text-4xl font-serif font-bold mb-5 text-coffee-dark" data-key="cta_title">
+                Visit us at
+            </h2>
+            <div class="bg-coffee-medium p-6 sm:p-8 rounded-2xl shadow-2xl text-cream-cozy grid md:grid-cols-2 gap-8">
+                <!-- Location Text -->
+                <div class="md:text-left flex flex-col justify-center">
+                    <p id="location-address" class="text-xl sm:text-2xl font-bold text-smile-yellow">
+                        4 Pl. de l'Hotel de Ville, 4138 Esch-sur-Alzette, Luxembourg
+                    </p>
+                    <!-- Opening Hours -->
+                    <div class="mt-6 text-left">
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:text-base">
+                            <div class="font-semibold">Monday</div>       <div>7 AM – 5 PM</div>
+                            <div class="font-semibold">Tuesday</div>      <div>7 AM – 5 PM</div>
+                            <div class="font-semibold">Wednesday</div>    <div>7 AM – 5 PM</div>
+                            <div class="font-semibold">Thursday</div>     <div>7 AM – 5 PM</div>
+                            <div class="font-semibold">Friday</div>       <div>7 AM – 5 PM</div>
+                            <div class="font-semibold">Saturday</div>     <div>9 AM – 5 PM</div>
+                            <div class="font-semibold">Sunday</div>       <div>9 AM – 5 PM</div>
                         </div>
-                        <span class="text-gray-600 text-xs">9:32 AM</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-pf-orange/10 rounded-md border-l-4 border-pf-orange">
-                        <div>
-                            <p class="font-bold text-white">Puckerfuel - Your Exclusive Rewards!</p>
-                            <p class="text-gray-300 text-sm">Welcome! Here are your free bonuses...</p>
-                        </div>
-                        <span class="text-pf-orange text-xs font-bold">9:30 AM</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-pf-black rounded-md border border-white/5">
-                        <div>
-                            <p class="font-semibold text-gray-400">Another Company</p>
-                            <p class="text-gray-500 text-sm">Weekly Digest</p>
-                        </div>
-                        <span class="text-gray-600 text-xs">8:55 AM</span>
                     </div>
                 </div>
-            </div>
 
-            <div class="mt-4 p-2 bg-red-900/20 border border-red-700 rounded-xl">
-                <p class="text-red-300 font-bold text-lg mb-3">
-                    🚨 IMPORTANT: Check your Spam & Promotions folders! 🚨
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- EMAIL PROCESS DETAIL SECTION -->
-    <section id="email-process" class="py-20 px-4 bg-pf-black">
-        <div class="container mx-auto max-w-4xl text-center">
-            <h2 class="font-display font-black text-3xl md:text-4xl mb-4">YOUR EMAIL JOURNEY</h2>
-            <p class="text-gray-400 mb-12 max-w-2xl mx-auto">Here’s exactly what to expect in your inbox after you join the waitlist.</p>
-
-            <div class="flex flex-col md:flex-row justify-center items-start gap-8 text-left">
-
-                <!-- Step 1: Welcome Email -->
-                <div class="flex-1 bg-pf-gray p-6 rounded-xl border border-white/10 text-center">
-                    <div class="bg-pf-orange text-black font-bold w-12 h-12 flex items-center justify-center rounded-full text-2xl mx-auto mb-4">1</div>
-                    <h3 class="font-display font-bold text-xl text-white mb-2">INSTANTLY: The Welcome Package</h3>
-                    <p class="text-gray-300 text-sm">Immediately after you sign up, you'll receive your first email. This contains links to all your free rewards, including the product brochure, sourness guide, and your official welcome to the community.</p>
+                <!-- Google Maps Embed -->
+                <div class="rounded-xl overflow-hidden shadow-2xl h-64 sm:h-96 w-full">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2581.442880796856!2d5.987747776495147!3d49.500251771424755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4795e3dd48408f6d%3A0x866187b508f7f502!2s4%20Pl.%20de%20l'H%C3%B4tel%20de%20Ville%2C%204138%20Esch-sur-Alzette%2C%20Luxembourg!5e0!3m2!1sen!2slu!4v1702570000000!5m2!1sen!2slu" 
+                        width="100%" 
+                        height="100%"
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
                 </div>
-
-                <!-- Step 2: Weekly Updates -->
-                <div class="flex-1 bg-pf-gray p-6 rounded-xl border border-white/10 text-center">
-                    <div class="bg-pf-orange text-black font-bold w-12 h-12 flex items-center justify-center rounded-full text-2xl mx-auto mb-4">2</div>
-                    <h3 class="font-display font-bold text-xl text-white mb-2">WEEKLY: Progress Updates</h3>
-                    <p class="text-gray-300 text-sm">If you opt-in, you'll get a weekly behind-the-scenes look at our journey to launch. See production updates, packaging reveals, and be the first to know about new developments as they happen.</p>
-                </div>
-
-                <!-- Step 3: Launch Email -->
-                <div class="flex-1 bg-pf-gray p-6 rounded-xl border border-white/10 text-center">
-                    <div class="bg-pf-orange text-black font-bold w-12 h-12 flex items-center justify-center rounded-full text-2xl mx-auto mb-4">3</div>
-                    <h3 class="font-display font-bold text-xl text-white mb-2">LAUNCH DAY: The Final Alert</h3>
-                    <p class="text-gray-300 text-sm">This is the big one. You'll get an email giving you 24-hour early access to the store before the public. It will include your exclusive 20% OFF discount code and a direct link to purchase PuckerFuel.</p>
-                </div>
-
             </div>
-        </div>
-    </section>
-
-
-<section id="no-email-signup" class="py-12 px-4 bg-pf-black">
-    <div class="container mx-auto max-w-3xl">
-        <h2 class="font-display font-black text-3xl md:text-4xl mb-4 text-center">NO EMAIL? NO PROBLEM.</h2>
+        </section>
         
-        <div class="grid md:grid-cols-2 gap-4">
-            <div class="bg-pf-gray border border-white/10 rounded-xl p-4 hover:border-pf-orange/50 transition-all">
-                <div class="text-3xl mb-2">📸</div>
-                <h3 class="font-bold text-lg mb-1">Follow on Instagram</h3>
-                <p class="text-gray-300 text-xs">@Oaf_fitnes - Daily stories, behind-the-scenes content, and launch announcements.</p>
-                <a href="https://www.instagram.com/oaf_fitnes/" target="_blank" class="text-pf-orange font-semibold text-xs hover:underline mt-2 inline-block">Follow Us →</a>
+        <!-- Social Media Icons -->
+        <section class="pb-12 pt-6 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h3 class="text-xl sm:text-2xl font-serif font-semibold mb-5 text-coffee-medium">Follow Our Journey</h3>
+            <div class="flex justify-center space-x-6 sm:space-x-8">
+                <!-- SVG icons scale consistently -->
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/profile.php?id=61581338334797" target="_blank" class="social-icon text-coffee-dark hover:text-coffee-medium">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.77 7.46H14.5v-1.9c0-.9.2-1.5 1.5-1.5h2.17V.01h-3.8c-4.55 0-5.6 3.03-5.6 5.6v2.16H5.43v4.46h2.84v9.64h4.94V11.92h3.94l.6-4.46z"/></svg>
+                </a>
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/smile.coffee.roasters/" target="_blank" class="social-icon text-coffee-dark hover:text-coffee-medium">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.013 4.85.068 1.488.066 2.455.337 3.238.653.784.316 1.469.754 2.127 1.412.658.658 1.1 1.343 1.416 2.126.315.783.585 1.75.65 3.237.054 1.266.067 1.646.067 4.85 0 3.204-.013 3.584-.067 4.85-.065 1.488-.336 2.455-.65 3.238-.316.784-.754 1.469-2.126 2.127-.658.658-1.343 1.1-2.126 1.416-.783.315-1.75.585-3.237.65-.054 1.266-.067 1.646-.067 4.85 0 3.204.013 3.584.067 4.85.065 1.488.336 2.455.65 3.238.316.784.754 1.469 2.126 2.127.658.658 1.343 1.1 2.126 1.416.783.315 1.75.585 3.237.65 1.266-.054 1.646-.067 4.85-.067 3.204 0 3.584-.013 4.85-.067 1.487-.065 2.455-.336 3.237-.65.784-.316 1.469-.754 2.126-1.412.658-.658 1.1-1.343 1.416-2.126.315-.783.585-1.75.65-3.237.054-1.266.067-1.646.067-4.85 0-3.204.013-3.584.067-4.85.065-1.488.336 2.455.65 3.238.316.784.754 1.469 2.126 2.127.658.658 1.343 1.1 2.126 1.416.783.315 1.75.585 3.237.65 1.266-.054 1.646-.067 4.85-.067zm0 3.256a4.444 4.444 0 1 0 0 8.888 4.444 4.444 0 0 0 0-8.888zm0 7.375a2.93 2.93 0 1 1 0-5.86 2.93 2.93 0 0 1 0 5.86zm6.54-7.375a.998.998 0 1 0 0-1.996.998.998 0 0 0 0 1.996z"/></svg>
+                </a>
+                <!-- TikTok -->
+                <a href="https://www.tiktok.com/@smile.coffee.roas?lang=en" target="_blank" class="social-icon text-coffee-dark hover:text-coffee-medium">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c-6.63 0-12 5.37-12 12s5.37 12 12 12 12-5.37 12-12-5.37-12-12-12zm-3.5 16.5c-.83 0-1.5-.67-1.5-1.5v-7c0-.83.67-1.5 1.5-1.5h7c.83 0 1.5.67 1.5 1.5v3.5c0 .28-.22.5-.5.5s-.5-.22-.5-.5v-3.5h-7v7h7v-3.5c0-.28.22-.5.5-.5s.5.22.5.5v3.5c0 .83-.67 1.5-1.5 1.5h-7z"/></svg>
+                </a>
             </div>
+        </section>
 
-            <div class="bg-pf-gray border border-white/10 rounded-xl p-4 hover:border-pf-orange/50 transition-all">
-                <div class="text-3xl mb-2">🎵</div>
-                <h3 class="font-bold text-lg mb-1">TikTok Updates</h3>
-                <p class="text-gray-300 text-xs">@Oaf_fitness - Videos and launch notifications via our pinned video.</p>
-                <a href="https://www.tiktok.com/@oaf_fitness" target="_blank" class="text-pf-orange font-semibold text-xs hover:underline mt-2 inline-block">Follow Us →</a>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-coffee-dark text-coffee-light py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs sm:text-sm">
+            <p data-key="copyright">&copy; 2025 SMILE Coffee Roasters. Handcrafted with comfort in Luxembourg.</p>
+            <div class="mt-2 space-x-4">
+                <a href="#" class="hover:text-cream-cozy transition-colors" data-key="privacy">Privacy Policy</a>
+                <a href="#" class="hover:text-cream-cozy transition-colors" data-key="shipping">Shipping Info</a>
             </div>
-
-            <div class="bg-pf-gray border border-white/10 rounded-xl p-4 hover:border-pf-orange/50 transition-all">
-                <div class="text-3xl mb-2">▶️</div>
-                <h3 class="font-bold text-lg mb-1">YouTube Channel</h3>
-                <p class="text-gray-300 text-xs">@Oaf_fitness Long-form content, product breakdowns, and the official launch announcement video.</p>
-                <a href="https://www.youtube.com/channel/UCVdF52kzNis_W4hApl_x2aw" target="_blank" class="text-pf-orange font-semibold text-xs hover:underline mt-2 inline-block">Subscribe →</a>
-            </div>
-            
-             <div class="bg-pf-gray border border-white/10 rounded-xl p-4 hover:border-pf-orange/50 transition-all">
-                <div class="text-3xl mb-2">🌐</div>
-                <h3 class="font-bold text-lg mb-1">Check This Website</h3>
-                <p class="text-gray-300 text-xs">Bookmark and visit regularly for countdown and announcements right here on the landing page.</p>
-                 <span class="text-pf-gray font-semibold text-xs mt-2 inline-block select-none pointer-events-none">Check Here →</span>
-            </div>
-            
-        </div>
-
-        <div class="mt-4 text-center p-3 bg-pf-orange/10 border border-pf-orange/30 rounded-xl">
-            <p class="text-gray-300 text-sm">⚠️ Note: Only email waitlist members get the full rewards package worth €67</p>
-        </div>
-    </div>
-</section>
-  
-  
-    <!-- UNSUBSCRIBE SECTION -->
-    <section id="unsubscribe-section" class="py-20 px-4 bg-pf-black">
-        <div class="container mx-auto max-w-xl text-center">
-            <h2 class="font-display font-black text-3xl md:text-4xl mb-4 text-pf-orange">⚠️ DELETE YOUR EMAIL ⚠️</h2>
-            <p class="text-gray-300 mb-8 text-lg">
-                If you wish to unsubscribe from our emails and have your data permenantly removed, please enter your email below.
-            </p>
-
-            <!-- Begin Brevo Unsubscribe Form -->
-            <div class="sib-form bg-pf-gray p-6 rounded-xl border border-white/10 shadow-lg" id="sib-form-unsubscribe">
-                <div id="sib-form-container-unsubscribe" class="sib-form-container">
-                    <div id="error-message-unsubscribe" class="sib-form-message-panel" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;max-width:540px;">
-                        <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
-                            <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon">
-                                <path d="M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-11.49 120h22.979c6.823 0 12.274 5.682 11.99 12.5l-7 168c-.268 6.428-5.556 11.5-11.99 11.5h-8.979c-6.433 0-11.722-5.073-11.99-11.5l-7-168c-.283-6.818 5.167-12.5 11.99-12.5zM256 340c-15.464 0-28 12.536-28 28s12.536 28 28 28 28-12.536 28-28-12.536-28-28-28z" />
-                            </svg>
-                            <span class="sib-form-message-panel__inner-text">
-                                Your Unsubscription could not be validated. Please try again.
-                            </span>
-                        </div>
-                    </div>
-                    <div></div>
-                    <div id="success-message-unsubscribe" class="sib-form-message-panel" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#085229; background-color:#e7faf0; border-radius:3px; border-color:#13ce66;max-width:540px;">
-                        <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
-                            <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon">
-                                <path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 464c-118.664 0-216-96.055-216-216 0-118.663 96.055-216 216-216 118.664 0 216 96.055 216 216 0 118.663-96.055 216-216 216zm141.63-274.961L217.15 376.071c-4.705 4.667-12.303 4.637-16.97-.068l-85.878-86.572c-4.667-4.705-4.637-12.303.068-16.97l8.52-8.451c4.705-4.667 12.303-4.637 16.97.068l68.976 69.533 163.441-162.13c4.705-4.667 12.303-4.637 16.97.068l8.451 8.52c4.668 4.705 4.637 12.303-.068 16.97z" />
-                            </svg>
-                            <span class="sib-form-message-panel__inner-text">
-                                Your un-subscription is successful.
-                            </span>
-                        </div>
-                    </div>
-                    <div></div>
-                    <div id="sib-container-unsubscribe" class="sib-container--large sib-container--vertical" style="direction:ltr">
-                        <form id="sib-form-unsubscribe" method="POST" action="https://de9c0110.sibforms.com/serve/MUIFAIrmWDMNY-ULPV3qkSyilxhKLJRns0FAy-rqfYL09l4_kNFAS8JoaDPA0qcb3WZB7XXq9_H2RDFF2IInpqdOXO_5mgeP7ETZ7G2XmK8Sb76_jmh4CuZG3-vHwl7-ED_n4Lmo_F-mOHZ5Rg63t3UqQvclS5A-UUbjfRalPpjH1DOfQE0Pe334JX1fVI6EMQChVx_xp6aXFpDT" data-type="unsubscription">
-                            <div style="padding: 8px 0;">
-                                <div class="sib-input sib-form-block">
-                                    <div class="form__entry entry_block">
-                                        <div class="form__label-row ">
-                                            <div class="entry__field">
-                                                <input class="input " type="text" id="EMAIL_UNSUB" name="EMAIL" autocomplete="off" placeholder="EMAIL" data-required="true" required />
-                                            </div>
-                                        </div>
-                                        <label class="entry__error entry__error--primary" style="font-size:16px; text-align:left; font-family:Helvetica, sans-serif; color:#661d1d; background-color:#ffeded; border-radius:3px; border-color:#ff4949;">
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="padding: 8px 0;">
-                                <div class="sib-form-block" style="text-align: center">
-                                    <button class="sib-form-block__button sib-form-block__button-with-loader" style="font-size:16px; text-align:center; font-weight:700; font-family:Helvetica, sans-serif; color:#FFFFFF; background-color:#FF5F00; border-radius:3px; border-width:0px;" form="sib-form-unsubscribe" type="submit">
-                                        <svg class="icon clickable__icon progress-indicator__icon sib-hide-loader-icon" viewBox="0 0 512 512" style="">
-                                            <path d="M460.116 373.846l-20.823-12.022c-5.541-3.199-7.54-10.159-4.663-15.874 30.137-59.886 28.343-131.652-5.386-189.946-33.641-58.394-94.896-95.833-161.827-99.676C261.028 55.961 256 50.751 256 44.352V20.309c0-6.904 5.808-12.337 12.703-11.982 83.556 4.306 160.163 50.864 202.11 123.677 42.063 72.696 44.079 162.316 6.031 236.832-3.14 6.148-10.75 8.461-16.728 5.01z" />
-                                        </svg>
-                                        UNSUBSCRIBE
-                                    </button>
-                                </div>
-                            </div>
-                            <input type="text" name="email_address_check" value="" class="input--hidden">
-                            <input type="hidden" name="locale" value="en">
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <!-- End Brevo Unsubscribe Form -->
-
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="py-8 border-t border-white/5">
-        <div class="container mx-auto px-4 text-center">
-            <h3 class="font-display font-black text-3xl mb-4">
-                PUCKER<span class="text-pf-orange">FUEL</span>
-            </h3>
-
-            <p class="text-gray-600 text-xs">
-                &copy; <span id="current-year">2025</span> PuckerFuel S.à r.l.-S. All rights reserved.<br>
-                2 rue Jean Engling, L-1466 Dommeldange, Luxembourg.
-            </p>
         </div>
     </footer>
-    
-    <!-- FIRST TIME VISITOR TOUR OVERLAY -->
-    <div id="tour-overlay">
-        <div id="tour-tooltip" class="tour-tooltip ">
-            <h3 class="font-display font-bold text-xl mb-2" id="tour-title"></h3>
-            <p class="mb-4 text-sm" id="tour-text"></p>
-            <div class="flex gap-3">
-                <button onclick="skipTour()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-semibold transition-colors">Skip Tour</button>
-                <button onclick="nextTourStep()" class="px-6 py-2 bg-white hover:bg-gray-200 text-black rounded-lg text-sm font-bold transition-colors flex-1">Next →</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- SCRIPTS -->
-    <!-- START - We recommend to place the below code in footer or bottom of your website html  -->
-<script>
-  window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
-  window.LOCALE = 'en';
-  window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The information provided is invalid.";
-
-  window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank. ";
-
-  window.GENERIC_INVALID_MESSAGE = "The information provided is invalid.";
-
-
-
-
-  window.translation = {
-    common: {
-      selectedList: '{quantity} list selected',
-      selectedLists: '{quantity} lists selected',
-      selectedOption: '{quantity} selected',
-      selectedOptions: '{quantity} selected',
-    }
-  };
-
-  var AUTOHIDE = Boolean(1);
-</script>
-
-<script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
-<!-- END - We recommend to place the above code in footer or bottom of your website html  -->
-
-<!-- START - Brevo Unsubscribe Form Script -->
-<script>
-  window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
-  window.LOCALE = 'en';
-  window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-
-  window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank. ";
-
-  window.GENERIC_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-
-  window.translation = {
-    common: {
-      selectedList: '{quantity} list selected',
-      selectedLists: '{quantity} lists selected',
-      selectedOption: '{quantity} selected',
-      selectedOptions: '{quantity} selected',
-    }
-  };
-  var AUTOHIDE = Boolean(0);
-</script>
-<script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
-<!-- END - Brevo Unsubscribe Form Script -->
-
-    <!-- Custom Page Scripts -->
-    <script>
-        // Dynamically set the current year in the footer
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-
-        // SMOOTH SCROLL NAVIGATION - Helper functions for CTA buttons
-        function scrollToSignup() {
-            document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function scrollToDetails() {
-            document.getElementById('rewards-details').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function scrollToNoEmail() {
-            document.getElementById('no-email-signup').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // COUNTDOWN TIMER - Updates every second until January 1, 2026
-        const countdownDate = new Date("January 1, 2026 00:00:00").getTime();
-
-        const countdownInterval = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = countdownDate - now;
-
-            // Calculate time units
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Update countdown display with zero-padding
-            document.getElementById("days").innerHTML = days.toString().padStart(2, '0');
-            document.getElementById("hours").innerHTML = hours.toString().padStart(2, '0');
-            document.getElementById("minutes").innerHTML = minutes.toString().padStart(2, '0');
-            document.getElementById("seconds").innerHTML = seconds.toString().padStart(2, '0');
-
-            // Handle countdown expiration
-            if (distance < 0) {
-                clearInterval(countdownInterval);
-                document.getElementById("countdown").innerHTML = '<span class="text-2xl font-display font-black text-red-500">WAITLIST CLOSED!</span>';
-                
-                // Update signup section to show closed message
-                const signupSection = document.getElementById("signup");
-                if(signupSection) {
-                    signupSection.querySelector('h2').innerHTML = 'WAITLIST IS NOW CLOSED';
-                    signupSection.querySelector('.sib-form').innerHTML = '<p class="text-center text-red-400 font-bold text-xl">Sorry, the waitlist and all associated rewards are no longer available.</p>';
-                    const grayText = signupSection.querySelector('p.text-gray-300');
-                    if(grayText) grayText.remove();
-                }
-            }
-        }, 1000);
-
-        // Helper function to generate an info icon SVG (moved from HTML)
-        function getInfoIcon() {
-            return `
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            `;
-        }
-
-        // FIRST TIME VISITOR TOUR SYSTEM
-        // Tour steps configuration - guides new visitors through signup process
-        const tourSteps = [
-            {
-                target: 'countdown-hero',
-                title: '⏰ Time is Running Out!',
-                text: 'The waitlist closes on January 1st. After that, no more entries and all rewards expire forever.',
-                position: 'bottom'
-            },
-            {
-                target: 'sib-form', // Target the actual form container
-                title: '📝 Claim Your FREE Rewards!',
-                text: 'Enter your email here to instantly unlock all 10 exclusive bonuses worth over $95, including a 20% discount and a spot on the Founders Wall.',
-                position: 'top'
-            },
-            {
-                target: 'rewards-list-summary',
-                title: '🎁 See What You Get',
-                text: 'Here\'s the complete breakdown of every reward in the package. It\'s all free for joining the waitlist!',
-                position: 'top'
-            },
-            {
-                target: 'no-email-button',
-                title: '🚫 No Email? No Problem!',
-                text: 'If you prefer not to share your email, click here to find other ways to stay updated. Note: rewards are only for email subscribers!',
-                position: 'top'
-            }
-        ];
-
-        let currentTourStep = 0;
-
-        // Check if user has seen tour before (using localStorage)
-        function checkFirstVisit() {
-            if (!localStorage.getItem('puckerfuel_tour_completed')) {
-                // Start tour immediately for first-time visitors
-                startTour();
-            }
-        }
-
-        // Initialize tour system
-        function startTour() {
-            currentTourStep = 0;
-            document.getElementById('tour-overlay').classList.add('active');
-            showTourStep(currentTourStep);
-        }
-
-        // Display specific tour step with positioning
-        function showTourStep(stepIndex) {
-            if (stepIndex >= tourSteps.length) {
-                completeTour();
-                return;
-            }
-
-            const step = tourSteps[stepIndex];
-            const target = document.getElementById(step.target);
-            const tooltip = document.getElementById('tour-tooltip');
-
-            // Reset arrow classes
-            tooltip.classList.remove('arrow-up', 'arrow-down');
-
-            if (!target) {
-                nextTourStep();
-                return;
-            }
-
-            // Remove previous highlights
-            document.querySelectorAll('.tour-highlight').forEach(el => {
-                if (el !== target) el.classList.remove('tour-highlight');
-            });
-
-            // Highlight target element
-            target.classList.add('tour-highlight');
-
-            // Update tooltip content
-            document.getElementById('tour-title').textContent = step.title;
-            document.getElementById('tour-text').textContent = step.text;
-
-            // Position tooltip relative to target
-            const rect = target.getBoundingClientRect();
-            const tooltipWidth = tooltip.offsetWidth;
-            const tooltipHeight = tooltip.offsetHeight;
-
-            let top, left;
-
-            if (step.position === 'bottom') {
-                top = rect.bottom + window.scrollY + 20; // 20px below target
-                left = rect.left + window.scrollX + (rect.width / 2) - (tooltipWidth / 2); // Centered horizontally
-                tooltip.classList.add('arrow-up');
-            } else { // top
-                top = rect.top + window.scrollY - tooltipHeight - 20; // 20px above target
-                left = rect.left + window.scrollX + (rect.width / 2) - (tooltipWidth / 2); // Centered horizontally
-                tooltip.classList.add('arrow-down');
-            }
-
-            // Keep tooltip on screen
-            if (left < 20) left = 20;
-            if (left + tooltipWidth > window.innerWidth - 20) {
-                left = window.innerWidth - tooltipWidth - 20;
-            }
-
-            // Keep tooltip on screen (vertical) - if 'top' position goes off-screen, switch to 'bottom'
-            if (top < window.scrollY + 20 && step.position === 'top') {
-                top = rect.bottom + window.scrollY + 20; // Position below target instead
-                tooltip.classList.remove('arrow-down');
-                tooltip.classList.add('arrow-up');
-            } else if (top + tooltipHeight > window.innerHeight + window.scrollY - 20 && step.position === 'bottom') {
-                top = rect.top + window.scrollY - tooltipHeight - 20; // Position above target instead
-                tooltip.classList.remove('arrow-up');
-                tooltip.classList.add('arrow-down');
-            }
-
-            tooltip.style.top = top + 'px';
-            tooltip.style.left = left + 'px';
-            
-            // Scroll to element smoothly, ensuring it's visible
-            target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        // Advance to next tour step
-        function nextTourStep() {
-            currentTourStep++;
-            showTourStep(currentTourStep);
-        }
-
-        // Skip entire tour
-        function skipTour() {
-            completeTour();
-        }
-
-        // Complete tour and save to localStorage
-        function completeTour() {
-            const overlay = document.getElementById('tour-overlay');
-            overlay.classList.remove('active');
-            document.querySelectorAll('.tour-highlight').forEach(el => {
-                el.classList.remove('tour-highlight');
-            });
-            localStorage.setItem('puckerfuel_tour_completed', 'true');
-        }
-
-        // Start tour check when page loads
-        window.addEventListener('load', checkFirstVisit);
-    </script>
 </body>
 </html>
